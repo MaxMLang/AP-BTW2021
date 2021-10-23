@@ -1,9 +1,9 @@
 library(tidyverse)
 
-btw_kerg <- read.csv("/Users/max/Library/Mobile Documents/com~apple~CloudDocs/AnPraktikum/AP-BTW2021/Raw Data/btw21_kerg.csv", 
+btw_kerg <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_kerg.csv?token=APSDNIIFGJAG7KMIRFP36UTBPU4TK", 
                       skip = 2,
                       sep= ";")
-btw_struktur <- read.csv("/Users/max/Library/Mobile Documents/com~apple~CloudDocs/AnPraktikum/AP-BTW2021/Raw Data/btw21_strukturdaten.csv",
+btw_struktur <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_strukturdaten.csv?token=APSDNIOU55YWJU5VMI7QD73BPU4UY",
                          skip= 8,
                          sep= ";")
 btw_kerg_dirty <- btw_kerg
