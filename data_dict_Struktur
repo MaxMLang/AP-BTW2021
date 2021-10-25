@@ -1,0 +1,27 @@
+Data Dictionary 
+
+Strukturdatensatz
+Abkürzung - Bedeutung 
+
+Land - Bundesland
+Wahlkreis.Nr - Wahlkreisnummer
+Wahlkreis.Name - Wahlkreisname
+Gmd.Anz - Gemeinden Anzahl (Stand 31.12.2019)
+Flaeche.Km - Fläche in Kilometer (Stand 31.12.2019)
+Bvk.Insg - Bevölkerung Insgesamt in 1000 (Stand 31.12.2019)
+Bvk.Dt - Bevölkerung Deutsche in 1000 (Stand 31.12.2019)
+Bvk.Aus - Bevölkerung Ausländer in 1000 (Stand 31.12.2019)
+Bvk.Dcht - Bevölkerungsdichte EW je km^2 (Stand 31.12.2019)
+Gbrt.Saldo - Geburtensaldo je 1000 EW (+) Zunahme (-) Abnahme (Stand 2019)
+Wander.Saldo - Wanderungssaldo je 1000 EW (+) Zunahme (-) Abnahme (Stand 2019)
+
+u18.Perctange - Alter unter 18 (%) (Stand 31.12.2019)
+f18t24.Perctange - Alter von 18 bis 24 (%) (Stand 31.12.2019)
+f25t34.Perctange - Alter von 25 bis 34 (%) (Stand 31.12.2019)
+f35t59.Perctange - Alter von 35 bis 59 (%) (Stand 31.12.2019)
+f60t74.Perctange - Alter von 60 bis 74 (%) (Stand 31.12.2019)
+f75tInf.Perctange - Alter über 75 Jahren (Stand 31.12.2019)
+
+Boden.SieduVerk - Bodenfläche nach Art der tatsächlichen Nutzung Siedlung und Verkehr (%) (Stand am 31.12.2019)
+Boden.VegeuGewaes - Bodenfläche nach Art der tatsächlichen Nutzung Vegetation und Gewässer (%) (Stand am 31.12.2019)
+Fertig.Wohnungen - Fertiggestellte Wohnungen 2019 (je 1000 EW)
