@@ -43,6 +43,10 @@ KTG.KinderF3t6 - Kindertagesbetreuung am 01.03.2020 - Betreute Kinder 3 bis unte
 Vfg.Einkommen - Verfügbares Einkommen der privaten Haushalte 2018 (EUR je EW)
 BIP - Bruttoinlandsprodukt 2018 (EUR je EW)
 SozPfli.Insg - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - insgesamt (je 1000 EW)
+SozPfli.LandW - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - Land- und Forstwirtschaft, Fischerei (%)
+SozPfli.ProdGewerb - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - Produzierendes Gewerbe (%)
+SozPfli.HandelGwVerk - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - Handel, Gastgewerbe, Verkehr (%)
+SozPfli.ÖffPrivDienstl - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - Öffentliche und private Dienstleister (%)
 
 
 
