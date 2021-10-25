@@ -55,6 +55,50 @@ btw_kerg_bund <- btw_kerg %>%
 footnotes <- btw_struktur$Fußnoten
 btw_struktur
 
+ 
+clean_colnames_btw_struktur <- c(
+                                 "Land",
+                                 "Wahlkreis.Nr",
+                                 "Wahlkreis.Name",
+                                 "Gmd.Anz",
+                                 "Flaeche.Km",
+                                 "Bvk.Insg",
+                                 "Bvk.Dt",
+                                 "Bvk.Aus",
+                                 "Bvk.Dcht",
+                                 "Gbrt.Saldo",
+                                 "Wander.Saldo",
+                                 "u18.Perctange",
+                                 "f18t24.Perctange",
+                                 "f25t34.Perctange",
+                                 "f35t59.Perctange",
+                                 "f60t74.Perctange",
+                                 "f75tInf.Perctange",
+                                 "Boden.SieduVerk",
+                                 "Boden.VegeuGewaes",
+                                 "Fertig.Wohnungen",
+                                 "Best.Wohnungen",
+                                 "Flaech.Wohn",
+                                 "WohnFlaech.EW",
+                                 "Best.PKW",
+                                 "Best.PkwElek",
+                                 "Unternehmen.Insg",
+                                 "Unternehmen.HW",
+                                 "Schulab.berufSch",
+                                 "Schulab.allgSch",
+                                 "Schulab.ohneHS",
+                                 "Schulab.mitHS",
+                                 "Schulab.mitMittSA",
+                                 "Schulab.mitAllgHS",
+                                 "KTG.KinderU3",
+                                 "KTG.KinderF3t6",
+                                 "Vfg.Einkommen",
+                                 "SozPfli.Insg",
+                                 "SozPfli.LandW",
+                                 "SozPfli.ProdGewerb",
+                                 "SozPfli.HandelGwVerk",
+                                 "SozPfli.ÖffPrivDienstl",
+                                 )
 
 colnames(btw_struktur)
 
@@ -77,3 +121,4 @@ btw_struk_bund <- btw_struktur %>%
   
 btw_struk_bund$Wahlkreis.Nr. <- NULL
 btw_struk_bund$Wahlkreis.Name <- NULL
+
