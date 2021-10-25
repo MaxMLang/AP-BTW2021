@@ -25,3 +25,29 @@ f75tInf.Perctange - Alter über 75 Jahren (Stand 31.12.2019)
 Boden.SieduVerk - Bodenfläche nach Art der tatsächlichen Nutzung Siedlung und Verkehr (%) (Stand am 31.12.2019)
 Boden.VegeuGewaes - Bodenfläche nach Art der tatsächlichen Nutzung Vegetation und Gewässer (%) (Stand am 31.12.2019)
 Fertig.Wohnungen - Fertiggestellte Wohnungen 2019 (je 1000 EW)
+Best.Wohnungen - Bestand an Wohnungen am 31.12.2019 - insgesamt (je 1000 EW)
+Flaech.Wohn - Wohnfläche am 31.12.2019 (je Wohnung)
+WohnFlaech.EW - Wohnfläche am 31.12.2019 (je EW)
+Best.PKW - PKW-Bestand am 01.01.2020 - PKW insgesamt (je 1000 EW)
+Best.PkwElek - PKW-Bestand am 01.01.2020 - PKW mit Elektro- oder Hybrid-Antrieb (%)
+Unternehmen.Insg - Unternehmensregister 2018 - Unternehmen insgesamt (je 1000 EW)
+Unternehmen.HW - Unternehmensregister 2018 - Handwerksunternehmen (je 1000 EW)
+Schulab.berufSch - Schulabgänger/-innen beruflicher Schulen 2019
+Schulab.allgSch - Schulabgänger/-innen allgemeinbildender Schulen 2019 - insgesamt ohne Externe (je 1000 EW)
+Schulab.ohneHS - Schulabgänger/-innen allgemeinbildender Schulen 2019 - ohne Hauptschulabschluss (%)
+Schulab.mitHS- Schulabgänger/-innen allgemeinbildender Schulen 2019 - mit Hauptschulabschluss (%)
+Schulab.mitMittSA - Schulabgänger/-innen allgemeinbildender Schulen 2019 - mit mittlerem Schulabschluss (%)
+Schulab.mitAllgHS - Schulabgänger/-innen allgemeinblldender Schulen 2019 - mit allgemeiner und Fachhochschulreife (%)
+KTG.KinderU3 - Kindertagesbetreuung am 01.03.2020 - Betreute Kinder unter 3 Jahre (Betreuungsquote)
+KTG.KinderF3t6 - Kindertagesbetreuung am 01.03.2020 - Betreute Kinder 3 bis unter 6 Jahre (Betreuungsquote)
+Vfg.Einkommen - Verfügbares Einkommen der privaten Haushalte 2018 (EUR je EW)
+BIP - Bruttoinlandsprodukt 2018 (EUR je EW)
+SozPfli.Insg - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - insgesamt (je 1000 EW)
+
+
+
+
+
+
+
+
