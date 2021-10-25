@@ -7,7 +7,9 @@ btw_struktur <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/
                          skip= 8,
                          sep= ";")
 btw_kerg_dirty <- btw_kerg
+btw_struktur_dirty <- btw_struktur
 
+# BTW_KERG DATENSATZ -------------------
 # Removing one column with only NA values
 any(!is.na(btw_kerg$X.156))
 btw_kerg$X.156 <- NULL
@@ -40,13 +42,38 @@ btw_kerg_wk <- btw_kerg%>%
 
 
 # Bundesländer
-btw_bundeslaender <- btw_kerg %>% 
+btw_kerg_bundeslaender <- btw_kerg %>% 
   filter(Wahlkreisnummer == 99)
 
 # Bundesgebiet
-btw_bund <- btw_kerg %>% 
+btw_kerg_bund <- btw_kerg %>% 
   filter(!is.na(Nr)) %>% 
   filter(!(Wahlkreisnummer %in% 99)) %>% 
   filter(Gebiet %in% "Bundesgebiet")
 
+# BTW_STRUKTUR DATENSATZ -------------------
+footnotes <- btw_struktur$Fußnoten
+btw_struktur
 
+
+colnames(btw_struktur)
+
+btw_struk_wk <- btw_struktur %>% 
+  filter(Wahlkreis.Nr.<300) %>% 
+  arrange(Wahlkreis.Nr.)
+
+# Länderebene
+btw_struk_laender <- btw_struktur %>% 
+  filter(Wahlkreis.Nr.>900 & Wahlkreis.Nr.<917) %>% 
+  arrange(Wahlkreis.Nr.)
+
+btw_struk_laender$Wahlkreis.Name <- NULL
+colnames(btw_struk_laender)[2] <- "Bundesland.Nr."
+btw_struk_laender[["Bundesland.Nr."]] <- 1:16
+
+# Bundesebene
+btw_struk_bund <- btw_struktur %>%
+  filter(Wahlkreis.Nr.>950)
+  
+btw_struk_bund$Wahlkreis.Nr. <- NULL
+btw_struk_bund$Wahlkreis.Name <- NULL
