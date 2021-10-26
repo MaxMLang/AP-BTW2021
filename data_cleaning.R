@@ -15,7 +15,7 @@ any(!is.na(btw_kerg$X.156))
 btw_kerg$X.156 <- NULL
 
 # Changing Column name from "gehört zu" to the actual Wahlkreisnummer see https://discord.com/channels/900747217936220200/900747392251465739/901399116343554089 for more info
-names(btw_kerg)[3] <- c("Wahlkreisnummer")
+names(btw_kerg)[3] <- c("WahlkreisnummerGrob")
 
 # Cleaning column names from multi level to single level headers
 parteinamen <- names(btw_kerg)[seq(from= 4, to= length(names(btw_kerg)), by= 4)] # Each Name is followed by three variabels
@@ -30,34 +30,34 @@ for (i in seq_along(parteinamen)){
 }
 colnames(btw_kerg)[4:211] <- colnames_cleaned
 
+colnames(btw_kerg)[1] <- "Wahlkreis.Nr"
 # Removing first two rows as multi level headers are no longer needed
 btw_kerg <- btw_kerg[3:nrow(btw_kerg),]
 
 # Nur Wahlkreise (ohne Bundesländer und Bund Ergebnis)
 btw_kerg_wk <- btw_kerg%>% 
-  filter(!is.na(Nr)) %>% 
-  filter(!(Wahlkreisnummer %in% 99)) %>% 
+  filter(!is.na(Wahlkreis.Nr)) %>% 
+  filter(!(WahlkreisnummerGrob %in% 99)) %>% 
   filter(!(Gebiet %in% "Bundesgebiet"))
 
 
 
 # Bundesländer
 btw_kerg_bundeslaender <- btw_kerg %>% 
-  filter(Wahlkreisnummer == 99)
+  filter(WahlkreisnummerGrob == 99)
 
 # Bundesgebiet
 btw_kerg_bund <- btw_kerg %>% 
-  filter(!is.na(Nr)) %>% 
-  filter(!(Wahlkreisnummer %in% 99)) %>% 
+  filter(!is.na(Wahlkreis.Nr)) %>% 
+  filter(!(WahlkreisnummerGrob %in% 99)) %>% 
   filter(Gebiet %in% "Bundesgebiet")
 
 # BTW_STRUKTUR DATENSATZ -------------------
 footnotes <- btw_struktur$Fußnoten
-btw_struktur
+btw_struktur$Fußnoten <- NULL
 
  
-clean_colnames_btw_struktur <- c(
-                                 "Land",
+clean_colnames_btw_struktur <- c("Land",
                                  "Wahlkreis.Nr",
                                  "Wahlkreis.Name",
                                  "Gmd.Anz",
@@ -93,23 +93,35 @@ clean_colnames_btw_struktur <- c(
                                  "KTG.KinderU3",
                                  "KTG.KinderF3t6",
                                  "Vfg.Einkommen",
+                                 "BIP",
                                  "SozPfli.Insg",
                                  "SozPfli.LandW",
                                  "SozPfli.ProdGewerb",
                                  "SozPfli.HandelGwVerk",
                                  "SozPfli.ÖffPrivDienstl",
+                                 "SozPfli.Rest",
+                                 "SGB2.Empf.Insg",
+                                 "SGB2.Empf.nErwHilf",
+                                 "SGB2.Empf.Aus",
+                                 "ArbeitslosQ",
+                                 "ArbeitslosQ.M",
+                                 "ArbeitslosQ.W",
+                                 "ArbeitslosQ.f15t24",
+                                 "ArbeitslosQ.f55t64"
                                  )
 
-colnames(btw_struktur)
+
+colnames(btw_struktur) <- clean_colnames_btw_struktur
+
 
 btw_struk_wk <- btw_struktur %>% 
-  filter(Wahlkreis.Nr.<300) %>% 
-  arrange(Wahlkreis.Nr.)
+  filter(Wahlkreis.Nr<300) %>% 
+  arrange(Wahlkreis.Nr)
 
 # Länderebene
 btw_struk_laender <- btw_struktur %>% 
-  filter(Wahlkreis.Nr.>900 & Wahlkreis.Nr.<917) %>% 
-  arrange(Wahlkreis.Nr.)
+  filter(Wahlkreis.Nr>900 & Wahlkreis.Nr<917) %>% 
+  arrange(Wahlkreis.Nr)
 
 btw_struk_laender$Wahlkreis.Name <- NULL
 colnames(btw_struk_laender)[2] <- "Bundesland.Nr."
@@ -117,8 +129,11 @@ btw_struk_laender[["Bundesland.Nr."]] <- 1:16
 
 # Bundesebene
 btw_struk_bund <- btw_struktur %>%
-  filter(Wahlkreis.Nr.>950)
+  filter(Wahlkreis.Nr>950)
   
-btw_struk_bund$Wahlkreis.Nr. <- NULL
+btw_struk_bund$Wahlkreis.Nr <- NULL
 btw_struk_bund$Wahlkreis.Name <- NULL
 
+
+# Creating one big Dataset with key Nr 
+btw_data <- left_join(btw_kerg_wk, btw_struk_wk, by= "Wahlkreis.Nr")
