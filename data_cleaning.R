@@ -20,6 +20,23 @@ names(btw_kerg)[3] <- c("WahlkreisnummerGrob")
 # Cleaning column names from multi level to single level headers
 parteinamen <- names(btw_kerg)[seq(from= 4, to= length(names(btw_kerg)), by= 4)] # Each Name is followed by three variabels
 
+kern_partein_names_dirty <- c("Christlich.Demokratische.Union.Deutschlands",
+                              "Sozialdemokratische.Partei.Deutschlands",
+                              "Alternative.für.Deutschland",
+                              "Freie.Demokratische.Partei",
+                              "DIE.LINKE",
+                              "BÜNDNIS.90.DIE.GRÜNEN",
+                              "Christlich.Soziale.Union.in.Bayern.e.V.",
+                              "FREIE.WÄHLER")
+
+kern_partein_names_clean <- c("CDU",
+                              "SPD",
+                              "AFD",
+                              "FDP",
+                              "Die_Linke",
+                              "Die_Gruenen",
+                              "CSU",
+                              "Freie_Waehler")
 
 colnames_cleaned <- vector()
 for (i in seq_along(parteinamen)){
@@ -54,8 +71,12 @@ btw_kerg_bund <- btw_kerg %>%
 
 # BTW_STRUKTUR DATENSATZ -------------------
 footnotes <- btw_struktur$Fußnoten
+<<<<<<< HEAD
 btw_struktur$Fußnoten <- NULL
 
+=======
+btw_struktur
+>>>>>>> e77fe9d98b637243fd0d299f0b0eeca972bb93af
  
 clean_colnames_btw_struktur <- c("Land",
                                  "Wahlkreis.Nr",
