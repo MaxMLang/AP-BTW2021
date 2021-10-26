@@ -71,12 +71,10 @@ btw_kerg_bund <- btw_kerg %>%
 
 # BTW_STRUKTUR DATENSATZ -------------------
 footnotes <- btw_struktur$Fußnoten
-<<<<<<< HEAD
+
+
 btw_struktur$Fußnoten <- NULL
 
-=======
-btw_struktur
->>>>>>> e77fe9d98b637243fd0d299f0b0eeca972bb93af
  
 clean_colnames_btw_struktur <- c("Land",
                                  "Wahlkreis.Nr",
