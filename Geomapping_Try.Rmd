@@ -1,0 +1,37 @@
+---
+title: "Basic Data Visualization"
+author: "Max Melchior Lang"
+date: "10/27/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(sf)
+library(microbenchmark)
+
+```
+
+```{r}
+wk_path <- "/Users/max/Downloads/btw17_geometrie_wahlkreise_vg250_shp/Geometrie_Wahlkreise_19DBT_VG250.shp"
+wk_shp <- st_read(wk_path)
+glimpse(wk_shp)
+
+wk_shp$LAND_NR <- NULL
+wk_shp$LAND_NAME <- NULL
+
+btw_geo_data <- left_join(btw_data, wk_shp, by= c("Wahlkreis.Nr" = "WKR_NR"))
+btw_geo_data$WKR_NAME <- NULL
+
+p1 <- wk_shp %>% 
+  ggplot() +
+  geom_sf()
+
+ggsave("Test_performance", p1)
+
+btw_geo_data %>% 
+ggplot()+
+  geom_sf(aes(geometry= geometry, fill=btw_kerg_trimmed_wk$Wahlbeteiligung.Zweit.End))
+```
+
