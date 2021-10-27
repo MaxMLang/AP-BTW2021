@@ -11,32 +11,17 @@ btw_struktur_dirty <- btw_struktur
 
 # BTW_KERG DATENSATZ -------------------
 # Removing one column with only NA values
-any(!is.na(btw_kerg$X.156))
 btw_kerg$X.156 <- NULL
 
 # Changing Column name from "gehört zu" to the actual Wahlkreisnummer see https://discord.com/channels/900747217936220200/900747392251465739/901399116343554089 for more info
-names(btw_kerg)[3] <- c("WahlkreisnummerGrob")
+names(btw_kerg)[3] <- c("Bundesland.Nr")
 
 # Cleaning column names from multi level to single level headers
+colnames(btw_kerg)[seq(from=20, to= 51, by= 4)] <- c("CDU", "SPD", "AFD", "FDP", "LINKE", "GRÜNE",
+                                                     "CSU", "FW")
 parteinamen <- names(btw_kerg)[seq(from= 4, to= length(names(btw_kerg)), by= 4)] # Each Name is followed by three variabels
 
-kern_partein_names_dirty <- c("Christlich.Demokratische.Union.Deutschlands",
-                              "Sozialdemokratische.Partei.Deutschlands",
-                              "Alternative.für.Deutschland",
-                              "Freie.Demokratische.Partei",
-                              "DIE.LINKE",
-                              "BÜNDNIS.90.DIE.GRÜNEN",
-                              "Christlich.Soziale.Union.in.Bayern.e.V.",
-                              "FREIE.WÄHLER")
 
-kern_partein_names_clean <- c("CDU",
-                              "SPD",
-                              "AFD",
-                              "FDP",
-                              "Die_Linke",
-                              "Die_Gruenen",
-                              "CSU",
-                              "Freie_Waehler")
 
 colnames_cleaned <- vector()
 for (i in seq_along(parteinamen)){
@@ -48,25 +33,69 @@ for (i in seq_along(parteinamen)){
 colnames(btw_kerg)[4:211] <- colnames_cleaned
 
 colnames(btw_kerg)[1] <- "Wahlkreis.Nr"
+
+# Changing Character Number columns to correct type numeric
+btw_kerg[,3:ncol(btw_kerg)] <- lapply(btw_kerg[3:ncol(btw_kerg)], as.numeric) # NAs are generated because some districts do not have Numbers (="") How should we deal with this?
+
+
+# Creating an additional Data Frame containing only the main parties, with other parties stored as "Sonstige"
+
+# 52 ist the column where the "non main" parties start
+Sonstige.Erst.End <- btw_kerg[seq(from= 52, to= ncol(btw_kerg), by= 4)] %>%
+  mutate("Sonstige.Erst.End"= rowSums(.[1:ncol(.)],na.rm= TRUE)) %>% 
+  select("Sonstige.Erst.End")
+
+Sonstige.Erst.Vor <- btw_kerg[seq(from= 53, to= ncol(btw_kerg), by=4)] %>%
+  mutate("Sonstige.Erst.Vor"= rowSums(.[1:ncol(.)],na.rm= TRUE)) %>% 
+  select("Sonstige.Erst.Vor") 
+
+Sonstige.Zweit.End <- btw_kerg[seq(from= 54, to= ncol(btw_kerg), by=4)] %>%
+  mutate("Sonstige.Zweit.End"= rowSums(.[1:ncol(.)],na.rm= TRUE)) %>% 
+  select("Sonstige.Zweit.End") 
+
+Sonstige.Zweit.Vor <- btw_kerg[seq(from= 55, to= ncol(btw_kerg), by=4)] %>%
+  mutate("Sonstige.Zweit.Vor"= rowSums(.[1:ncol(.)],na.rm= TRUE)) %>% 
+  select("Sonstige.Zweit.Vor")
+
+btw_kerg_trimmed <- btw_kerg %>% 
+  add_column("Sonstige.Zweit.Vor"= Sonstige.Zweit.Vor, .after = colnames(btw_kerg[51])) %>% 
+  add_column("Sonstige.Zweit.End"= Sonstige.Zweit.End, .after = colnames(btw_kerg[51])) %>%
+  add_column("Sonstige.Erst.Vor"= Sonstige.Erst.Vor, .after = colnames(btw_kerg[51])) %>% 
+  add_column("Sonstige.Erst.End"= Sonstige.Erst.End, .after = colnames(btw_kerg[51])) %>% 
+  select(1:55)
+
+  
+
 # Removing first two rows as multi level headers are no longer needed
 btw_kerg <- btw_kerg[3:nrow(btw_kerg),]
+btw_kerg_trimmed <- btw_kerg_trimmed[3:nrow(btw_kerg_trimmed),]
 
 # Nur Wahlkreise (ohne Bundesländer und Bund Ergebnis)
 btw_kerg_wk <- btw_kerg%>% 
   filter(!is.na(Wahlkreis.Nr)) %>% 
-  filter(!(WahlkreisnummerGrob %in% 99)) %>% 
+  filter(!(Bundesland.Nr %in% 99)) %>% 
   filter(!(Gebiet %in% "Bundesgebiet"))
 
-
+btw_kerg_trimmed_wk <- btw_kerg_trimmed%>% 
+  filter(!is.na(Wahlkreis.Nr)) %>% 
+  filter(!(Bundesland.Nr %in% 99)) %>% 
+  filter(!(Gebiet %in% "Bundesgebiet"))
 
 # Bundesländer
 btw_kerg_bundeslaender <- btw_kerg %>% 
-  filter(WahlkreisnummerGrob == 99)
+  filter(Bundesland.Nr == 99)
 
+btw_kerg_trimmed_bundeslaender <- btw_kerg_trimmed %>% 
+  filter(Bundesland.Nr == 99)
 # Bundesgebiet
 btw_kerg_bund <- btw_kerg %>% 
   filter(!is.na(Wahlkreis.Nr)) %>% 
-  filter(!(WahlkreisnummerGrob %in% 99)) %>% 
+  filter(!(Bundesland.Nr %in% 99)) %>% 
+  filter(Gebiet %in% "Bundesgebiet")
+
+btw_kerg_trimmed_bund <- btw_kerg_trimmed %>% 
+  filter(!is.na(Wahlkreis.Nr)) %>% 
+  filter(!(Bundesland.Nr %in% 99)) %>% 
   filter(Gebiet %in% "Bundesgebiet")
 
 # BTW_STRUKTUR DATENSATZ -------------------
@@ -74,6 +103,8 @@ footnotes <- btw_struktur$Fußnoten
 
 
 btw_struktur$Fußnoten <- NULL
+
+btw_struktur[,3:ncol(btw_struktur)] <- lapply(btw_kerg[3:ncol(btw_kerg)], as.numeric)
 
  
 clean_colnames_btw_struktur <- c("Land",
@@ -155,4 +186,11 @@ btw_struk_bund$Wahlkreis.Name <- NULL
 
 
 # Creating one big Dataset with key Nr 
-btw_data <- left_join(btw_kerg_wk, btw_struk_wk, by= "Wahlkreis.Nr")
+
+
+btw_data <- left_join(btw_kerg_wk, btw_struk_wk, by= "Wahlkreis.Nr")%>% 
+  select(-c("Land", "Wahlkreis.Name"))
+
+btw_trimmed_data <- left_join(btw_kerg_trimmed_wk, btw_struk_wk, by= "Wahlkreis.Nr") %>% 
+  select(-c("Land", "Wahlkreis.Name"))
+
