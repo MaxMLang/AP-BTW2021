@@ -64,11 +64,72 @@ btw_kerg_trimmed <- btw_kerg %>%
   add_column("Sonstige.Erst.End"= Sonstige.Erst.End, .after = colnames(btw_kerg[51])) %>% 
   select(1:55)
 
-  
+
 
 # Removing first two rows as multi level headers are no longer needed
 btw_kerg <- btw_kerg[3:nrow(btw_kerg),]
 btw_kerg_trimmed <- btw_kerg_trimmed[3:nrow(btw_kerg_trimmed),]
+
+# Adding useful columns which are not in the set by calculating them
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("Wahlbeteiligung.Erst.End"= (btw_kerg_trimmed[["Wählende.Erst.End"]]/btw_kerg_trimmed[["Wahlberechtigte.Erst.End"]]),
+         "Wahlbeteiligung.Zweit.End"= (btw_kerg_trimmed[["Wählende.Zweit.End"]]/btw_kerg_trimmed[["Wahlberechtigte.Zweit.End"]]),
+         .after = "Gültige.Stimmen.Zweit.Vor")
+
+#### CDU
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("CDU.Erst.End.Perc"= btw_kerg_trimmed[["CDU.Erst.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         "CDU.Zweit.End.Perc"= btw_kerg_trimmed[["CDU.Zweit.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         .after= c("CDU.Zweit.Vor"))
+
+#### SPD
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("SPD.Erst.End.Perc"= btw_kerg_trimmed[["SPD.Erst.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         "SPD.Zweit.End.Perc"= btw_kerg_trimmed[["SPD.Zweit.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         .after= c("SPD.Zweit.Vor"))
+
+#### AFD
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("AFD.Erst.End.Perc"= btw_kerg_trimmed[["AFD.Erst.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         "AFD.Zweit.End.Perc"= btw_kerg_trimmed[["AFD.Zweit.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         .after= c("AFD.Zweit.Vor"))
+
+#### FDP
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("FDP.Erst.End.Perc"= btw_kerg_trimmed[["FDP.Erst.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         "FDP.Zweit.End.Perc"= btw_kerg_trimmed[["FDP.Zweit.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         .after= c("FDP.Zweit.Vor"))
+
+#### LINKE
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("LINKE.Erst.End.Perc"= btw_kerg_trimmed[["LINKE.Erst.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         "LINKE.Zweit.End.Perc"= btw_kerg_trimmed[["LINKE.Zweit.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         .after= c("LINKE.Zweit.Vor"))
+
+#### GRÜNE
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("GRÜNE.Erst.End.Perc"= btw_kerg_trimmed[["GRÜNE.Erst.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         "GRÜNE.Zweit.End.Perc"= btw_kerg_trimmed[["GRÜNE.Zweit.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         .after= c("GRÜNE.Zweit.Vor"))
+
+#### CSU 
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("CSU.Erst.End.Perc"= btw_kerg_trimmed[["CSU.Erst.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         "CSU.Zweit.End.Perc"= btw_kerg_trimmed[["CSU.Zweit.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         .after= c("CSU.Zweit.Vor"))
+
+#### FW
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("FW.Erst.End.Perc"= btw_kerg_trimmed[["FW.Erst.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         "FW.Zweit.End.Perc"= btw_kerg_trimmed[["FW.Zweit.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         .after= c("FW.Zweit.Vor"))
+
+#### Sonstige
+btw_kerg_trimmed <- btw_kerg_trimmed %>% 
+  mutate("Sonstige.Erst.End.Perc"= btw_kerg_trimmed[["Sonstige.Erst.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         "Sonstige.Zweit.End.Perc"= btw_kerg_trimmed[["Sonstige.Zweit.End"]]/btw_kerg_trimmed[["Wählende.Erst.End"]],
+         .after= c("Sonstige.Zweit.Vor"))
+
 
 # Nur Wahlkreise (ohne Bundesländer und Bund Ergebnis)
 btw_kerg_wk <- btw_kerg%>% 
