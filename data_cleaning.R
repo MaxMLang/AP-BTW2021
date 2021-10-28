@@ -2,10 +2,12 @@ library(tidyverse)
 
 btw_kerg <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_kerg.csv?token=APSDNIIFGJAG7KMIRFP36UTBPU4TK", 
                       skip = 2,
-                      sep= ";")
+                      sep= ";", 
+                     encoding = "UTF-8")
 btw_struktur <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_strukturdaten.csv?token=APSDNIOU55YWJU5VMI7QD73BPU4UY",
                          skip= 8,
-                         sep= ";")
+                         sep= ";", 
+                         encoding = "UTF-8")
 btw_kerg_dirty <- btw_kerg
 btw_struktur_dirty <- btw_struktur
 
@@ -72,7 +74,7 @@ btw_kerg_trimmed <- btw_kerg_trimmed[3:nrow(btw_kerg_trimmed),]
 
 # Adding useful columns which are not in the set by calculating them
 btw_kerg_trimmed <- btw_kerg_trimmed %>% 
-  mutate("Wahlbeteiligung.Erst.End"= (btw_kerg_trimmed[["Wählende.Erst.End"]]/btw_kerg_trimmed[["Wahlberechtigte.Erst.End"]]),
+  mutate("Wahlbeteiligung.Erst.End" = (btw_kerg_trimmed[["Wählende.Erst.End"]] / btw_kerg_trimmed[["Wahlberechtigte.Erst.End"]]),
          "Wahlbeteiligung.Zweit.End"= (btw_kerg_trimmed[["Wählende.Zweit.End"]]/btw_kerg_trimmed[["Wahlberechtigte.Zweit.End"]]),
          .after = "Gültige.Stimmen.Zweit.Vor")
 
