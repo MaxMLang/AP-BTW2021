@@ -1,10 +1,10 @@
 library(tidyverse)
 
-btw_kerg <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_kerg.csv?token=APSDNIIFGJAG7KMIRFP36UTBPU4TK", 
+btw_kerg <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_kerg.csv?token=APSDNIJZEQBP5LCADBOMOYTBQZ4M2", 
                       skip = 2,
                       sep= ";", 
                      encoding = "UTF-8")
-btw_struktur <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_strukturdaten.csv?token=APSDNIOU55YWJU5VMI7QD73BPU4UY",
+btw_struktur <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_strukturdaten.csv?token=APSDNIPOKDNXPXO3DLOH4VTBQZ4PA",
                          skip= 8,
                          sep= ";", 
                          encoding = "UTF-8")
@@ -39,7 +39,6 @@ colnames(btw_kerg)[1] <- "Wahlkreis.Nr"
 # Changing Character Number columns to correct type numeric
 btw_kerg[,3:ncol(btw_kerg)] <- lapply(btw_kerg[3:ncol(btw_kerg)], as.numeric) # NAs are generated because some districts do not have Numbers (="") How should we deal with this?
 
-
 # Creating an additional Data Frame containing only the main parties, with other parties stored as "Sonstige"
 
 # 52 ist the column where the "non main" parties start
@@ -65,8 +64,6 @@ btw_kerg_trimmed <- btw_kerg %>%
   add_column("Sonstige.Erst.Vor"= Sonstige.Erst.Vor, .after = colnames(btw_kerg[51])) %>% 
   add_column("Sonstige.Erst.End"= Sonstige.Erst.End, .after = colnames(btw_kerg[51])) %>% 
   select(1:55)
-
-
 
 # Removing first two rows as multi level headers are no longer needed
 btw_kerg <- btw_kerg[3:nrow(btw_kerg),]
@@ -144,6 +141,8 @@ btw_kerg_trimmed_wk <- btw_kerg_trimmed%>%
   filter(!(Bundesland.Nr %in% 99)) %>% 
   filter(!(Gebiet %in% "Bundesgebiet"))
 
+
+  
 # Bundesländer
 btw_kerg_bundeslaender <- btw_kerg %>% 
   filter(Bundesland.Nr == 99)
@@ -257,3 +256,26 @@ btw_data <- left_join(btw_kerg_wk, btw_struk_wk, by= "Wahlkreis.Nr")%>%
 btw_trimmed_data <- left_join(btw_kerg_trimmed_wk, btw_struk_wk, by= "Wahlkreis.Nr") %>% 
   select(-c("Land", "Wahlkreis.Name"))
 
+# Plausibilitätschecks
+# Endgültige Erststimmen und Gültige Stimme
+all.equal(rowSums(btw_data[seq(from=20,to=208, by=4)],na.rm = TRUE), btw_data[["Gültige.Stimmen.Erst.End"]])
+
+# Endgültige Zweitstimmen ung Gültige Stimmen
+all.equal(rowSums(btw_data[seq(from=22,to=210, by=4)],na.rm = TRUE), btw_data[["Gültige.Stimmen.Zweit.End"]])
+
+# CSU nur in Bayern
+btw_data %>% 
+  filter(!is.na(CSU.Erst.End)) %>% 
+  select(Bundesland.Nr, Wahlkreis.Nr, Gebiet)
+
+btw_data %>% 
+  filter(!is.na(CSU.Erst.End)) %>% 
+  select(Bundesland.Nr, Wahlkreis.Nr, Gebiet) %>% 
+  nrow()
+
+btw_data %>% 
+  filter(!is.na(CSU.Erst.End)) %>% 
+  select(Bundesland.Nr)
+
+saveRDS(btw_data, file= "btw_data.RDS")
+saveRDS(btw_trimmed_data, file= "btw_trimmed_data.RDS")
