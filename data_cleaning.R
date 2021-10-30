@@ -7,7 +7,8 @@ btw_kerg <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main
 btw_struktur <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_strukturdaten.csv?token=APSDNIPOKDNXPXO3DLOH4VTBQZ4PA",
                          skip= 8,
                          sep= ";", 
-                         encoding = "UTF-8")
+                         encoding = "UTF-8",
+                         dec= ",")
 btw_kerg_dirty <- btw_kerg
 btw_struktur_dirty <- btw_struktur
 
@@ -166,7 +167,9 @@ footnotes <- btw_struktur$Fußnoten
 
 btw_struktur$Fußnoten <- NULL
 
-btw_struktur[,3:ncol(btw_struktur)] <- lapply(btw_kerg[3:ncol(btw_kerg)], as.numeric)
+btw_struktur[["Fläche.am.31.12.2019..km.."]] <- gsub("\\.","",btw_struktur[["Fläche.am.31.12.2019..km.."]])
+btw_struktur[["Fläche.am.31.12.2019..km.."]] <- gsub("\\,",".",btw_struktur[["Fläche.am.31.12.2019..km.."]])
+btw_struktur[,c(2,4:ncol(btw_struktur))] <- lapply(btw_struktur[c(2,4:ncol(btw_struktur))], as.numeric)
 
  
 clean_colnames_btw_struktur <- c("Land",

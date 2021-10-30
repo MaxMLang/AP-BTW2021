@@ -1,0 +1,63 @@
+---
+title: 'Bundestagswahl 2021: Analyse des Wahlverhalten in Abhängigkeit von soziodemographischen
+  Strukturmerkmalen'
+author: "Carla Fuchs, Christian Hobelsberger, Max Melchior Lang, Mattia Mohr"
+date: "10/30/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(sf)
+library(reshape2)
+btw_data <- readRDS("btw_data.RDS")
+btw_trimmed_data <- readRDS("btw_trimmed_data.RDS")
+```
+
+# Carla
+```{r}
+
+```
+
+# Chris
+```{r}
+
+```
+
+# Mattia
+```{r}
+
+```
+
+# Max
+
+## Creating a Correlation Matrix for further analysis (selection of Struktur variables)
+
+```{r}
+struktur_only <- btw_trimmed_data %>% 
+  select(76:ncol(btw_trimmed_data))
+
+colSums(is.na(struktur_only))
+
+pairs(struktur_only[1:10])
+pairs(struktur_only[11:20])
+pairs(struktur_only[21:30])
+pairs(struktur_only[31:40])
+pairs(struktur_only[41:48])
+
+cor_matrix <- cor(struktur_only, use= "pairwise.complete.obs", method = "spearman")
+
+cor_matrix_melted <- melt(cor_matrix)
+
+# dev.off()
+limit <- max(abs(cor_matrix_melted$value)) * c(-1, 1)
+
+
+ggplot(data = cor_matrix_melted, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_raster()+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(angle=90,hjust=1))+
+  ggtitle("Korrelationsmatrix der Strukturvariablen")
+```
+
