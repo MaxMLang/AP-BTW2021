@@ -10,10 +10,27 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(sf)
+library(GGally)
 library(reshape2)
+library(RColorBrewer)
+library(viridis)
 btw_data <- readRDS("btw_data.RDS")
 btw_trimmed_data <- readRDS("btw_trimmed_data.RDS")
+
+wk_path <- "/Users/max/Library/Mobile Documents/com~apple~CloudDocs/AnPraktikum/AP-BTW2021/Raw Data/btw21_geometrie_wahlkreise_geo_shp_WGS84/Geometrie_Wahlkreise_20DBT_geo.shp"
+wk_shp <- st_read(wk_path)
+glimpse(wk_shp)
+
+wk_shp$LAND_NR <- NULL
+wk_shp$LAND_NAME <- NULL
+
+btw_geo_data <- left_join(btw_data, wk_shp, by= c("Wahlkreis.Nr" = "WKR_NR"))
+btw_trimmed_geo_data <- left_join(btw_trimmed_data, wk_shp, by= c("Wahlkreis.Nr" = "WKR_NR"))
+btw_geo_data$WKR_NAME <- NULL
+btw_trimmed_geo_data$WKR_NAME <- NULL
 ```
+
+
 
 # Carla
 ```{r}
@@ -32,7 +49,7 @@ btw_trimmed_data <- readRDS("btw_trimmed_data.RDS")
 
 # Max
 
-## Creating a Correlation Matrix for further analysis (selection of Struktur variables)
+## Creating a Correlation Matrix for further analysis (esp. selection of Struktur variables)
 
 ```{r}
 struktur_only <- btw_trimmed_data %>% 
@@ -40,11 +57,22 @@ struktur_only <- btw_trimmed_data %>%
 
 colSums(is.na(struktur_only))
 
-pairs(struktur_only[1:10])
-pairs(struktur_only[11:20])
-pairs(struktur_only[21:30])
-pairs(struktur_only[31:40])
-pairs(struktur_only[41:48])
+ggpairs(struktur_only[1:10],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+ggpairs(struktur_only[11:20],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+ggpairs(struktur_only[21:30],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+ggpairs(struktur_only[31:40],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+ggpairs(struktur_only[41:48],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+
 
 cor_matrix <- cor(struktur_only, use= "pairwise.complete.obs", method = "spearman")
 
@@ -60,4 +88,86 @@ ggplot(data = cor_matrix_melted, aes(x=Var1, y=Var2, fill=value)) +
 theme(axis.text.x=element_text(angle=90,hjust=1))+
   ggtitle("Korrelationsmatrix der Strukturvariablen")
 ```
+
+# CSU Bayern Map
+```{r}
+bayern_trimmed <- btw_trimmed_geo_data %>% 
+  filter(Bundesland.Nr == 9)
+
+p1 <- bayern_trimmed %>%
+  mutate(CSU.Erst.End.Perc.Cut= cut(bayern_trimmed$CSU.Erst.End.Perc,
+                                    seq(0.05,0.5,0.05))) %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= CSU.Erst.End.Perc.Cut), colour= "white")+
+  scale_fill_brewer(palette= "Greys", drop=FALSE)
+
+ggsave("p1.png", path = "/Users/max/Desktop/")
+
+
+
+p1 <- bayern_trimmed %>%
+  mutate(CSU.Zweit.End.Perc.Cut= cut(bayern_trimmed$CSU.Zweit.End.Perc,
+                                    seq(0.05,0.4,0.05))) %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= CSU.Zweit.End.Perc.Cut), colour= "white")+
+  scale_fill_brewer(palette= "Greys", drop= FALSE)
+
+ggsave("p2.png", path = "/Users/max/Desktop/")
+```
+
+# Freie Wähler Bayern Map
+```{r}
+p1 <- bayern_trimmed %>%
+  mutate(FW.Erst.End.Perc.Cut= cut(bayern_trimmed$FW.Erst.End.Perc,
+                                    seq(0.,0.4,0.05))) %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= FW.Erst.End.Perc.Cut))+
+  scale_fill_brewer(palette= "Oranges", drop=FALSE)
+
+ggsave("p3.png", path = "/Users/max/Desktop/")
+
+p1 <- bayern_trimmed %>%
+  mutate(FW.Zweit.End.Perc.Cut= cut(bayern_trimmed$FW.Zweit.End.Perc,
+                                    seq(0,0.4,0.05))) %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= FW.Zweit.End.Perc.Cut))+
+  scale_fill_brewer(palette= "Oranges", drop=FALSE)
+
+ggsave("p4.png", path = "/Users/max/Desktop/")
+
+```
+
+
+```{r}
+p1 <- bayern_trimmed %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= cut(SozPfli.LandW, seq(0,2,0.2))))+
+  scale_fill_brewer(palette = "YlOrRd")
+
+ggsave("p5.png", path = "/Users/max/Desktop/")
+
+p1 <- bayern_trimmed %>% 
+  mutate(Niedriger.SA = Schulab.ohneHS + Schulab.mitHS) %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= cut(Niedriger.SA, seq(0,35,5))))+
+  scale_fill_brewer(palette = "YlOrRd")
+ggsave("p6.png", path = "/Users/max/Desktop/")
+
+FW_Struktur <- bayern_trimmed %>% 
+  select(FW.Erst.End,FW.Zweit.End, 76:ncol(bayern_trimmed), -geometry)
+
+cor_matrix_FW <- cor(FW_Struktur, use= "everything", method = "spearman")
+
+cor_matrix_FW_melted <- melt(cor_matrix_FW)
+
+# dev.off()
+cor_matrix_FW_melted %>% 
+  filter(Var1 %in% c("FW.Erst.End", "FW.Zweit.End")) %>% 
+ggplot(aes(x=Var1, y=Var2, fill=value)) +  
+  geom_raster()+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(angle=90,hjust=1))
+  
+```
+
 
