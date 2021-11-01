@@ -14,9 +14,12 @@ library(GGally)
 library(reshape2)
 library(RColorBrewer)
 library(viridis)
+
+#loading cleaned data sets
 btw_data <- readRDS("btw_data.RDS")
 btw_trimmed_data <- readRDS("btw_trimmed_data.RDS")
 
+#loading geo data
 wk_path <- "/Users/max/Library/Mobile Documents/com~apple~CloudDocs/AnPraktikum/AP-BTW2021/Raw Data/btw21_geometrie_wahlkreise_geo_shp_WGS84/Geometrie_Wahlkreise_20DBT_geo.shp"
 wk_shp <- st_read(wk_path)
 glimpse(wk_shp)
@@ -24,6 +27,7 @@ glimpse(wk_shp)
 wk_shp$LAND_NR <- NULL
 wk_shp$LAND_NAME <- NULL
 
+# joining
 btw_geo_data <- left_join(btw_data, wk_shp, by= c("Wahlkreis.Nr" = "WKR_NR"))
 btw_trimmed_geo_data <- left_join(btw_trimmed_data, wk_shp, by= c("Wahlkreis.Nr" = "WKR_NR"))
 btw_geo_data$WKR_NAME <- NULL
@@ -49,7 +53,7 @@ btw_trimmed_geo_data$WKR_NAME <- NULL
 
 # Max
 
-## Creating a Correlation Matrix for further analysis (esp. selection of Struktur variables)
+# Korellation 
 
 ```{r}
 struktur_only <- btw_trimmed_data %>% 
@@ -153,8 +157,8 @@ p1 <- bayern_trimmed %>%
   scale_fill_brewer(palette = "YlOrRd")
 ggsave("p6.png", path = "/Users/max/Desktop/")
 
-FW_Struktur <- bayern_trimmed %>% 
-  select(FW.Erst.End,FW.Zweit.End, 76:ncol(bayern_trimmed), -geometry)
+FW_Struktur <- bayern_trimmed %>%  
+  select(FW.Erst.End.Perc,FW.Zweit.End.Perc, 76:ncol(bayern_trimmed), -geometry)
 
 cor_matrix_FW <- cor(FW_Struktur, use= "everything", method = "spearman")
 
@@ -162,12 +166,78 @@ cor_matrix_FW_melted <- melt(cor_matrix_FW)
 
 # dev.off()
 cor_matrix_FW_melted %>% 
-  filter(Var1 %in% c("FW.Erst.End", "FW.Zweit.End")) %>% 
+  filter(Var1 %in% c("FW.Erst.End.Perc", "FW.Zweit.End.Perc")) %>% 
 ggplot(aes(x=Var1, y=Var2, fill=value)) +  
   geom_raster()+
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
 theme(axis.text.x=element_text(angle=90,hjust=1))
-  
+
+cor_matrix_FW_melted %>% 
+  filter(Var1 %in% c("FW.Zweit.End")) %>% 
+  arrange(desc(value)) %>% 
+  slice(which(Var2 %in% c("Unternehmen.HW", "Schulab.mitMittSA", "SozPfli.LandW",
+                    "Boden.SieduVerk", "Schulab.mitAllgHS", "SozPfli.ÖffPrivDienstl")))
+```
+
+# Afd
+```{r}
+# Needs to be manually downlaoded --> will be in repo after talk with A. Klima
+# Link: https://hub.arcgis.com/datasets/esri-de-content::bundesländergrenzen-2018/explore?location=50.999100%2C10.454033%2C6.51
+länder <- st_read("/Users/max/Downloads/Bundesl%C3%A4ndergrenzen_2018-shp/Bundesländergrenzen_2018.shp")
+
+p1 <- btw_trimmed_geo_data %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= cut(AFD.Zweit.End.Perc, seq(0,0.35,0.05))),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_brewer(palette = "Blues")
+
+ggsave("p7.png", path = "/Users/max/Desktop/")
+
+p1 <- btw_trimmed_geo_data %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= cut(LINKE.Zweit.End.Perc, seq(0,0.35,0.05))),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_brewer(palette = "Reds")
+
+ggsave("p8.png", path = "/Users/max/Desktop/")
+
+```
+
+# Hang zu extremen Randparteien im Osten?
+
+```{r}
+p1 <- btw_trimmed_geo_data %>% 
+  mutate(Rand.Zweit.End.Perc= LINKE.Zweit.End.Perc + AFD.Zweit.End.Perc) %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= cut(Rand.Zweit.End.Perc, seq(0,0.4,0.05))),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_brewer(palette = "YlOrRd")
+
+ggsave("p9.png", path = "/Users/max/Desktop/")
+```
+
+
+# Korrelationenen Struktur AFD
+
+```{r}
+AFD_struktur <- btw_trimmed_geo_data %>% 
+  select(Bundesland.Nr ,AFD.Erst.End.Perc,AFD.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) %>%
+  filter(Bundesland.Nr %in% 10:16)
+
+cor_matrix_AFD <- cor(AFD_struktur, use= "complete", method = "spearman") 
+cor_matrix_AFD_melted <- melt(cor_matrix_AFD) %>% 
+  arrange(desc(value))
+
+# dev.off()
+cor_matrix_AFD_melted %>% 
+  filter(Var1 %in% c("AFD.Erst.End.Perc", "FW.Zweit.End.Perc")) %>% 
+ggplot(aes(x=Var1, y=Var2, fill=value)) +  
+  geom_raster()+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(angle=90,hjust=1))
 ```
 
 
