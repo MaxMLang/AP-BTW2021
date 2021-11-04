@@ -53,7 +53,7 @@ btw_trimmed_geo_data$WKR_NAME <- NULL
 
 # Max
 
-# Korellation 
+# Korrlationsscatterplots Strukturvariablen
 
 ```{r}
 struktur_only <- btw_trimmed_data %>% 
@@ -76,8 +76,11 @@ ggpairs(struktur_only[31:40],
 ggpairs(struktur_only[41:48],
         lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
         upper = list(continuous = wrap("cor", method = "spearman")))
+```
 
+# Heatmap Korrelationsmatrix Strukturvariablen 
 
+```{r}
 cor_matrix <- cor(struktur_only, use= "pairwise.complete.obs", method = "spearman")
 
 cor_matrix_melted <- melt(cor_matrix)
@@ -93,7 +96,148 @@ theme(axis.text.x=element_text(angle=90,hjust=1))+
   ggtitle("Korrelationsmatrix der Strukturvariablen")
 ```
 
-# CSU Bayern Map
+
+
+# AFD Erst und Zweitstimmen in % Bundesgebiet
+```{r}
+# Needs to be manually downloaded --> will be in repo after talk with A. Klima
+# Link: https://hub.arcgis.com/datasets/esri-de-content::bundesländergrenzen-2018/explore?location=50.999100%2C10.454033%2C6.51
+länder <- st_read("/Users/max/Downloads/Bundesl%C3%A4ndergrenzen_2018-shp/Bundesländergrenzen_2018.shp")
+cor(btw_trimmed_geo_data$AFD.Erst.End.Perc, btw_trimmed_geo_data$AFD.Zweit.End.Perc, use= "complete")
+
+p1 <- btw_trimmed_geo_data %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= cut(AFD.Zweit.End.Perc, seq(0,0.35,0.05))),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_brewer(palette = "Blues")
+
+ggsave("AFD_Zweitstimmen.png", path = "/Users/max/Desktop/")
+
+```
+
+# Linke Erst und Zweitstimmen in % Bundesgebiet
+```{r}
+cor(btw_trimmed_geo_data$LINKE.Erst.End.Perc, btw_trimmed_geo_data$LINKE.Zweit.End.Perc, use= "complete")
+
+p1 <- btw_trimmed_geo_data %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= cut(LINKE.Zweit.End.Perc,
+                                            seq(0,0.35,0.05))),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_brewer(palette = "Reds")
+
+ggsave("LINKE_Zweitstimmen.png", path = "/Users/max/Desktop/")
+
+```
+
+# Hang zu extremen Randparteien (LINKE und AFD) speziell im Osten?
+
+```{r}
+p1 <- btw_trimmed_geo_data %>% 
+  mutate(Rand.Zweit.End.Perc= LINKE.Zweit.End.Perc + AFD.Zweit.End.Perc) %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= cut(Rand.Zweit.End.Perc, seq(0,0.4,0.05))),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_brewer(palette = "YlOrRd")
+
+ggsave("Randparteien.png", path = "/Users/max/Desktop/")
+```
+
+
+# Korrelationenen Struktur in den neuen Bundesländern AFD
+
+```{r}
+AFD_struktur <- btw_trimmed_geo_data %>% 
+  select(Bundesland.Nr ,AFD.Erst.End.Perc,AFD.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) %>%
+  filter(Bundesland.Nr %in% 10:16)
+
+cor_matrix_AFD <- cor(AFD_struktur, use= "complete", method = "spearman") 
+cor_matrix_AFD_melted <- melt(cor_matrix_AFD) %>% 
+  arrange(desc(value))
+
+# dev.off()
+cor_matrix_AFD_melted %>% 
+  filter(Var1 %in% c("AFD.Zweit.End.Perc")) %>% 
+ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +  
+  geom_raster()+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(angle=90,hjust=1))
+```
+
+# Korrelationenen Struktur in den neuen Bundesländern LINKE
+
+```{r}
+LINKE_struktur <- btw_trimmed_geo_data %>% 
+  select(Bundesland.Nr ,LINKE.Erst.End.Perc, LINKE.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) %>%
+  filter(Bundesland.Nr %in% 10:16)
+
+cor_matrix_LINKE <- cor(LINKE_struktur, use= "complete", method = "spearman") 
+cor_matrix_LINKE_melted <- melt(cor_matrix_LINKE) %>% 
+  arrange(desc(value))
+
+# dev.off()
+cor_matrix_LINKE_melted %>% 
+  filter(Var1 %in% c("LINKE.Zweit.End.Perc")) %>% 
+ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +  
+  geom_raster()+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(angle=90,hjust= 1))
+```
+
+# Zusammenhang zwischen älterer Bevölkerung und AFD Stimmen
+## Ältere Bevölkerung ü75
+```{r}
+p1 <- btw_trimmed_geo_data %>% 
+ggplot() +     
+  geom_sf(aes(geometry= geometry, fill= cut(f75tInf.Perctange, seq(5, 20, 2.5))))+
+  scale_fill_brewer(palette = "YlOrRd", drop= FALSE)
+
+ggsave("ätere_Bevölkerung.png", path = "/Users/max/Desktop/")
+
+
+```
+
+```{r}
+btw_trimmed_data %>%
+  mutate(is.Osten= Bundesland.Nr %in% c(10:16)) %>% 
+ggplot(aes(y= AFD.Zweit.End.Perc, x= f75tInf.Perctange, col= is.Osten))+
+  geom_point(alpha= 0.5)
+
+btw_trimmed_data %>%
+  mutate(is.Osten= Bundesland.Nr %in% c(10:16)) %>%
+  mutate(is.Berlin= Bundesland.Nr%in% c(11)) %>% 
+ggplot(aes(y= AFD.Zweit.End.Perc, x= f75tInf.Perctange, col= is.Berlin))+
+  facet_wrap(~is.Osten)+
+  geom_point(alpha= 0.5)
+
+btw_trimmed_data %>%
+  mutate(is.Osten= Bundesland.Nr %in% c(10:16)) %>%
+  mutate(is.Berlin= Bundesland.Nr%in% c(11)) %>% 
+  mutate(f60tInf.Perctange= f60t74.Perctange+f75tInf.Perctange) %>% 
+ggplot(aes(y= AFD.Zweit.End.Perc, x= f60tInf.Perctange, col= is.Berlin))+
+  facet_wrap(~is.Osten)+
+  geom_point(alpha= 0.5)
+  
+```
+
+# Ältere Bevölkerung Randparteien
+```{r}
+btw_trimmed_data %>%
+  mutate(is.Osten= Bundesland.Nr %in% c(10:16)) %>%
+  mutate(is.Berlin= Bundesland.Nr%in% c(11)) %>% 
+  mutate(Rand.Zweit.End.Perc= LINKE.Zweit.End.Perc + AFD.Zweit.End.Perc) %>% 
+  mutate(f60tInf.Perctange= f60t74.Perctange+f75tInf.Perctange) %>% 
+ggplot(aes(y= Rand.Zweit.End.Perc, x= f60tInf.Perctange, col= is.Berlin))+
+  facet_wrap(~is.Osten)+
+  geom_point(alpha= 0.25)
+```
+
+
+# Versuche, Überlegungen etc.
+# CSU Bayern Map (Erst und Zweitstimmen %)
 ```{r}
 bayern_trimmed <- btw_trimmed_geo_data %>% 
   filter(Bundesland.Nr == 9)
@@ -119,11 +263,11 @@ p1 <- bayern_trimmed %>%
 ggsave("p2.png", path = "/Users/max/Desktop/")
 ```
 
-# Freie Wähler Bayern Map
+# Freie Wähler Bayern Map (Erst und Zweitstimmen %)
 ```{r}
 p1 <- bayern_trimmed %>%
   mutate(FW.Erst.End.Perc.Cut= cut(bayern_trimmed$FW.Erst.End.Perc,
-                                    seq(0.,0.4,0.05))) %>% 
+                                    seq(0,0.4,0.05))) %>% 
   ggplot()+
   geom_sf(aes(geometry= geometry, fill= FW.Erst.End.Perc.Cut))+
   scale_fill_brewer(palette= "Oranges", drop=FALSE)
@@ -141,7 +285,8 @@ ggsave("p4.png", path = "/Users/max/Desktop/")
 
 ```
 
-
+# Soziale Strukturen Bayern Visualisierung
+## Landwirtschaft dominante Gebiete
 ```{r}
 p1 <- bayern_trimmed %>% 
   ggplot()+
@@ -149,7 +294,10 @@ p1 <- bayern_trimmed %>%
   scale_fill_brewer(palette = "YlOrRd")
 
 ggsave("p5.png", path = "/Users/max/Desktop/")
+```
 
+## Gebiete mit hohen Anteil mit niedrigem Schulabschluss
+```{r}
 p1 <- bayern_trimmed %>% 
   mutate(Niedriger.SA = Schulab.ohneHS + Schulab.mitHS) %>% 
   ggplot()+
@@ -159,6 +307,10 @@ ggsave("p6.png", path = "/Users/max/Desktop/")
 
 FW_Struktur <- bayern_trimmed %>%  
   select(FW.Erst.End.Perc,FW.Zweit.End.Perc, 76:ncol(bayern_trimmed), -geometry)
+```
+
+# Korrelation Freie Wähler mit obigen sozialen Strukturen
+```{r}
 
 cor_matrix_FW <- cor(FW_Struktur, use= "everything", method = "spearman")
 
@@ -173,71 +325,8 @@ ggplot(aes(x=Var1, y=Var2, fill=value)) +
 theme(axis.text.x=element_text(angle=90,hjust=1))
 
 cor_matrix_FW_melted %>% 
-  filter(Var1 %in% c("FW.Zweit.End")) %>% 
+  filter(Var1 %in% c("FW.Zweit.End.Perc")) %>% 
   arrange(desc(value)) %>% 
   slice(which(Var2 %in% c("Unternehmen.HW", "Schulab.mitMittSA", "SozPfli.LandW",
                     "Boden.SieduVerk", "Schulab.mitAllgHS", "SozPfli.ÖffPrivDienstl")))
 ```
-
-# Afd
-```{r}
-# Needs to be manually downlaoded --> will be in repo after talk with A. Klima
-# Link: https://hub.arcgis.com/datasets/esri-de-content::bundesländergrenzen-2018/explore?location=50.999100%2C10.454033%2C6.51
-länder <- st_read("/Users/max/Downloads/Bundesl%C3%A4ndergrenzen_2018-shp/Bundesländergrenzen_2018.shp")
-
-p1 <- btw_trimmed_geo_data %>% 
-  ggplot()+
-  geom_sf(aes(geometry= geometry, fill= cut(AFD.Zweit.End.Perc, seq(0,0.35,0.05))),
-          color= "darkgrey")+
-  geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_brewer(palette = "Blues")
-
-ggsave("p7.png", path = "/Users/max/Desktop/")
-
-p1 <- btw_trimmed_geo_data %>% 
-  ggplot()+
-  geom_sf(aes(geometry= geometry, fill= cut(LINKE.Zweit.End.Perc, seq(0,0.35,0.05))),
-          color= "darkgrey")+
-  geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_brewer(palette = "Reds")
-
-ggsave("p8.png", path = "/Users/max/Desktop/")
-
-```
-
-# Hang zu extremen Randparteien im Osten?
-
-```{r}
-p1 <- btw_trimmed_geo_data %>% 
-  mutate(Rand.Zweit.End.Perc= LINKE.Zweit.End.Perc + AFD.Zweit.End.Perc) %>% 
-  ggplot()+
-  geom_sf(aes(geometry= geometry, fill= cut(Rand.Zweit.End.Perc, seq(0,0.4,0.05))),
-          color= "darkgrey")+
-  geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_brewer(palette = "YlOrRd")
-
-ggsave("p9.png", path = "/Users/max/Desktop/")
-```
-
-
-# Korrelationenen Struktur AFD
-
-```{r}
-AFD_struktur <- btw_trimmed_geo_data %>% 
-  select(Bundesland.Nr ,AFD.Erst.End.Perc,AFD.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) %>%
-  filter(Bundesland.Nr %in% 10:16)
-
-cor_matrix_AFD <- cor(AFD_struktur, use= "complete", method = "spearman") 
-cor_matrix_AFD_melted <- melt(cor_matrix_AFD) %>% 
-  arrange(desc(value))
-
-# dev.off()
-cor_matrix_AFD_melted %>% 
-  filter(Var1 %in% c("AFD.Erst.End.Perc", "FW.Zweit.End.Perc")) %>% 
-ggplot(aes(x=Var1, y=Var2, fill=value)) +  
-  geom_raster()+
-  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
-theme(axis.text.x=element_text(angle=90,hjust=1))
-```
-
-
