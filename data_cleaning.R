@@ -1,15 +1,23 @@
 library(tidyverse)
 
-btw_kerg <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_kerg.csv?token=APSDNIJZEQBP5LCADBOMOYTBQZ4M2", 
+btw_kerg <- read.csv("Raw Data/btw21_kerg.csv", 
                       skip = 2,
                       sep= ";", 
                      encoding = "UTF-8")
-btw_struktur <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_strukturdaten.csv?token=APSDNIPOKDNXPXO3DLOH4VTBQZ4PA",
+btw_struktur <- read.csv("Raw Data/btw21_strukturdaten.csv",
                          skip= 8,
                          sep= ";", 
                          encoding = "UTF-8",
                          dec= ",")
+
+btw_kerg2 <- read.csv("Raw Data/btw21_kerg2.csv",
+                      skip= 9,
+                      sep= ";", 
+                      encoding = "UTF-8",
+                      dec= ",")
+  
 btw_kerg_dirty <- btw_kerg
+
 btw_struktur_dirty <- btw_struktur
 
 # BTW_KERG DATENSATZ -------------------
