@@ -1,15 +1,23 @@
 library(tidyverse)
 
-btw_kerg <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_kerg.csv?token=APSDNIJZEQBP5LCADBOMOYTBQZ4M2", 
+btw_kerg <- read.csv("Raw Data/btw21_kerg.csv", 
                       skip = 2,
                       sep= ";", 
                      encoding = "UTF-8")
-btw_struktur <- read.csv("https://raw.githubusercontent.com/MaxMLang/AP-BTW2021/main/Raw%20Data/btw21_strukturdaten.csv?token=APSDNIPOKDNXPXO3DLOH4VTBQZ4PA",
+btw_struktur <- read.csv("Raw Data/btw21_strukturdaten.csv",
                          skip= 8,
                          sep= ";", 
                          encoding = "UTF-8",
                          dec= ",")
+
+btw_kerg2 <- read.csv("Raw Data/btw21_kerg2.csv",
+                      skip= 9,
+                      sep= ";", 
+                      encoding = "UTF-8",
+                      dec= ",")
+  
 btw_kerg_dirty <- btw_kerg
+
 btw_struktur_dirty <- btw_struktur
 
 # BTW_KERG DATENSATZ -------------------
@@ -167,8 +175,8 @@ footnotes <- btw_struktur$Fußnoten
 
 btw_struktur$Fußnoten <- NULL
 
-btw_struktur[["Fläche.am.31.12.2019..km.."]] <- gsub("\\.","",btw_struktur[["Fläche.am.31.12.2019..km.."]])
-btw_struktur[["Fläche.am.31.12.2019..km.."]] <- gsub("\\,",".",btw_struktur[["Fläche.am.31.12.2019..km.."]])
+btw_struktur[["Fläche.am.31.12.2019..km²."]] <- gsub("\\.","",btw_struktur[["Fläche.am.31.12.2019..km²."]])
+btw_struktur[["Fläche.am.31.12.2019..km²."]] <- gsub("\\,",".",btw_struktur[["Fläche.am.31.12.2019..km²."]])
 btw_struktur[,c(2,4:ncol(btw_struktur))] <- lapply(btw_struktur[c(2,4:ncol(btw_struktur))], as.numeric)
 
  
@@ -282,3 +290,29 @@ btw_data %>%
 
 saveRDS(btw_data, file= "btw_data.RDS")
 saveRDS(btw_trimmed_data, file= "btw_trimmed_data.RDS")
+
+# BTW_KERG2 DATENSATZ -------------------
+
+# Removing column with all NAs
+all(is.na(btw_kerg2[["Bemerkung"]]))
+
+btw_kerg2[["Bemerkung"]] <- NULL
+
+
+# Splitte nach Gebietsarten
+
+btw_kerg2_bund <- btw_kerg2 %>%
+  filter(Gebietsart == "Bund")
+
+btw_kerg2_land <- btw_kerg2 %>%
+  filter(Gebietsart == "Land")
+
+btw_kerg2_wk <- btw_kerg2 %>%
+  filter(Gebietsart == "Wahlkreis")
+
+
+
+
+
+
+
