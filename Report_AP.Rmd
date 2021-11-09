@@ -18,9 +18,10 @@ library(viridis)
 #loading cleaned data sets
 btw_data <- readRDS("btw_data.RDS")
 btw_trimmed_data <- readRDS("btw_trimmed_data.RDS")
-
+btw_kerg2_wk <- readRDS("btw_kerg2_wk.RDS")
+länder <- st_read("/Users/max/Downloads/Bundesl%C3%A4ndergrenzen_2018-shp/Bundesländergrenzen_2018.shp")
 #loading geo data
-wk_path <- "/Users/max/Library/Mobile Documents/com~apple~CloudDocs/AnPraktikum/AP-BTW2021/Raw Data/btw21_geometrie_wahlkreise_geo_shp_WGS84/Geometrie_Wahlkreise_20DBT_geo.shp"
+wk_path <- "Raw Data/btw21_geometrie_wahlkreise_geo_shp_WGS84/Geometrie_Wahlkreise_20DBT_geo.shp"
 wk_shp <- st_read(wk_path)
 glimpse(wk_shp)
 
@@ -94,6 +95,94 @@ ggplot(data = cor_matrix_melted, aes(x=Var1, y=Var2, fill=value)) +
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
 theme(axis.text.x=element_text(angle=90,hjust=1))+
   ggtitle("Korrelationsmatrix der Strukturvariablen")
+```
+
+
+# SPD Gewinn 
+
+```{r}
+spd_zweit <- btw_kerg2_wk %>% 
+  filter(Gruppenname == "SPD") %>% 
+  filter(Stimme == 2) 
+
+spd_erst <- btw_kerg2_wk %>% 
+  filter(Gruppenname == "SPD") %>% 
+  filter(Stimme == 1) 
+
+cor(spd_erst$DiffProzentPkt, spd_zweit$DiffProzentPkt)
+
+p1 <- btw_trimmed_geo_data %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= spd_zweit$DiffProzentPkt),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-15,16))
+
+ggsave("SPD_Zweitstimme.png", path = "/Users/max/Desktop/", width = 7, height = 7)
+```
+
+
+# CDU Verlust
+```{r}
+union_zweit <- btw_kerg2_wk %>% 
+  filter(Gruppenname %in% c("CDU", "CSU")) %>% 
+  filter(Stimme == 2)
+
+union_erst <- btw_kerg2_wk %>% 
+  filter(Gruppenname %in% c("CDU", "CSU")) %>% 
+  filter(Stimme == 1)
+
+cor(union_erst$DiffProzentPkt, union_zweit$DiffProzentPkt)
+
+p1 <- btw_trimmed_geo_data %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= union_zweit$DiffProzentPkt),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-18,5))
+
+ggsave("CDU_DiffPkt.png", path = "/Users/max/Desktop/")
+
+```
+
+
+
+# Kormatrix SPD
+```{r}
+SPD_struktur <- btw_trimmed_geo_data %>% 
+  select(Bundesland.Nr ,SPD.Erst.End.Perc,SPD.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) 
+
+cor_matrix_SPD <- cor(SPD_struktur, use= "pairwise") 
+cor_matrix_SPD_melted <- melt(cor_matrix_SPD) %>% 
+  arrange(desc(value))
+
+# dev.off()
+cor_matrix_SPD_melted %>% 
+  filter(Var1 %in% c("SPD.Zweit.End.Perc")) %>% 
+ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +  
+  geom_raster()+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(angle=90,hjust=1))
+```
+# Kormatrix SPD
+```{r}
+UNION_struktur <- btw_trimmed_geo_data %>% 
+  replace(is.na(.), 0) %>% 
+  mutate(UNION.Erst.End.Perc= CDU.Erst.End.Perc + CSU.Erst.End.Perc, 
+         UNION.Zweit.End.Perc= CDU.Zweit.End.Perc + CSU.Zweit.End.Perc) %>% 
+  select(Bundesland.Nr ,UNION.Erst.End.Perc,UNION.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) 
+  
+cor_matrix_UNION <- cor(UNION_struktur, use= "complete") 
+cor_matrix_UNION_melted <- melt(cor_matrix_UNION) %>% 
+  arrange(desc(value))
+
+# dev.off()
+cor_matrix_UNION_melted %>% 
+  filter(Var1 %in% c("UNION.Zweit.End.Perc")) %>% 
+ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +  
+  geom_raster()+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(angle=90,hjust=1))
 ```
 
 
