@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(sf)
-library(microbenchmark)
+#library(microbenchmark)
 
 ```
 

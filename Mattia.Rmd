@@ -202,6 +202,39 @@ btw_kerg_trimmed_bundeslaender %>%
 
 
 
+#Erst/Zweitstimmen
+```{r}
+#Boxplot Unterschied Erst/Zweitstimmen über alle Wahlkreise
+btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimmen", y = CDU.Erst.End.Perc))+
+  geom_boxplot(aes(x = "Zweitstimmen", y = CDU.Zweit.End.Perc))
+
+btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimmen", y = CDU.Erst.End.Perc))+
+  geom_boxplot(aes(x = "Zweitstimmen", y = CDU.Zweit.End.Perc))+
+   geom_boxplot(aes(x = "Erststimmen", y = CSU.Erst.End.Perc))+
+  geom_boxplot(aes(x = "Zweitstimmen", y = CSU.Zweit.End.Perc))
+#Linke mehr Zweitstimmen??
+#CDU deutlich weniger
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #nicht anschauen
 ```{r}
