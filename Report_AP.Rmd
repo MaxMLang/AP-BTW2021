@@ -20,7 +20,7 @@ library(viridis)
 btw_data <- readRDS("btw_data.RDS")
 btw_trimmed_data <- readRDS("btw_trimmed_data.RDS")
 btw_kerg2_wk <- readRDS("btw_kerg2_wk.RDS")
-länder <- st_read("/Users/max/Downloads/Bundesl%C3%A4ndergrenzen_2018-shp/Bundesländergrenzen_2018.shp")
+länder <- st_read("Raw Data/laender_geometrie_WGS84/Bundesländergrenzen_2018.shp")
 #loading geo data
 wk_path <- "Raw Data/btw21_geometrie_wahlkreise_geo_shp_WGS84/Geometrie_Wahlkreise_20DBT_geo.shp"
 wk_shp <- st_read(wk_path)
