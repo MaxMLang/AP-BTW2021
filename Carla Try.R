@@ -1,15 +1,49 @@
+library(tidyverse)
+library('patchwork')
 ## SPD vs CDU
 
-btw_trimmed_data %>%
-  filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc) %>%
+plot1 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc | SPD.Zweit.End.Perc > CSU.Zweit.End.Perc) %>%
   ggplot(aes(y = Vfg.Einkommen)) +
-  geom_boxplot()
+  geom_boxplot() +
+  ylim(15000, 35000)
 
-btw_trimmed_data %>%
-  filter(SPD.Zweit.End.Perc < CDU.Zweit.End.Perc) %>%
+
+plot2 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc < CDU.Zweit.End.Perc | SPD.Zweit.End.Perc < CSU.Zweit.End.Perc) %>%
   ggplot(aes(y = Vfg.Einkommen)) +
-  geom_boxplot()
+  geom_boxplot() +
+  ylim(15000, 35000)
 
+x <- plot1 + plot2 + plot_annotation(title = "Verfügbares Einkommen")
+
+plot3 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc | SPD.Zweit.End.Perc > CSU.Zweit.End.Perc) %>%
+  ggplot(aes(y = Bvk.Dcht)) +
+  geom_boxplot() +
+  ylim(0, 15000)
+
+plot4 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc < CDU.Zweit.End.Perc | SPD.Zweit.End.Perc < CSU.Zweit.End.Perc) %>%
+  ggplot(aes(y = Bvk.Dcht)) +
+  geom_boxplot() +
+  ylim(0, 15000)
+
+plot3 + plot4
+
+plot3 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc | SPD.Zweit.End.Perc > CSU.Zweit.End.Perc) %>%
+  ggplot(aes(y = Bvk.Aus)) +
+  geom_boxplot() + 
+  ylim(0,35)
+
+plot4 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc < CDU.Zweit.End.Perc | SPD.Zweit.End.Perc < CSU.Zweit.End.Perc) %>%
+  ggplot(aes(y = Bvk.Aus)) +
+  geom_boxplot() + 
+  ylim(0,35)
+
+plot3 + plot4
 
 ## Erst vs. Zweitstimmen Balkendiagramm
 btw_kerg_trimmed %>%
@@ -40,10 +74,66 @@ btw_trimmed_data %>%
   geom_smooth(aes(y = LINKE.Zweit.End), color = "purple") +
   geom_smooth(aes(y = FDP.Zweit.End), color = "yellow") +
   facet_wrap("Age")
-  
 
+
+  
+btw_trimmed_data %>%
+  select(c(CDU.Zweit.End,
+           SPD.Zweit.End,
+           AFD.Zweit.End,
+           FDP.Zweit.End,
+           GRÜNE.Zweit.End,
+           LINKE.Zweit.End,
+           Schulab.berufSch,
+           Schulab.allgSch,
+           Schulab.ohneHS,
+           Schulab.mitHS,
+           Schulab.mitMittSA,
+           Schulab.mitAllgHS)) %>%
+  pivot_longer(Schulab.berufSch:Schulab.mitAllgHS, names_to = "Abschluss", values_to = "Percentage") %>%
+  ggplot(aes(x = Percentage)) +
+  geom_smooth(aes(y = CDU.Zweit.End), color = "black") +
+  geom_smooth(aes(y = SPD.Zweit.End), color = "red") +
+  geom_smooth(aes(y = AFD.Zweit.End), color = "blue") +
+  geom_smooth(aes(y = GRÜNE.Zweit.End), color = "green") +
+  geom_smooth(aes(y = LINKE.Zweit.End), color = "purple") +
+  geom_smooth(aes(y = FDP.Zweit.End), color = "yellow") +
+  facet_wrap("Abschluss")
 
 btw_trimmed_data %>%
+  select(c(CDU.Zweit.End,
+           SPD.Zweit.End,
+           AFD.Zweit.End,
+           FDP.Zweit.End,
+           GRÜNE.Zweit.End,
+           LINKE.Zweit.End,
+           SozPfli.LandW,
+           SozPfli.ProdGewerb,
+           SozPfli.HandelGwVerk,
+           SozPfli.ÖffPrivDienstl,
+           SozPfli.Rest)) %>%
+  pivot_longer(SozPfli.LandW:SozPfli.Rest, names_to = "Beschäftigung", values_to = "Percentage") %>%
+  ggplot(aes(x = Percentage)) +
+  geom_smooth(aes(y = CDU.Zweit.End), color = "black") +
+  geom_smooth(aes(y = SPD.Zweit.End), color = "red") +
+  geom_smooth(aes(y = AFD.Zweit.End), color = "blue") +
+  geom_smooth(aes(y = GRÜNE.Zweit.End), color = "green") +
+  geom_smooth(aes(y = LINKE.Zweit.End), color = "purple") +
+  geom_smooth(aes(y = FDP.Zweit.End), color = "yellow") +
+  facet_wrap("Beschäftigung")
+
+btw_trimmed_data %>%
+  ggplot(aes(x = SozPfli.LandW)) +
+  geom_point(aes(y = GRÜNE.Zweit.End), color = "green") +
+  geom_smooth(aes(y = GRÜNE.Zweit.End), color = "green")
+
+btw_trimmed_data %>%
+  ggplot(aes(x = Bvk.Dcht)) +
+  geom_point(aes(y = GRÜNE.Zweit.End), color = "green") +
+  geom_smooth(aes(y = GRÜNE.Zweit.End), color = "green")
+
+
+  btw_trimmed_data %>%
   select(c(Sonstige.Zweit.End,
            f18t24.Perctange,
            f25t34.Perctange,

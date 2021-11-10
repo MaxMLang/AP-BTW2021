@@ -175,8 +175,8 @@ footnotes <- btw_struktur$Fußnoten
 
 btw_struktur$Fußnoten <- NULL
 
-btw_struktur[["Fläche.am.31.12.2019..km²."]] <- gsub("\\.","",btw_struktur[["Fläche.am.31.12.2019..km²."]])
-btw_struktur[["Fläche.am.31.12.2019..km²."]] <- gsub("\\,",".",btw_struktur[["Fläche.am.31.12.2019..km²."]])
+btw_struktur[["Fläche.am.31.12.2019..km.."]] <- gsub("\\.","",btw_struktur[["Fläche.am.31.12.2019..km²."]])
+btw_struktur[["Fläche.am.31.12.2019..km.."]] <- gsub("\\,",".",btw_struktur[["Fläche.am.31.12.2019..km²."]])
 btw_struktur[,c(2,4:ncol(btw_struktur))] <- lapply(btw_struktur[c(2,4:ncol(btw_struktur))], as.numeric)
 
  
@@ -310,6 +310,8 @@ btw_kerg2_land <- btw_kerg2 %>%
 btw_kerg2_wk <- btw_kerg2 %>%
   filter(Gebietsart == "Wahlkreis")
 
+colnames(btw_kerg2_wk)[4] <- "Wahlkreis.Nr"
+saveRDS(btw_kerg2_wk, file= "btw_kerg2_wk.RDS")
 
 
 
