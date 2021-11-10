@@ -158,6 +158,8 @@ btw_kerg_bundeslaender <- btw_kerg %>%
 
 btw_kerg_trimmed_bundeslaender <- btw_kerg_trimmed %>% 
   filter(Bundesland.Nr == 99)
+
+saveRDS(btw_kerg_trimmed_bundeslaender,"btw_kerg_trimmed_bundeslaender.RDS")
 # Bundesgebiet
 btw_kerg_bund <- btw_kerg %>% 
   filter(!is.na(Wahlkreis.Nr)) %>% 
@@ -312,6 +314,7 @@ btw_kerg2_wk <- btw_kerg2 %>%
 
 colnames(btw_kerg2_wk)[4] <- "Wahlkreis.Nr"
 saveRDS(btw_kerg2_wk, file= "btw_kerg2_wk.RDS")
+
 
 
 
