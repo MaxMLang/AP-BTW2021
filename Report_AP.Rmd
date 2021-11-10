@@ -7,6 +7,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(sf)
@@ -31,6 +32,7 @@ wk_shp$LAND_NAME <- NULL
 # joining
 btw_geo_data <- left_join(btw_data, wk_shp, by= c("Wahlkreis.Nr" = "WKR_NR"))
 btw_trimmed_geo_data <- left_join(btw_trimmed_data, wk_shp, by= c("Wahlkreis.Nr" = "WKR_NR"))
+btw_trimmed_geo_data2 <- left_join(btw_trimmed_geo_data, btw_kerg2_wk, by= "Wahlkreis.Nr")
 btw_geo_data$WKR_NAME <- NULL
 btw_trimmed_geo_data$WKR_NAME <- NULL
 ```
@@ -54,35 +56,16 @@ btw_trimmed_geo_data$WKR_NAME <- NULL
 
 # Max
 
-# Korrlationsscatterplots Strukturvariablen
+
+
+
+# Heatmap Korrelationsmatrix Strukturvariablen 
 
 ```{r}
 struktur_only <- btw_trimmed_data %>% 
   select(76:ncol(btw_trimmed_data))
 
-colSums(is.na(struktur_only))
-
-ggpairs(struktur_only[1:10],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
-ggpairs(struktur_only[11:20],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
-ggpairs(struktur_only[21:30],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
-ggpairs(struktur_only[31:40],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
-ggpairs(struktur_only[41:48],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
-```
-
-# Heatmap Korrelationsmatrix Strukturvariablen 
-
-```{r}
-cor_matrix <- cor(struktur_only, use= "pairwise.complete.obs", method = "spearman")
+cor_matrix <- cor(struktur_only, use= "pairwise.complete.obs")
 
 cor_matrix_melted <- melt(cor_matrix)
 
@@ -95,10 +78,12 @@ ggplot(data = cor_matrix_melted, aes(x=Var1, y=Var2, fill=value)) +
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
 theme(axis.text.x=element_text(angle=90,hjust=1))+
   ggtitle("Korrelationsmatrix der Strukturvariablen")
+
+ggsave("Korr_Matrix_Strukturvariablen.png", path = "Grafiken/", width = 7, height= 7)
 ```
 
 
-# SPD Gewinn 
+# SPD Gewinn/Verlust Map
 
 ```{r}
 spd_zweit <- btw_kerg2_wk %>% 
@@ -113,16 +98,16 @@ cor(spd_erst$DiffProzentPkt, spd_zweit$DiffProzentPkt)
 
 p1 <- btw_trimmed_geo_data %>% 
   ggplot()+
-  geom_sf(aes(geometry= geometry, fill= spd_zweit$DiffProzentPkt),
+  geom_sf(aes(geometry= geometry, fill= spd_zweit[["DiffProzentPkt"]]),
           color= "darkgrey")+
   geom_sf(data = länder, color = "black", fill = NA)+
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-15,16))
 
-ggsave("SPD_Zweitstimme.png", path = "/Users/max/Desktop/", width = 7, height = 7)
+ggsave("SPD_Zweit_GV_Map.png", path="Grafiken/", width = 7, height= 7)
 ```
 
 
-# CDU Verlust
+# CDU Gewinn / Verlust Map
 ```{r}
 union_zweit <- btw_kerg2_wk %>% 
   filter(Gruppenname %in% c("CDU", "CSU")) %>% 
@@ -141,10 +126,26 @@ p1 <- btw_trimmed_geo_data %>%
   geom_sf(data = länder, color = "black", fill = NA)+
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-18,5))
 
-ggsave("CDU_DiffPkt.png", path = "/Users/max/Desktop/")
+ggsave("Union_Zweit_GV_Map.png", path="Grafiken/", width = 7, height= 7)
 
 ```
 
+```{r}
+spd_zweit %>% 
+  mutate(is.Osten= ifelse(UegGebietsnummer %in% c(10:16), TRUE, FALSE)) %>% 
+  ggplot(aes(x= is.Osten, y= DiffProzentPkt))+
+  geom_boxplot()
+
+ggsave("SPD_Zweit_O-W_Box.png", path="Grafiken/", width = 7, height= 7)
+```
+
+```{r}
+union_zweit %>% 
+  mutate(is.Osten= ifelse(UegGebietsnummer %in% c(10:16), TRUE, FALSE)) %>% 
+  ggplot(aes(x= is.Osten, y= DiffProzentPkt))+
+  geom_boxplot()
+ggsave("Union_Zweit_O-W_Box.png", path="Grafiken/", width = 7, height= 7)
+```
 
 
 # Kormatrix SPD
@@ -163,8 +164,11 @@ ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +
   geom_raster()+
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
 theme(axis.text.x=element_text(angle=90,hjust=1))
+
+ggsave("Kor_Matrix_SPD_Struktur.png", path = "Grafiken/", width = 7, height= 7)
 ```
-# Kormatrix SPD
+
+# Kormatrix Union
 ```{r}
 UNION_struktur <- btw_trimmed_geo_data %>% 
   replace(is.na(.), 0) %>% 
@@ -183,6 +187,85 @@ ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +
   geom_raster()+
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
 theme(axis.text.x=element_text(angle=90,hjust=1))
+
+ggsave("Kor_Matrix_UNION_Struktur.png", path = "Grafiken/", width = 7, height= 7)
+```
+
+# Freie Wähler Landtagsbeteiligung + BTW 
+```{r}
+FW_DiffProzent <- btw_trimmed_geo_data2 %>% 
+  filter(Gruppenname %in% "FREIE WÄHLER") %>% 
+  filter(Stimme == 2) %>% 
+  select(Wahlkreis.Nr, DiffProzent, DiffProzentPkt)
+
+FW_Zweit_data <- btw_trimmed_geo_data %>% 
+  select(-c(22:63)) %>% 
+  select(-c(28:33))
+
+FW_Diff_Data <- left_join(FW_Zweit_data, FW_DiffProzent, by= "Wahlkreis.Nr")
+
+# Added Logic column if or if not FW in state parliament (RP= 7, BY=9)
+FW_Diff_Data <- FW_Diff_Data %>% 
+  mutate(is.LT= ifelse(.$Bundesland.Nr%in% c(7,9), TRUE, FALSE))
+
+FW_Diff_Data %>% 
+ggplot(aes(x= is.LT, y= DiffProzentPkt))+
+  geom_boxplot()
+ggsave("LT_FW_DiffPkt_Box.png", path = "Grafiken/", width = 7, height= 7)
+
+FW_Diff_Data %>% 
+ggplot(aes(x= is.LT, y= FW.Zweit.End.Perc))+
+  geom_boxplot()
+ggsave("LT_FW_ZweitPerc_Box.png", path = "Grafiken/", width = 7, height= 7)
+```
+
+# Bundesmap FW Stimmen
+
+```{r}
+p1 <- FW_Diff_Data %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= FW.Zweit.End.Perc))+
+  scale_fill_continuous(low= "white", high= "orange")+
+  geom_sf(data = länder, color = "black", fill = NA)
+
+ggsave("FW_ZweitPerc_Map.png", path = "Grafiken/", width = 7, height= 7)
+```
+
+
+
+```{r}
+cor_matrix_FW <- cor(select(FW_Diff_Data,-c(1:21,26,76,79)))
+
+cor_matrix_FW_melted <- melt(cor_matrix_FW)
+
+# dev.off()
+cor_matrix_FW_melted %>% 
+  filter(Var1 %in% c("FW.Erst.End.Perc", "FW.Zweit.End.Perc")) %>% 
+ggplot(aes(x=Var1, y=reorder(Var2,-value), fill=value)) +  
+  geom_raster()+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(angle=90,hjust=1))
+
+cor_matrix_FW_melted_sliced <- cor_matrix_FW_melted %>% 
+  filter(Var1 %in% c("FW.Zweit.End.Perc")) %>% 
+  arrange(desc(value)) %>% 
+  slice(which(Var2 %in% c("Unternehmen.HW", "Schulab.mitMittSA", "SozPfli.LandW",
+                    "Boden.SieduVerk", "Schulab.mitAllgHS", "SozPfli.ÖffPrivDienstl")))
+
+cor_matrix_FW_melted_sliced %>% 
+  filter(Var1 %in% c("FW.Erst.End.Perc", "FW.Zweit.End.Perc")) %>% 
+ggplot(aes(x=Var1, y=reorder(Var2,-value), fill=value)) +  
+  geom_raster()+
+  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(angle=90,hjust=1))
+ggsave("Kor_Matrix_FW_Struktur_Sliced.png", path = "Grafiken/", width = 7, height= 7)
+
+FW_Diff_Data %>% 
+  ggplot(aes(x= Unternehmen.HW, y= FW.Zweit.End.Perc))+
+  geom_point(shape= ifelse(FW_Diff_Data$Bundesland.Nr %in% 9, 17, 16), alpha= 0.5)+
+  facet_wrap(~is.LT)
+  
+ggsave("LT_FW_ZweitPerc_Scatter.png", path = "Grafiken/", width = 7, height= 7)
 ```
 
 
@@ -202,6 +285,7 @@ p1 <- btw_trimmed_geo_data %>%
   scale_fill_brewer(palette = "Blues")
 
 ggsave("AFD_Zweitstimmen.png", path = "/Users/max/Desktop/")
+
 
 ```
 
@@ -227,13 +311,14 @@ ggsave("LINKE_Zweitstimmen.png", path = "/Users/max/Desktop/")
 p1 <- btw_trimmed_geo_data %>% 
   mutate(Rand.Zweit.End.Perc= LINKE.Zweit.End.Perc + AFD.Zweit.End.Perc) %>% 
   ggplot()+
-  geom_sf(aes(geometry= geometry, fill= cut(Rand.Zweit.End.Perc, seq(0,0.4,0.05))),
+  geom_sf(aes(geometry= geometry, fill= Rand.Zweit.End.Perc),
           color= "darkgrey")+
   geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_brewer(palette = "YlOrRd")
+  scale_fill_viridis("magma", trans= "reverse")
 
-ggsave("Randparteien.png", path = "/Users/max/Desktop/")
+ggsave("Randparteien_Bund_Map.png", path = "Grafiken/", width= 7, height= 7)
 ```
+
 
 
 # Korrelationenen Struktur in den neuen Bundesländern AFD
@@ -310,6 +395,7 @@ ggplot(aes(y= AFD.Zweit.End.Perc, x= f60tInf.Perctange, col= is.Berlin))+
   facet_wrap(~is.Osten)+
   geom_point(alpha= 0.5)
   
+ggsave("AFD_ue60_O-W_Sctter.png", path = "Grafiken/", width= 7, height= 7)
 ```
 
 # Ältere Bevölkerung Randparteien
@@ -322,6 +408,8 @@ btw_trimmed_data %>%
 ggplot(aes(y= Rand.Zweit.End.Perc, x= f60tInf.Perctange, col= is.Berlin))+
   facet_wrap(~is.Osten)+
   geom_point(alpha= 0.25)
+
+ggsave("Rand_ue60_O-W_Sctter.png", path = "Grafiken/", width= 7, height= 7)
 ```
 
 
@@ -367,8 +455,8 @@ p1 <- bayern_trimmed %>%
   mutate(FW.Zweit.End.Perc.Cut= cut(bayern_trimmed$FW.Zweit.End.Perc,
                                     seq(0,0.4,0.05))) %>% 
   ggplot()+
-  geom_sf(aes(geometry= geometry, fill= FW.Zweit.End.Perc.Cut))+
-  scale_fill_brewer(palette= "Oranges", drop=FALSE)
+  geom_sf(aes(geometry= geometry, fill= FW.Zweit.End.Perc))+
+  scale_fill_continuous(low= "white", high= "orange")
 
 ggsave("p4.png", path = "/Users/max/Desktop/")
 
@@ -419,3 +507,29 @@ cor_matrix_FW_melted %>%
   slice(which(Var2 %in% c("Unternehmen.HW", "Schulab.mitMittSA", "SozPfli.LandW",
                     "Boden.SieduVerk", "Schulab.mitAllgHS", "SozPfli.ÖffPrivDienstl")))
 ```
+
+# Korrlationsscatterplots Strukturvariablen
+
+```{r}
+struktur_only <- btw_trimmed_data %>% 
+  select(76:ncol(btw_trimmed_data))
+
+colSums(is.na(struktur_only))
+
+ggpairs(struktur_only[1:10],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+ggpairs(struktur_only[11:20],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+ggpairs(struktur_only[21:30],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+ggpairs(struktur_only[31:40],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+ggpairs(struktur_only[41:48],
+        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
+        upper = list(continuous = wrap("cor", method = "spearman")))
+```
+
