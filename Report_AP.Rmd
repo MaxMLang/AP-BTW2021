@@ -41,12 +41,12 @@ btw_trimmed_geo_data$WKR_NAME <- NULL
 
 # Adding Union-Cols
 btw_kerg_trimmed_bundeslaender[is.na(btw_kerg_trimmed_bundeslaender)] <- 0
-btw_kerg_trimmed_bundeslaender <- btw_test %>%
+btw_kerg_trimmed_bundeslaender <- btw_kerg_trimmed_bundeslaender %>%
   mutate(Union.Erst.Vor = CDU.Erst.Vor + CSU.Erst.Vor,
          Union.Erst.End = CDU.Erst.End + CSU.Erst.End,
          Union.Erst.End.Perc = CDU.Erst.End.Perc + CSU.Erst.End.Perc,
          Union.Zweit.Vor = CDU.Zweit.Vor + CSU.Zweit.Vor,
-         Union.Zweit.End = CDU.Zweit.End + CDU.Zweit.End,
+         Union.Zweit.End = CDU.Zweit.End + CSU.Zweit.End,
          Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc)
 ```
 
@@ -60,18 +60,68 @@ btw_kerg_trimmed_bundeslaender <- btw_test %>%
 # Chris
 ```{r}
 
-btw_kerg_trimmed_bundeslaender$CDU.Zweit.End.Perc
-btw_test <- btw_kerg_trimmed_bundeslaender
-btw_test[is.na(btw_test)] <- 0
-btw_test <- btw_test %>%
-  mutate(Union.Erst.Vor = CDU.Erst.Vor + CSU.Erst.Vor,
-         Union.Erst.End = CDU.Erst.End + CSU.Erst.End,
-         Union.Erst.End.Perc = CDU.Erst.End.Perc + CSU.Erst.End.Perc,
-         Union.Zweit.Vor = CDU.Zweit.Vor + CSU.Zweit.Vor,
-         Union.Zweit.End = CDU.Zweit.End + CDU.Zweit.End,
-         Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc)
+anzahl_stimmen_erst <- sum(btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Erst.End"]])
 
-btw_test %>%
+anzahl_stimmen_zweit <- sum(btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Zweit.End"]])
+
+anzahl_stimmen_gesamt <- sum(btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Erst.End"]] + btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Zweit.End"]])
+
+
+partei <- c("CDU/CSU", "SPD", "AFD", "FDP", "Linke", "Grüne", "Sonstiges")
+stimmen_gesamt <- c(
+  sum(btw_kerg_trimmed_bundeslaender[["Union.Erst.End"]]) +
+  sum(btw_kerg_trimmed_bundeslaender[["Union.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["SPD.Erst.End"]]) +
+  sum(btw_kerg_trimmed_bundeslaender[["SPD.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["AFD.Erst.End"]]) +
+  sum(btw_kerg_trimmed_bundeslaender[["AFD.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["FDP.Erst.End"]]) +
+  sum(btw_kerg_trimmed_bundeslaender[["FDP.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["LINKE.Erst.End"]]) +
+  sum(btw_kerg_trimmed_bundeslaender[["LINKE.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["GRÜNE.Erst.End"]]) +
+  sum(btw_kerg_trimmed_bundeslaender[["GRÜNE.Zweit.End"]]),
+  0
+  )
+
+stimmen_erst <- c(
+  sum(btw_kerg_trimmed_bundeslaender[["Union.Erst.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["SPD.Erst.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["AFD.Erst.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["FDP.Erst.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["LINKE.Erst.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["GRÜNE.Erst.End"]]),
+  0
+  )
+stimmen_zweit <- c(
+  sum(btw_kerg_trimmed_bundeslaender[["Union.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["SPD.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["AFD.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["FDP.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["LINKE.Zweit.End"]]),
+  sum(btw_kerg_trimmed_bundeslaender[["GRÜNE.Zweit.End"]]),
+  0
+  )
+
+
+ergebnisse_table <- data.frame(partei, stimmen_erst, stimmen_zweit, stimmen_gesamt)
+
+ergebnisse_table[7,2] <- anzahl_stimmen_erst - sum(ergebnisse_table[1:6,2])
+
+ergebnisse_table[7,3] <- anzahl_stimmen_zweit - sum(ergebnisse_table[1:6,2])
+
+ergebnisse_table[7,4] <- anzahl_stimmen_gesamt - sum(ergebnisse_table[1:6,2])
+
+ergebnisse_table <- ergebnisse_table %>%
+  mutate(stimmen_erst_perc = stimmen_erst / anzahl_stimmen_erst,
+         stimmen_zweit_perc = stimmen_zweit / anzahl_stimmen_zweit,
+         stimmen_gesamt_perc = stimmen_gesamt/ anzahl_stimmen_gesamt)
+
+ergebnisse_table
+
+
+
+btw_kerg_trimmed_bundeslaender %>%
   ggplot() +
   geom_bar(aes(y = Union.Erst.End.Perc, x = "CDU/CSU"),stat = "summary", fill = "black") +
   geom_bar(aes(y = SPD.Zweit.End.Perc, x = "SPD"),stat = "summary", fill = "red") +
@@ -81,6 +131,11 @@ btw_test %>%
   geom_bar(aes(y = GRÜNE.Zweit.End.Perc, x = "Grüne"),stat = "summary", fill = "green") +
   xlab("") +
   ylab("Zweitstimmen (in %)")
+
+
+btw_test %>%
+  ggplot() +
+  geom_bar(aes(y = Union.Erst.End.Perc, x = "CDU/CSU"),stat = "summary", fill = "black")
   
 ```
 
