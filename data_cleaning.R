@@ -171,6 +171,7 @@ btw_kerg_trimmed_bund <- btw_kerg_trimmed %>%
   filter(!(Bundesland.Nr %in% 99)) %>% 
   filter(Gebiet %in% "Bundesgebiet")
 
+saveRDS(btw_kerg_trimmed_bund,"btw_kerg_trimmed_bund.RDS")
 # BTW_STRUKTUR DATENSATZ -------------------
 footnotes <- btw_struktur$Fußnoten
 
