@@ -19,6 +19,7 @@ library(viridis)
 #loading cleaned data sets
 btw_data <- readRDS("btw_data.RDS")
 btw_trimmed_data <- readRDS("btw_trimmed_data.RDS")
+btw_kerg_trimmed_bundeslaender <- readRDS("btw_kerg_trimmed_bundeslaender.RDS")
 btw_kerg2_wk <- readRDS("btw_kerg2_wk.RDS")
 länder <- st_read("Raw Data/laender_geometrie_WGS84/Bundesländergrenzen_2018.shp")
 #loading geo data
@@ -35,6 +36,18 @@ btw_trimmed_geo_data <- left_join(btw_trimmed_data, wk_shp, by= c("Wahlkreis.Nr"
 btw_trimmed_geo_data2 <- left_join(btw_trimmed_geo_data, btw_kerg2_wk, by= "Wahlkreis.Nr")
 btw_geo_data$WKR_NAME <- NULL
 btw_trimmed_geo_data$WKR_NAME <- NULL
+
+# editing data
+
+# Adding Union-Cols
+btw_kerg_trimmed_bundeslaender[is.na(btw_kerg_trimmed_bundeslaender)] <- 0
+btw_kerg_trimmed_bundeslaender <- btw_test %>%
+  mutate(Union.Erst.Vor = CDU.Erst.Vor + CSU.Erst.Vor,
+         Union.Erst.End = CDU.Erst.End + CSU.Erst.End,
+         Union.Erst.End.Perc = CDU.Erst.End.Perc + CSU.Erst.End.Perc,
+         Union.Zweit.Vor = CDU.Zweit.Vor + CSU.Zweit.Vor,
+         Union.Zweit.End = CDU.Zweit.End + CDU.Zweit.End,
+         Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc)
 ```
 
 
@@ -47,6 +60,28 @@ btw_trimmed_geo_data$WKR_NAME <- NULL
 # Chris
 ```{r}
 
+btw_kerg_trimmed_bundeslaender$CDU.Zweit.End.Perc
+btw_test <- btw_kerg_trimmed_bundeslaender
+btw_test[is.na(btw_test)] <- 0
+btw_test <- btw_test %>%
+  mutate(Union.Erst.Vor = CDU.Erst.Vor + CSU.Erst.Vor,
+         Union.Erst.End = CDU.Erst.End + CSU.Erst.End,
+         Union.Erst.End.Perc = CDU.Erst.End.Perc + CSU.Erst.End.Perc,
+         Union.Zweit.Vor = CDU.Zweit.Vor + CSU.Zweit.Vor,
+         Union.Zweit.End = CDU.Zweit.End + CDU.Zweit.End,
+         Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc)
+
+btw_test %>%
+  ggplot() +
+  geom_bar(aes(y = Union.Erst.End.Perc, x = "CDU/CSU"),stat = "summary", fill = "black") +
+  geom_bar(aes(y = SPD.Zweit.End.Perc, x = "SPD"),stat = "summary", fill = "red") +
+  geom_bar(aes(y = AFD.Zweit.End.Perc, x = "AFD"),stat = "summary", fill = "blue") +
+  geom_bar(aes(y = FDP.Zweit.End.Perc, x = "FDP"),stat = "summary", fill = "yellow") +
+  geom_bar(aes(y = LINKE.Zweit.End.Perc, x = "Linke"),stat = "summary", fill = "purple") +
+  geom_bar(aes(y = GRÜNE.Zweit.End.Perc, x = "Grüne"),stat = "summary", fill = "green") +
+  xlab("") +
+  ylab("Zweitstimmen (in %)")
+  
 ```
 
 # Mattia
