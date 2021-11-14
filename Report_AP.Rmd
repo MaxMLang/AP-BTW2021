@@ -50,6 +50,9 @@ btw_kerg_trimmed_bundeslaender <- btw_kerg_trimmed_bundeslaender %>%
          Union.Zweit.End = CDU.Zweit.End + CSU.Zweit.End,
          Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc)
 
+# Partei Farben
+partei_colors <- c("black", "red", "blue", "yellow", "purple", "green", "darkgrey")
+
 theme_set(theme_light())
 
 theme_map <- function(...) {
@@ -81,6 +84,8 @@ theme_map <- function(...) {
 
 # Chris
 ```{r}
+
+# Data Structuring: Making a clean Data Frame
 
 anzahl_stimmen_erst <- sum(btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Erst.End"]])
 
@@ -139,12 +144,26 @@ ergebnisse_table <- ergebnisse_table %>%
          stimmen_zweit_perc = stimmen_zweit / anzahl_stimmen_zweit,
          stimmen_gesamt_perc = stimmen_gesamt/ anzahl_stimmen_gesamt)
 
+ergebnisse_table[["partei"]] <- factor(ergebnisse_table[["partei"]], levels = ergebnisse_table[["partei"]])
+
 ergebnisse_table
+
+partei_colors <- c("black", "red", "blue", "yellow", "purple", "green", "darkgrey")
+
+ergebnisse_table %>%
+  ggplot(mapping = aes(x = partei, y = stimmen_erst_perc)) +
+  geom_bar(stat = "identity", fill = partei_colors) +
+  xlab("Partei") +
+  ylab("Stimmen (in %)") +
+  ggtitle(label = "Ergebnis 1. Stimmen Bundestagswahl 2021")
+
+
+  
 
 
 
 btw_kerg_trimmed_bundeslaender %>%
-  ggplot() +
+  ggplot(stat = "summary") +
   geom_bar(aes(y = Union.Erst.End.Perc, x = "CDU/CSU"),stat = "summary", fill = "black") +
   geom_bar(aes(y = SPD.Zweit.End.Perc, x = "SPD"),stat = "summary", fill = "red") +
   geom_bar(aes(y = AFD.Zweit.End.Perc, x = "AFD"),stat = "summary", fill = "blue") +
@@ -160,6 +179,21 @@ btw_test %>%
   geom_bar(aes(y = Union.Erst.End.Perc, x = "CDU/CSU"),stat = "summary", fill = "black")
   
 ```
+
+# Ergebnisse Bundestagswahl 2021
+```{r}
+ergebnisse_table %>%
+  ggplot(mapping = aes(x = partei, y = stimmen_erst_perc)) +
+  geom_bar(stat = "identity", fill = partei_colors) +
+  xlab("Partei") +
+  ylab("Stimmen (in %)") +
+  ggtitle(label = "Ergebnis: Erststimmen Bundestagswahl 2021") +
+  scale_y_continuous(labels = scales::percent,
+                     breaks = scales::pretty_breaks(n = 10))
+  
+  ggsave("Ergebnis_Erststimmen.png", path="Grafiken/", width = 7, height= 7)
+```
+
 
 # Mattia
 ```{r}
