@@ -192,6 +192,28 @@ ergebnisse_table %>%
                      breaks = scales::pretty_breaks(n = 10))
   
   ggsave("Ergebnis_Erststimmen.png", path="Grafiken/", width = 7, height= 7)
+  
+ergebnisse_table %>%
+  ggplot(mapping = aes(x = partei, y = stimmen_zweit_perc)) +
+  geom_bar(stat = "identity", fill = partei_colors) +
+  xlab("Partei") +
+  ylab("Stimmen (in %)") +
+  ggtitle(label = "Ergebnis: Zweitstimmen Bundestagswahl 2021") +
+  scale_y_continuous(labels = scales::percent,
+                     breaks = scales::pretty_breaks(n = 10))
+  
+  ggsave("Ergebnis_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
+  
+ergebnisse_table %>%
+  ggplot(mapping = aes(x = partei, y = stimmen_gesamt_perc)) +
+  geom_bar(stat = "identity", fill = partei_colors) +
+  xlab("Partei") +
+  ylab("Stimmen (in %)") +
+  ggtitle(label = "Ergebnis: Gesamtstimmen Bundestagswahl 2021") +
+  scale_y_continuous(labels = scales::percent,
+                     breaks = scales::pretty_breaks(n = 10))
+  
+  ggsave("Ergebnis_Gesamtstimmen.png", path="Grafiken/", width = 7, height= 7)
 ```
 
 
