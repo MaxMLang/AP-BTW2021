@@ -31,6 +31,10 @@ glimpse(wk_shp)
 wk_shp$LAND_NR <- NULL
 wk_shp$LAND_NAME <- NULL
 
+# Loading  Mail and in Person voting Data from Bavaria
+btw_brief_urne_all <- readRDS("btw_brief_urne_all.RDS")
+btw_by_brief_urne_wk21 <- readRDS("btw_by_brief_urne_wk.RDS")
+btw_by_brief_urne_Gde21 <- readRDS("btw_by_brief_urne_Gde.RDS")
 # joining
 btw_geo_data <- left_join(btw_data, wk_shp, by= c("Wahlkreis.Nr" = "WKR_NR"))
 btw_trimmed_geo_data <- left_join(btw_trimmed_data, wk_shp, by= c("Wahlkreis.Nr" = "WKR_NR"))
@@ -266,6 +270,8 @@ SPD_CDU_CSU_Diff %>%
   ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Zweitstimmen von SPD und Union (bzgl. der Bundestagswahl 2017")+
   xlab("Partei")+
   ylab("Differenz Prozentpunkte (Zweitstimmen)")
+
+ggsave("SPD_Union_Zweit_GV_Diff_Box.png", path="Grafiken/", width = 7, height= 7)
 ```
 
 ## SPD Gewinn/Verlust Map und Union Verlust Map
@@ -304,14 +310,27 @@ ggsave("Union_Zweit_GV_Map.png", path="Grafiken/", width = 7, height= 7)
 spd_zweit %>% 
   arrange(desc(DiffProzentPkt)) %>% 
   slice(1:5) %>% 
-  select(Wahlkreis.Nr,Gebietsname, DiffProzentPkt)
+  select(Gebietsname, DiffProzentPkt)
 ```
 
+```{r}
+spd_erst %>% 
+  arrange(desc(DiffProzentPkt)) %>% 
+  slice(1:5) %>% 
+  select(Gebietsname, DiffProzentPkt)
+```
 ### Welche Wahlkreise hatte die SPD einen Stimmverlust?
 ```{r}
 spd_zweit %>% 
   slice(which(DiffProzentPkt<0)) %>% 
-  select(Gebietsname)
+  select(Gebietsname, DiffProzentPkt)
+```
+
+```{r}
+spd_erst %>% 
+  slice(which(DiffProzentPkt<0)) %>% 
+  slice(1:5) %>% 
+  select(Gebietsname, DiffProzentPkt)
 ```
 
 
@@ -338,6 +357,37 @@ union_zweit %>%
   slice(1:5) %>% 
   select(Gebietsname, DiffProzentPkt)
 ```
+
+```{r}
+union_erst %>% 
+  arrange(desc(DiffProzentPkt)) %>% 
+  slice(1:5) %>% 
+  select(Gebietsname, DiffProzentPkt)
+```
+
+# Briefwahl in Bayern (on Hold, Plausibilitätschecks stimmen nicht)
+
+```{r}
+total_brief_urne <- btw_by_brief_urne_wk21 %>% 
+  select(B1.Urne, B1Briefwähler) %>% 
+  colSums()
+
+names(total_brief_urne) <- c("Urnenwähler", "Briefwähler")
+total_brief_urne
+sum(total_brief_urne)
+
+btw_by_brief_urne_wk21 %>% 
+  select(B) %>% 
+  colSums()
+
+btw_by_brief_urne %>% 
+  filter((schluessel.Wbz %in% c(9,10)) & (schluessel %in% c(212))) %>% 
+  slice(1:2) %>% 
+  select(B, B1.Urne, B1Briefwähler, C)
+```
+
+
+
 
 
 # Freie Wähler Landtagsbeteiligung + BTW
