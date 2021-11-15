@@ -315,6 +315,7 @@ btw_kerg2_wk <- btw_kerg2 %>%
 
 colnames(btw_kerg2_wk)[4] <- "Wahlkreis.Nr"
 saveRDS(btw_kerg2_wk, file= "btw_kerg2_wk.RDS")
+saveRDS(btw_kerg2_bund, file= "btw_kerg2_bund.RDS")
 
 
 
