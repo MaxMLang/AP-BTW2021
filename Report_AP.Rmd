@@ -438,37 +438,57 @@ MittSA <- FW_Diff_Data %>%
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
   ylab("")+
-  xlab("Schulabgänger/-innen mit mittlerem Schulabschluss")+
-  labs(colour= "Regierungsbeteiligung")
+  xlab("Schulabgänger/-innen mit 
+       mittlerem Schulabschluss in Prozent")+
+  labs(colour= "Regierungsbeteiligung in Prozent")
 
 SozPfli.LandW <- FW_Diff_Data %>% 
   ggplot(aes(x= SozPfli.LandW, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
-  facet_wrap(~is.LT)+
-  ylab("")
+  scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
+  facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
+  ylab("")+
+  xlab("Sozialversicherungspflichtige Beschäftigte 
+  Land- und Forstwirtschaft, 
+       Fischerei in Prozent")+
+  labs(colour= "Regierungsbeteiligung")
 
 Boden.SieduVerk <- FW_Diff_Data %>% 
   ggplot(aes(x= Boden.SieduVerk, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
-  facet_wrap(~is.LT)
+  scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
+  facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
+  ylab("")+
+  xlab("Bodenflächennutzung
+       Siedlung und Verkehr in Prozent")+
+  labs(colour= "Regierungsbeteiligung")
   
 Schulab.mitAllgHS <- FW_Diff_Data %>% 
   ggplot(aes(x= Schulab.mitAllgHS, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
-  facet_wrap(~is.LT)+
-  ylab("")
+  scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
+  facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
+  ylab("")+
+  xlab("Schulabgänger/-innen mit 
+       allgemeiner und Fachhochschulreife in Prozent")+
+  labs(colour= "Regierungsbeteiligung")
 
 SozPfli.ÖffPrivDienstl <- FW_Diff_Data %>% 
   ggplot(aes(x= SozPfli.ÖffPrivDienstl, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
-  facet_wrap(~is.LT)+
-  ylab("")
+  scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
+  facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
+  ylab("")+
+  xlab("Sozialversicherungspflichtige - 
+       Öffentliche und private Dienstleister in Prozent")+
+  labs(colour= "Regierungsbeteiligung")
 
-p1 <- ggarrange(HW, MittSA,SozPfli.LandW, Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl,
-           common.legend = TRUE)
+p1 <- ggarrange(HW, MittSA,SozPfli.LandW, common.legend = TRUE, legend = "right", nrow= 1)
+ggsave("LT_FW_ZweitPerc_Scatter_PosKor.png", path = "Grafiken/", width = 15, height= 7)
 
+p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl, nrow = 1,common.legend = TRUE, legend = "right")
 
-ggsave("LT_FW_ZweitPerc_Scatter.png", path = "Grafiken/", width = 7, height= 7)
+ggsave("LT_FW_ZweitPerc_Scatter_NegKor.png", path = "Grafiken/", width = 15, height= 7)
 ```
 
 
