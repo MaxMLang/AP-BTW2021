@@ -358,6 +358,8 @@ FW_Diff_Data <- left_join(FW_Zweit_data, FW_DiffProzent, by= "Wahlkreis.Nr")
 # Added Logic column if or if not FW in state parliament (RP= 7, BY=9)
 FW_Diff_Data <- FW_Diff_Data %>% 
   mutate(is.LT= ifelse(.$Bundesland.Nr%in% c(7,9), TRUE, FALSE))
+
+FW_Diff_Data$is.LT <- as.factor(FW_Diff_Data$is.LT)
 ```
 
 ## Bundesmap FW Stimmen
@@ -424,13 +426,20 @@ ggsave("Kor_Matrix_FW_Struktur_Sliced.png", path = "Grafiken/", width = 7, heigh
 HW <- FW_Diff_Data %>% 
   ggplot(aes(x= Unternehmen.HW, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
-  facet_wrap(~is.LT)
+  scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
+  facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
+  ylab("Anteil an Zweitstimmen für die Freien Wähler")+
+  xlab("Handwerksunternehmen (je 1000 EW)")+
+  labs(colour= "Regierungsbeteiligung")
   
 MittSA <- FW_Diff_Data %>% 
   ggplot(aes(x= Schulab.mitMittSA, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
-  facet_wrap(~is.LT)+
-  ylab("")
+  scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
+  facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
+  ylab("")+
+  xlab("Schulabgänger/-innen mit mittlerem Schulabschluss")+
+  labs(colour= "Regierungsbeteiligung")
 
 SozPfli.LandW <- FW_Diff_Data %>% 
   ggplot(aes(x= SozPfli.LandW, y= FW.Zweit.End.Perc))+
@@ -441,8 +450,7 @@ SozPfli.LandW <- FW_Diff_Data %>%
 Boden.SieduVerk <- FW_Diff_Data %>% 
   ggplot(aes(x= Boden.SieduVerk, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
-  facet_wrap(~is.LT)+
-  ylab("")
+  facet_wrap(~is.LT)
   
 Schulab.mitAllgHS <- FW_Diff_Data %>% 
   ggplot(aes(x= Schulab.mitAllgHS, y= FW.Zweit.End.Perc))+
@@ -456,7 +464,7 @@ SozPfli.ÖffPrivDienstl <- FW_Diff_Data %>%
   facet_wrap(~is.LT)+
   ylab("")
 
-ggarrange(HW, MittSA,SozPfli.LandW, Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl,
+p1 <- ggarrange(HW, MittSA,SozPfli.LandW, Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl,
            common.legend = TRUE)
 
 
