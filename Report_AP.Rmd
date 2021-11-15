@@ -90,7 +90,7 @@ theme_map <- function(...) {
 
 ergebnisse_diff_table <- btw_kerg2_bund %>%
   filter(Stimme == 2) %>%
-  filter(Gruppenname %in% c("CDU", "CSU", "SPD", "AFD", "FDP", "DIE LINKE", "GRÜNE"))
+  filter(Gruppenname %in% c("CDU", "CSU", "SPD", "AfD", "FDP", "DIE LINKE", "GRÜNE"))
 
 ergebnisse_diff_table[["DiffProzentPkt"]] <- as.numeric(ergebnisse_diff_table[["DiffProzentPkt"]])
 
@@ -137,13 +137,10 @@ stimmen_zweit <- c(
   0
   )
 
-stimmen_diff_perc <- c(
-  sum(ergebnisse_diff_table[1,17], ),
-  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "SPD"][17],
-  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "AFD"][17],
-  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "FDP"][17],
-  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "DIE LINKE"][17],
-  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "GRÜNE"][17],
+stimmen_zweit_diff_perc <- c(
+  sum(ergebnisse_diff_table[1,17], ergebnisse_diff_table[7,17]),
+  ergebnisse_diff_table[2:6, 17],
+  0
 )
 
 
@@ -161,6 +158,8 @@ ergebnisse_table <- ergebnisse_table %>%
          stimmen_gesamt_perc = stimmen_gesamt/ anzahl_stimmen_gesamt)
 
 ergebnisse_table[["partei"]] <- factor(ergebnisse_table[["partei"]], levels = ergebnisse_table[["partei"]])
+
+ergebnisse_table <- cbind(ergebnisse_table, stimmen_zweit_diff_perc)
 
 ergebnisse_table
 
@@ -189,9 +188,17 @@ ergebnisse_table %>%
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10))
   
-  ggsave("Ergebnis_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
+ggsave("Ergebnis_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
+ergebnisse_table %>%
+  ggplot(mapping = aes(x = partei, y = stimmen_zweit_diff_perc)) +
+  geom_bar(stat = "identity", fill = partei_colors) +
+  xlab("Partei") +
+  ylab("Stimmen (in %)") +
+  ggtitle(label = "Ergebnis: Differenzen Zweitstimmen Bundestagswahl 2021") +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))
 
+ggsave("Differenzen_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 ```
 
 
