@@ -23,6 +23,7 @@ btw_trimmed_data <- readRDS("btw_trimmed_data.RDS")
 btw_kerg_trimmed_bundeslaender <- readRDS("btw_kerg_trimmed_bundeslaender.RDS")
 btw_kerg2_wk <- readRDS("btw_kerg2_wk.RDS")
 länder <- st_read("Raw Data/laender_geometrie_WGS84/Bundesländergrenzen_2018.shp")
+btw_kerg2_bund <- readRDS("btw_kerg2_bund.RDS")
 #loading geo data
 wk_path <- "Raw Data/btw21_geometrie_wahlkreise_geo_shp_WGS84/Geometrie_Wahlkreise_20DBT_geo.shp"
 wk_shp <- st_read(wk_path)
@@ -87,6 +88,12 @@ theme_map <- function(...) {
 
 # Data Structuring: Making a clean Data Frame
 
+ergebnisse_diff_table <- btw_kerg2_bund %>%
+  filter(Stimme == 2) %>%
+  filter(Gruppenname %in% c("CDU", "CSU", "SPD", "AFD", "FDP", "DIE LINKE", "GRÜNE"))
+
+ergebnisse_diff_table[["DiffProzentPkt"]] <- as.numeric(ergebnisse_diff_table[["DiffProzentPkt"]])
+
 anzahl_stimmen_erst <- sum(btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Erst.End"]])
 
 anzahl_stimmen_zweit <- sum(btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Zweit.End"]])
@@ -130,14 +137,23 @@ stimmen_zweit <- c(
   0
   )
 
+stimmen_diff_perc <- c(
+  sum(ergebnisse_diff_table[1,17], ),
+  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "SPD"][17],
+  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "AFD"][17],
+  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "FDP"][17],
+  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "DIE LINKE"][17],
+  ergebnisse_diff_table[ergebnisse_diff_table["Gruppenname"] == "GRÜNE"][17],
+)
+
 
 ergebnisse_table <- data.frame(partei, stimmen_erst, stimmen_zweit, stimmen_gesamt)
 
 ergebnisse_table[7,2] <- anzahl_stimmen_erst - sum(ergebnisse_table[1:6,2])
 
-ergebnisse_table[7,3] <- anzahl_stimmen_zweit - sum(ergebnisse_table[1:6,2])
+ergebnisse_table[7,3] <- anzahl_stimmen_zweit - sum(ergebnisse_table[1:6,3])
 
-ergebnisse_table[7,4] <- anzahl_stimmen_gesamt - sum(ergebnisse_table[1:6,2])
+ergebnisse_table[7,4] <- anzahl_stimmen_gesamt - sum(ergebnisse_table[1:6,4])
 
 ergebnisse_table <- ergebnisse_table %>%
   mutate(stimmen_erst_perc = stimmen_erst / anzahl_stimmen_erst,
@@ -148,36 +164,7 @@ ergebnisse_table[["partei"]] <- factor(ergebnisse_table[["partei"]], levels = er
 
 ergebnisse_table
 
-partei_colors <- c("black", "red", "blue", "yellow", "purple", "green", "darkgrey")
 
-ergebnisse_table %>%
-  ggplot(mapping = aes(x = partei, y = stimmen_erst_perc)) +
-  geom_bar(stat = "identity", fill = partei_colors) +
-  xlab("Partei") +
-  ylab("Stimmen (in %)") +
-  ggtitle(label = "Ergebnis 1. Stimmen Bundestagswahl 2021")
-
-
-  
-
-
-
-btw_kerg_trimmed_bundeslaender %>%
-  ggplot(stat = "summary") +
-  geom_bar(aes(y = Union.Erst.End.Perc, x = "CDU/CSU"),stat = "summary", fill = "black") +
-  geom_bar(aes(y = SPD.Zweit.End.Perc, x = "SPD"),stat = "summary", fill = "red") +
-  geom_bar(aes(y = AFD.Zweit.End.Perc, x = "AFD"),stat = "summary", fill = "blue") +
-  geom_bar(aes(y = FDP.Zweit.End.Perc, x = "FDP"),stat = "summary", fill = "yellow") +
-  geom_bar(aes(y = LINKE.Zweit.End.Perc, x = "Linke"),stat = "summary", fill = "purple") +
-  geom_bar(aes(y = GRÜNE.Zweit.End.Perc, x = "Grüne"),stat = "summary", fill = "green") +
-  xlab("") +
-  ylab("Zweitstimmen (in %)")
-
-
-btw_test %>%
-  ggplot() +
-  geom_bar(aes(y = Union.Erst.End.Perc, x = "CDU/CSU"),stat = "summary", fill = "black")
-  
 ```
 
 # Ergebnisse Bundestagswahl 2021
@@ -203,17 +190,8 @@ ergebnisse_table %>%
                      breaks = scales::pretty_breaks(n = 10))
   
   ggsave("Ergebnis_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
-  
-ergebnisse_table %>%
-  ggplot(mapping = aes(x = partei, y = stimmen_gesamt_perc)) +
-  geom_bar(stat = "identity", fill = partei_colors) +
-  xlab("Partei") +
-  ylab("Stimmen (in %)") +
-  ggtitle(label = "Ergebnis: Gesamtstimmen Bundestagswahl 2021") +
-  scale_y_continuous(labels = scales::percent,
-                     breaks = scales::pretty_breaks(n = 10))
-  
-  ggsave("Ergebnis_Gesamtstimmen.png", path="Grafiken/", width = 7, height= 7)
+
+
 ```
 
 
