@@ -162,13 +162,14 @@ ergebnisse_table[["partei"]] <- factor(ergebnisse_table[["partei"]], levels = er
 ergebnisse_table <- cbind(ergebnisse_table, stimmen_zweit_diff_perc)
 
 ergebnisse_table
+  
 
 
 ```
 
 # Ergebnisse Bundestagswahl 2021
 ```{r}
-ergebnisse_table %>%
+ergebnis_erststimmen <- ergebnisse_table %>%
   ggplot(mapping = aes(x = partei, y = stimmen_erst_perc)) +
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
@@ -179,7 +180,7 @@ ergebnisse_table %>%
   
   ggsave("Ergebnis_Erststimmen.png", path="Grafiken/", width = 7, height= 7)
   
-ergebnisse_table %>%
+ergebnis_zweitstimmen <- ergebnisse_table %>%
   ggplot(mapping = aes(x = partei, y = stimmen_zweit_perc)) +
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
@@ -190,7 +191,7 @@ ergebnisse_table %>%
   
 ggsave("Ergebnis_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
-ergebnisse_table %>%
+diff_zweitstimmen <- ergebnisse_table %>%
   slice(-7) %>%
   ggplot(mapping = aes(x = partei, 
                        y = stimmen_zweit_diff_perc/100)) +
@@ -202,6 +203,11 @@ ergebnisse_table %>%
                      breaks = scales::pretty_breaks(n = 10))
 
 ggsave("Differenzen_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
+
+ggarrange(ergebnis_erststimmen, ergebnis_zweitstimmen, ncol = 1)
+
+ggsave("Ergebnis_UND_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
+
 ```
 
 
