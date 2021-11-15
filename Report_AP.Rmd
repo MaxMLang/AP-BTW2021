@@ -172,7 +172,7 @@ ergebnisse_table %>%
   ggplot(mapping = aes(x = partei, y = stimmen_erst_perc)) +
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
-  ylab("Stimmen (in %)") +
+  ylab("Stimmen") +
   ggtitle(label = "Ergebnis: Erststimmen Bundestagswahl 2021") +
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10))
@@ -183,7 +183,7 @@ ergebnisse_table %>%
   ggplot(mapping = aes(x = partei, y = stimmen_zweit_perc)) +
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
-  ylab("Stimmen (in %)") +
+  ylab("Stimmen") +
   ggtitle(label = "Ergebnis: Zweitstimmen Bundestagswahl 2021") +
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10))
