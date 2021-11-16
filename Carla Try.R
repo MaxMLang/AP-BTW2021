@@ -45,20 +45,52 @@ plot4 <- btw_trimmed_data %>%
 
 plot3 + plot4
 
-## Erst vs. Zweitstimmen Balkendiagramm
+plot3 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc | SPD.Zweit.End.Perc > CSU.Zweit.End.Perc) %>%
+  ggplot(aes(y = Schulab.mitAllgHS)) +
+  geom_boxplot() + 
+  ylim(0,60)
+
+plot4 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc < CDU.Zweit.End.Perc | SPD.Zweit.End.Perc < CSU.Zweit.End.Perc) %>%
+  ggplot(aes(y = Schulab.mitAllgHS)) +
+  geom_boxplot() + 
+  ylim(0,60)
+
+plot3 + plot4
+
+
+plot3 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc | SPD.Zweit.End.Perc > CSU.Zweit.End.Perc) %>%
+  ggplot(aes(y = ArbeitslosQ)) +
+  geom_boxplot()
+
+plot4 <- btw_trimmed_data %>%
+  filter(SPD.Zweit.End.Perc < CDU.Zweit.End.Perc | SPD.Zweit.End.Perc < CSU.Zweit.End.Perc) %>%
+  ggplot(aes(y = ArbeitslosQ)) +
+  geom_boxplot()
+
+a <- plot3 + plot4
+
+## Erst vs. Zweitstimmen
+
+## Bzw. Map Differenz
+Balkendiagramm
 btw_kerg_trimmed %>%
   ggplot() +
   geom_bar()
 
+
+## E
 ## Altersgruppen Scatterplots große Parteien
 
 btw_trimmed_data %>%
-  select(c(CDU.Zweit.End,
-           SPD.Zweit.End,
-           AFD.Zweit.End,
-           FDP.Zweit.End,
-           GRÜNE.Zweit.End,
-           LINKE.Zweit.End,
+  select(c(CDU.Zweit.End.Perc,
+           SPD.Zweit.End.Perc,
+           AFD.Zweit.End.Perc,
+           FDP.Zweit.End.Perc,
+           GRÜNE.Zweit.End.Perc,
+           LINKE.Zweit.End.Perc,
            f18t24.Perctange,
            f25t34.Perctange,
            f35t59.Perctange,
@@ -67,12 +99,12 @@ btw_trimmed_data %>%
            ) %>%
   pivot_longer(f18t24.Perctange:f75tInf.Perctange, names_to = "Age", values_to = "Percentage") %>%
   ggplot(aes(x = Percentage)) +
-  geom_smooth(aes(y = CDU.Zweit.End), color = "black") +
-  geom_smooth(aes(y = SPD.Zweit.End), color = "red") +
-  geom_smooth(aes(y = AFD.Zweit.End), color = "blue") +
-  geom_smooth(aes(y = GRÜNE.Zweit.End), color = "green") +
-  geom_smooth(aes(y = LINKE.Zweit.End), color = "purple") +
-  geom_smooth(aes(y = FDP.Zweit.End), color = "yellow") +
+  geom_smooth(aes(y = CDU.Zweit.End.Perc), color = "black") +
+  geom_smooth(aes(y = SPD.Zweit.End.Perc), color = "red") +
+  geom_smooth(aes(y = AFD.Zweit.End.Perc), color = "blue") +
+  geom_smooth(aes(y = GRÜNE.Zweit.End.Perc), color = "green") +
+  geom_smooth(aes(y = LINKE.Zweit.End.Perc), color = "purple") +
+  geom_smooth(aes(y = FDP.Zweit.End.Perc), color = "yellow") +
   facet_wrap("Age")
 
 
@@ -147,6 +179,45 @@ btw_trimmed_data %>%
   facet_wrap("Age")
 
 ## Altersgruppen Sonstige
+
+  
+  
+## Arbeitslosengeld
+
+btw_trimmed_data %>%
+  ggplot(aes(x = ArbeitslosQ)) +
+  geom_smooth(aes(y = CDU.Zweit.End.Perc), color = "black") +
+  geom_smooth(aes(y = SPD.Zweit.End.Perc), color = "red") +
+  geom_smooth(aes(y = AFD.Zweit.End.Perc), color = "blue") +
+  geom_smooth(aes(y = GRÜNE.Zweit.End.Perc), color = "green") +
+  geom_smooth(aes(y = LINKE.Zweit.End.Perc), color = "purple") +
+  geom_smooth(aes(y = FDP.Zweit.End.Perc), color = "yellow") +
+  geom_point(aes(y = CDU.Zweit.End.Perc), color = "black", size = 1) +
+  geom_point(aes(y = SPD.Zweit.End.Perc), color = "red", size = 1) +
+  geom_point(aes(y = AFD.Zweit.End.Perc), color = "blue", size = 1) +
+  geom_point(aes(y = GRÜNE.Zweit.End.Perc), color = "green", size = 1) +
+  geom_point(aes(y = LINKE.Zweit.End.Perc), color = "purple", size = 1) +
+  geom_point(aes(y = FDP.Zweit.End.Perc), color = "yellow", size = 1)
+
+btw_trimmed_data %>%
+  select(c(CDU.Zweit.End.Perc,
+           SPD.Zweit.End.Perc,
+           AFD.Zweit.End.Perc,
+           FDP.Zweit.End.Perc,
+           GRÜNE.Zweit.End.Perc,
+           LINKE.Zweit.End.Perc,
+           ArbeitslosQ.M,
+           ArbeitslosQ.W)
+  ) %>%
+  pivot_longer(c(ArbeitslosQ.M, ArbeitslosQ.W), names_to = "Age", values_to = "Percentage") %>%
+  ggplot(aes(x = Percentage)) +
+  geom_smooth(aes(y = CDU.Zweit.End.Perc), color = "black") +
+  geom_smooth(aes(y = SPD.Zweit.End.Perc), color = "red") +
+  geom_smooth(aes(y = AFD.Zweit.End.Perc), color = "blue") +
+  geom_smooth(aes(y = GRÜNE.Zweit.End.Perc), color = "green") +
+  geom_smooth(aes(y = LINKE.Zweit.End.Perc), color = "purple") +
+  geom_smooth(aes(y = FDP.Zweit.End.Perc), color = "yellow") +
+  facet_wrap("Age")
 
 
 ## Einkommen und Wahlverhalten
