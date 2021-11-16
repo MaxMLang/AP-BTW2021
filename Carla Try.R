@@ -1,22 +1,60 @@
 library(tidyverse)
 library('patchwork')
+
+
+
+
+## Korrelation Parteien untereinander?
+
+## Strukturvariablen
+
+btw_trimmed_data %>%
+  ggplot(aes(x = ArbeitslosQ)) +
+  geom_jitter(aes(y = CDU.Zweit.End.Perc), color = "black", size = 1) +
+  geom_jitter(aes(y = SPD.Zweit.End.Perc), color = "red", size = 1) +
+  geom_jitter(aes(y = AFD.Zweit.End.Perc), color = "blue", size = 1) +
+  geom_jitter(aes(y = GRÜNE.Zweit.End.Perc), color = "green", size = 1) +
+  geom_jitter(aes(y = LINKE.Zweit.End.Perc), color = "purple", size = 1) +
+  geom_jitter(aes(y = FDP.Zweit.End.Perc), color = "yellow", size = 1)
+
 ## SPD vs CDU
 
-plot1 <- btw_trimmed_data %>%
-  filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc | SPD.Zweit.End.Perc > CSU.Zweit.End.Perc) %>%
-  ggplot(aes(y = Vfg.Einkommen)) +
-  geom_boxplot() +
-  ylim(15000, 35000)
 
+spd_vs_union <- btw_trimmed_data %>%
+  mutate(UnionvsSPD = case_when(((SPD.Erst.End.Perc + SPD.Zweit.End.Perc) 
+                                 > (CDU.Erst.End.Perc + CDU.Zweit.End.Perc)
+                                 | (SPD.Erst.End.Perc + SPD.Zweit.End.Perc) 
+                                 > (CSU.Erst.End.Perc + CSU.Zweit.End.Perc))
+                                ~ "Wahlkreise in denen die SPD mehr Gesamtstimmen \nals die Union erreicht hat", 
+                                ((SPD.Erst.End.Perc + SPD.Zweit.End.Perc) 
+                                 < (CDU.Erst.End.Perc + CDU.Zweit.End.Perc)
+                                 | (SPD.Erst.End.Perc + SPD.Zweit.End.Perc) 
+                                 < (CSU.Erst.End.Perc + CSU.Zweit.End.Perc))
+                                ~ "Wahlkreise in denen die Union mehr Gesamtstimmen \nals die SPD erreicht hat"))
+
+spd_vs_union %>%
+  ggplot(aes(x = UnionvsSPD, y = Vfg.Einkommen)) +
+  geom_boxplot() +
+  ylim(15000, 35000) +
+  labs(title = "Verfügbares Einkommen") +
+  xlab(" ") +
+  ylab("Verfügbares Einkommen")
+
+
+plot1 <- btw_trimmed_data %>%
+  filter((SPD.Erst.End.Perc + SPD.Zweit.End.Perc) > (CDU.Erst.End.Perc + CDU.Zweit.End.Perc)  
+          | (SPD.Erst.End.Perc + SPD.Zweit.End.Perc) > (CSU.Erst.End.Perc + CSU.Zweit.End.Perc)) %>%
+  ggplot(aes(y = Vfg.Einkommen)) +
+  
 
 plot2 <- btw_trimmed_data %>%
-  filter(SPD.Zweit.End.Perc < CDU.Zweit.End.Perc | SPD.Zweit.End.Perc < CSU.Zweit.End.Perc) %>%
+  filter((SPD.Erst.End.Perc + SPD.Zweit.End.Perc) < (CDU.Erst.End.Perc + CDU.Zweit.End.Perc)  
+         | (SPD.Erst.End.Perc + SPD.Zweit.End.Perc) < (CSU.Erst.End.Perc + CSU.Zweit.End.Perc)) %>%
   ggplot(aes(y = Vfg.Einkommen)) +
   geom_boxplot() +
   ylim(15000, 35000)
 
-x <- plot1 + plot2 + plot_annotation(title = "Verfügbares Einkommen")
-
+x <- ggarrange(plot1, plot2)
 plot3 <- btw_trimmed_data %>%
   filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc | SPD.Zweit.End.Perc > CSU.Zweit.End.Perc) %>%
   ggplot(aes(y = Bvk.Dcht)) +
@@ -29,7 +67,7 @@ plot4 <- btw_trimmed_data %>%
   geom_boxplot() +
   ylim(0, 15000)
 
-plot3 + plot4
+y <- plot3 + plot4
 
 plot3 <- btw_trimmed_data %>%
   filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc | SPD.Zweit.End.Perc > CSU.Zweit.End.Perc) %>%
@@ -43,7 +81,7 @@ plot4 <- btw_trimmed_data %>%
   geom_boxplot() + 
   ylim(0,35)
 
-plot3 + plot4
+z <- plot3 + plot4
 
 plot3 <- btw_trimmed_data %>%
   filter(SPD.Zweit.End.Perc > CDU.Zweit.End.Perc | SPD.Zweit.End.Perc > CSU.Zweit.End.Perc) %>%
@@ -57,7 +95,7 @@ plot4 <- btw_trimmed_data %>%
   geom_boxplot() + 
   ylim(0,60)
 
-plot3 + plot4
+zz <-plot3 + plot4
 
 
 plot3 <- btw_trimmed_data %>%
@@ -70,7 +108,7 @@ plot4 <- btw_trimmed_data %>%
   ggplot(aes(y = ArbeitslosQ)) +
   geom_boxplot()
 
-a <- plot3 + plot4
+zzz <- plot3 + plot4
 
 ## Erst vs. Zweitstimmen
 
@@ -84,7 +122,7 @@ btw_kerg_trimmed %>%
 ## E
 ## Altersgruppen Scatterplots große Parteien
 
-btw_trimmed_data %>%
+a <-btw_trimmed_data %>%
   select(c(CDU.Zweit.End.Perc,
            SPD.Zweit.End.Perc,
            AFD.Zweit.End.Perc,
@@ -109,7 +147,7 @@ btw_trimmed_data %>%
 
 
   
-btw_trimmed_data %>%
+b <-btw_trimmed_data %>%
   select(c(CDU.Zweit.End,
            SPD.Zweit.End,
            AFD.Zweit.End,
@@ -132,7 +170,7 @@ btw_trimmed_data %>%
   geom_smooth(aes(y = FDP.Zweit.End), color = "yellow") +
   facet_wrap("Abschluss")
 
-btw_trimmed_data %>%
+c <- btw_trimmed_data %>%
   select(c(CDU.Zweit.End,
            SPD.Zweit.End,
            AFD.Zweit.End,
@@ -184,14 +222,8 @@ btw_trimmed_data %>%
   
 ## Arbeitslosengeld
 
-btw_trimmed_data %>%
+d <- btw_trimmed_data %>%
   ggplot(aes(x = ArbeitslosQ)) +
-  geom_smooth(aes(y = CDU.Zweit.End.Perc), color = "black") +
-  geom_smooth(aes(y = SPD.Zweit.End.Perc), color = "red") +
-  geom_smooth(aes(y = AFD.Zweit.End.Perc), color = "blue") +
-  geom_smooth(aes(y = GRÜNE.Zweit.End.Perc), color = "green") +
-  geom_smooth(aes(y = LINKE.Zweit.End.Perc), color = "purple") +
-  geom_smooth(aes(y = FDP.Zweit.End.Perc), color = "yellow") +
   geom_point(aes(y = CDU.Zweit.End.Perc), color = "black", size = 1) +
   geom_point(aes(y = SPD.Zweit.End.Perc), color = "red", size = 1) +
   geom_point(aes(y = AFD.Zweit.End.Perc), color = "blue", size = 1) +
@@ -199,6 +231,13 @@ btw_trimmed_data %>%
   geom_point(aes(y = LINKE.Zweit.End.Perc), color = "purple", size = 1) +
   geom_point(aes(y = FDP.Zweit.End.Perc), color = "yellow", size = 1)
 
+
+geom_smooth(aes(y = CDU.Zweit.End.Perc), color = "black") +
+  geom_smooth(aes(y = SPD.Zweit.End.Perc), color = "red") +
+  geom_smooth(aes(y = AFD.Zweit.End.Perc), color = "blue") +
+  geom_smooth(aes(y = GRÜNE.Zweit.End.Perc), color = "green") +
+  geom_smooth(aes(y = LINKE.Zweit.End.Perc), color = "purple") +
+  geom_smooth(aes(y = FDP.Zweit.End.Perc), color = "yellow") +
 btw_trimmed_data %>%
   select(c(CDU.Zweit.End.Perc,
            SPD.Zweit.End.Perc,
