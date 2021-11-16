@@ -365,28 +365,96 @@ union_erst %>%
   select(Gebietsname, DiffProzentPkt)
 ```
 
-# Briefwahl in Bayern (on Hold, Plausibilitätschecks stimmen nicht)
-
+# Briefwahl in Bayern 
+## Data Preparation
 ```{r}
 total_brief_urne <- btw_by_brief_urne_wk21 %>% 
-  select(B1.Urne, B1Briefwähler) %>% 
+  mutate(Urnenwaehler= B - B1Briefwähler) %>% 
+  select(B, Urnenwaehler, B1Briefwähler) %>% 
+  colSums()
+names(total_brief_urne) <- c("Gesamt.Waehler", "Urnenwaehler", "Briefwaehler")
+
+btw_21_17_brief_urne <- btw_brief_urne_all %>% 
+  mutate(Urnenwaehler_21= B_21 - B1Briefwähler_21,
+         Urnenwaehler_17= B_17 - B1Briefwähler_17) %>% 
+  select(schluessel, B_21, B_17, B1Briefwähler_21, B1Briefwähler_17, Urnenwaehler_21, Urnenwaehler_17)
+
+
+total_brief_urne_21_17 <- btw_21_17_brief_urne %>% 
+  select(-schluessel) %>% 
   colSums()
 
-names(total_brief_urne) <- c("Urnenwähler", "Briefwähler")
-total_brief_urne
-sum(total_brief_urne)
+total_brief_urne_21_17_df <- data.frame(list(Jahr= as.factor(c("2017", "2017", "2021", "2021")), 
+                                             Art= as.factor(c("Urne", "Brief", "Urne", "Brief")), 
+                                             Anzahl= c(total_brief_urne_21_17[c("Urnenwaehler_17","B1Briefwähler_17")], total_brief_urne_21_17[c("Urnenwaehler_21","B1Briefwähler_21")])))
 
-btw_by_brief_urne_wk21 %>% 
-  select(B) %>% 
-  colSums()
-
-btw_by_brief_urne %>% 
-  filter((schluessel.Wbz %in% c(9,10)) & (schluessel %in% c(212))) %>% 
-  slice(1:2) %>% 
-  select(B, B1.Urne, B1Briefwähler, C)
+total_brief_urne_21_17_df <-  total_brief_urne_21_17_df %>%
+  add_column(Gesamt.Anzahl = c(rep(total_brief_urne_21_17[2],2), rep(total_brief_urne_21_17[1],2)))
 ```
 
 
+## 2021 Barplot Absolut nach Art
+```{r}
+total_brief_urne <- btw_by_brief_urne_wk21 %>% 
+  mutate(Urnenwaehler= B - B1Briefwähler) %>% 
+  select(B, Urnenwaehler, B1Briefwähler) %>% 
+  colSums()
+names(total_brief_urne) <- c("Gesamt.Waehler", "Urnenwaehler", "Briefwaehler")
+
+
+
+
+data.frame(list(Art= c("Urne", "Brief"), Anzahl= c(total_brief_urne[2], total_brief_urne[3]))) %>% 
+  ggplot(aes(x= Art, y= Anzahl)) +
+  geom_bar(stat= "identity") + 
+  scale_y_continuous(breaks = seq(from= 0, to= 5000000, by= 500000), limits = c(0,5000000),
+                     labels = c("0","500.000","1.000.000","1.500.000","2.000.000","2.500.000","3.000.000",
+                                "3.500.000", "4.000.000","4.500.000","5.000.000"))+
+  labs(title = "Anzahl der Wählenden nach Art (Brief/Urne) in Bayern" )
+
+ggsave("Brief_Urne_Anzahl_BY_21.png", path="Grafiken/", width = 7, height= 7)
+
+```
+
+## Anzahl Barplot (Facet nach Jahr) und Stacked scale Barplot 2017 zum Vergleich der Anteile
+```{r}
+total_brief_urne_21_17_df %>% 
+  mutate((Perc= Anzahl/Gesamt.Anzahl)) %>% 
+  ggplot(aes(x= Jahr, y= Anzahl, fill= Art))+
+  geom_bar(stat = "identity", position = "fill")+
+  scale_fill_manual(values = c("#8dd3c7", "darkgrey"))+
+  ggtitle("Vergleich der Anteile von Brief- und Urnenwahl
+       zwischen 2017 und 2021")+
+  ylab("Anteil")
+
+ggsave("Brief_Urne_ScaledBar_BY_1721.png", path="Grafiken/", width = 7, height= 7)
+```
+
+## In welchen Wahlkreisen gab es die größte Veränderung zur Briefwahl?
+```{r}
+
+btw_brief_urne_all %>% 
+  mutate(Urnenwaehler_21= B_21 - B1Briefwähler_21,
+         Urnenwaehler_17= B_17 - B1Briefwähler_17) %>% 
+  mutate(BriefDiff= B1Briefwähler_21/B_21- B1Briefwähler_17/B_17,
+         UrneDiff= Urnenwaehler_21/B_21 - Urnenwaehler_17/B_17) %>% 
+  arrange(BriefDiff) %>% 
+  left_join(y= wk_shp, by= c("schluessel"="WKR_NR")) %>% 
+  ggplot() +
+  geom_sf(aes(geometry= geometry, fill= BriefDiff))+
+  scale_fill_continuous(low= "#fff2ae", high= "#darkblue")
+
+```
+
+
+
+## Ausgabe der Prozentualen Anteile nach Art pro Jahr
+```{r}
+total_brief_urne_21_17_df %>% 
+  mutate(Perc= Anzahl/Gesamt.Anzahl) %>% 
+  select(Jahr, Art, Perc) %>% 
+  arrange(Art)
+```
 
 
 
