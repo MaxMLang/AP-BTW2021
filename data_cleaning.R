@@ -1,5 +1,4 @@
 library(tidyverse)
-library(openxlsx)
 
 btw_kerg <- read.csv("Raw Data/btw21_kerg.csv", 
                       skip = 2,
@@ -16,10 +15,7 @@ btw_kerg2 <- read.csv("Raw Data/btw21_kerg2.csv",
                       sep= ";", 
                       encoding = "UTF-8",
                       dec= ",")
-
-btw_by_brief_urne <- read.xlsx("Raw Data/wahlbezirksergebnisse_2021.xlsx", sheet = 1, startRow = 2) 
-btw_by_brief_urne17 <- read.xlsx("Raw Data/wahlbezirksergebnisse_2017.xlsx", sheet = 1, startRow = 2) 
-
+  
 btw_kerg_dirty <- btw_kerg
 
 btw_struktur_dirty <- btw_struktur
@@ -319,46 +315,10 @@ btw_kerg2_wk <- btw_kerg2 %>%
 
 colnames(btw_kerg2_wk)[4] <- "Wahlkreis.Nr"
 saveRDS(btw_kerg2_wk, file= "btw_kerg2_wk.RDS")
-saveRDS(btw_kerg2_bund, file= "btw_kerg2_bund.RDS")
-
-# Briefwahldaten ----
-btw_by_brief_urne <- btw_by_brief_urne %>% 
-  mutate(D.Sonstige= rowSums(btw_by_brief_urne[20:71], na.rm = TRUE)) %>% 
-  mutate(F.Sonstige= rowSums(btw_by_brief_urne[81:99], na.rm = TRUE)) %>% 
-  select(-c(20:71, 81:99))
-
-btw_by_brief_urne[1:ncol(btw_by_brief_urne)] <- lapply(btw_by_brief_urne[1:ncol(btw_by_brief_urne)], as.numeric)
-
-btw_by_brief_urne_wk <- btw_by_brief_urne %>% 
-  group_by(schluessel) %>% 
-  summarise_each(list(sum))
-
-btw_by_brief_urne_Gde <- btw_by_brief_urne %>% 
-  group_by(schluessel.Gde) %>% 
-  summarise_each(list(sum))
 
 
-saveRDS(btw_by_brief_urne_wk, file= "btw_by_brief_urne_wk.RDS")
-saveRDS(btw_by_brief_urne_Gde, file= "btw_by_brief_urne_Gde.RDS")
-
-btw_by_brief_urne17[1:ncol(btw_by_brief_urne17)] <- lapply(btw_by_brief_urne17[1:ncol(btw_by_brief_urne17)], as.numeric)
-
-btw_by_brief_urne17 <- btw_by_brief_urne17 %>% 
-  mutate(D.Sonstige= rowSums(btw_by_brief_urne17[20:48], na.rm = TRUE)) %>% 
-  mutate(F.Sonstige= rowSums(btw_by_brief_urne17[58:71], na.rm = TRUE)) %>% 
-  select(-c(20:48, 58:71))
-
-btw_by_brief_urne_17_wk <- btw_by_brief_urne17 %>% 
-  group_by(schluessel.Wkr) %>% 
-  summarise_each(list(sum))
-
-btw_by_brief_urne_17_Gde <- btw_by_brief_urne17 %>% 
-  group_by(schluessel.Gde) %>% 
-  summarise_each(list(sum))
-
-btw_brief_urne_all <- left_join(btw_by_brief_urne_wk, btw_by_brief_urne_17_wk, by= c("schluessel"="schluessel.Wkr"), suffix= c("_21", "_17"))
 
 
-saveRDS(btw_by_brief_urne_17_wk, file = "btw_by_brief_urne_17_wk.RDS")
-saveRDS(btw_by_brief_urne_17_Gde, file = "btw_by_brief_urne_17_Gde.RDS")
-saveRDS(btw_brief_urne_all, file = "btw_brief_urne_all.RDS")
+
+
+
