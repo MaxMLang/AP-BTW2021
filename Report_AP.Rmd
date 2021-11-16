@@ -22,7 +22,11 @@ btw_data <- readRDS("btw_data.RDS")
 btw_trimmed_data <- readRDS("btw_trimmed_data.RDS")
 btw_kerg_trimmed_bundeslaender <- readRDS("btw_kerg_trimmed_bundeslaender.RDS")
 btw_kerg2_wk <- readRDS("btw_kerg2_wk.RDS")
+<<<<<<< HEAD
 länder <- st_read("Raw Data/laender_geometrie_WGS84/Bundeslaendergrenzen_2018.shp")
+=======
+länder <- st_read("Raw Data/laender_geometrie_WGS84/Bundesländergrenzen_2018.shp")
+>>>>>>> c19ceeded6c63d98e388e549548e3e8e3b68f717
 btw_kerg2_bund <- readRDS("btw_kerg2_bund.RDS")
 #loading geo data
 wk_path <- "Raw Data/btw21_geometrie_wahlkreise_geo_shp_WGS84/Geometrie_Wahlkreise_20DBT_geo.shp"
@@ -44,6 +48,15 @@ btw_trimmed_geo_data$WKR_NAME <- NULL
 # Adding Union-Cols
 btw_kerg_trimmed_bundeslaender[is.na(btw_kerg_trimmed_bundeslaender)] <- 0
 btw_kerg_trimmed_bundeslaender <- btw_kerg_trimmed_bundeslaender %>%
+  mutate(Union.Erst.Vor = CDU.Erst.Vor + CSU.Erst.Vor,
+         Union.Erst.End = CDU.Erst.End + CSU.Erst.End,
+         Union.Erst.End.Perc = CDU.Erst.End.Perc + CSU.Erst.End.Perc,
+         Union.Zweit.Vor = CDU.Zweit.Vor + CSU.Zweit.Vor,
+         Union.Zweit.End = CDU.Zweit.End + CSU.Zweit.End,
+         Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc)
+
+btw_trimmed_data[is.na(btw_trimmed_data)] <- 0
+btw_trimmed_data <- btw_trimmed_data %>%
   mutate(Union.Erst.Vor = CDU.Erst.Vor + CSU.Erst.Vor,
          Union.Erst.End = CDU.Erst.End + CSU.Erst.End,
          Union.Erst.End.Perc = CDU.Erst.End.Perc + CSU.Erst.End.Perc,
@@ -213,7 +226,27 @@ ggsave("Ergebnis_UND_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
 # Mattia
 ```{r}
+btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "UNION 1", y = Union.Erst.End.Perc), fill = "black", 
+               color = "darkgrey", outlier.color = "black", size = 1.02)+
+  geom_boxplot(aes(x = "SPD 1", y = SPD.Erst.End.Perc), fill = "red")+
+  geom_boxplot(aes(x = "AFD 1", y = AFD.Erst.End.Perc), fill = "blue", outlier.color = "#666666")+
+  geom_boxplot(aes(x = "GRÜNE 1", y = GRÜNE.Erst.End.Perc),fill = "green")+
+  geom_boxplot(aes(x = "FDP 1", y = FDP.Erst.End.Perc), fill = "yellow")+
+  
+  geom_boxplot(aes(x = "UNION 2", y = Union.Zweit.End.Perc), fill = "black", 
+               color = "darkgrey", outlier.color = "black")+
+  geom_boxplot(aes(x = "SPD 2", y = SPD.Zweit.End.Perc), fill = "red")+
+  geom_boxplot(aes(x = "AFD 2", y = AFD.Zweit.End.Perc), fill = "blue")+
+  geom_boxplot(aes(x = "GRÜNE 2", y = GRÜNE.Zweit.End.Perc),fill = "green")+
+  geom_boxplot(aes(x = "FDP 2", y = FDP.Zweit.End.Perc), fill = "yellow")+
+  #geom_boxplot(aes(x = "Zweitstimmen", y = GRÜNE.Zweit.End.Perc))+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "Erst- und Zweitstimmen der Wahlkreise pro Partei")+
+  theme_light()+
+ scale_x_discrete(limits = c("UNION 1", "UNION 2", "SPD 1", "SPD 2", "GRÜNE 1", "GRÜNE 2", "FDP 1", "FDP 2", "AFD 1", "AFD 2"))
 
+ggsave("MM_Erst_Zweit_große_Parteien.png", path = "Grafiken", width = 9, height = 7)
 ```
 
 # Max
