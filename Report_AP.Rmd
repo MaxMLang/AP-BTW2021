@@ -83,10 +83,9 @@ theme_map <- function(...) {
 
 
 # Carla
-```{r}
 
 # SPD vs CDU Boxplots
-
+```{r}
 # Verfügbares Einkommen
 
 spd_vs_union <- btw_trimmed_data %>%
@@ -97,19 +96,21 @@ spd_vs_union <- btw_trimmed_data %>%
                                 (SPD.Zweit.End < Union.Zweit.End)
                                 ~ "Wahlkreise in denen die Union mehr Zweitstimmen \nals die SPD erreicht hat"))
 
-x <- spd_vs_union %>%
+spd_vs_union %>%
   ggplot(aes(x = UnionvsSPD, y = Vfg.Einkommen, col = UnionvsSPD)) +
   geom_boxplot() +
   ylim(15000, 35000) +
   labs(title = "Verfügbares Einkommen") +
   xlab(" ") +
-  ylab("Verfügbares Einkommen") +
+  ylab("Verfügbares Einkommen der privaten Haushalte 2018 \n(EUR je EW)") +
   scale_color_manual(values = c("red", "black")) +
   theme(legend.position = "none")
 
+ggsave("Boxplot_SPD_Union_Einkommen.png", path = "Grafiken/")
+
 # Arbeitslosenquote
 
-x <- spd_vs_union %>%
+spd_vs_union %>%
   ggplot(aes(x = UnionvsSPD, y = ArbeitslosQ, col = UnionvsSPD)) +
   geom_boxplot() +
   labs(title = "Arbeitslosenquote") +
@@ -118,229 +119,150 @@ x <- spd_vs_union %>%
   scale_color_manual(values = c("red", "black")) +
   theme(legend.position = "none")
 
+ggsave("Boxplot_SPD_Union_Arbeitslosenquote.png", path = "Grafiken/")
+
 # Schulabgänger/-innen allgemeinblldender Schulen 2019 - mit allgemeiner und Fachhochschulreife
 
-x <- spd_vs_union %>%
+spd_vs_union %>%
   ggplot(aes(x = UnionvsSPD, y = Schulab.mitAllgHS, col = UnionvsSPD)) +
   geom_boxplot() +
   ylim(20, 60) +
   labs(title = "Schulabgänger/-innen mit allgemeiner und Fachhochschulreife") +
   xlab(" ") +
-  ylab("Schulabgänger/-innen allgemeinblldender Schulen 2019 \nmit allgemeiner und Fachhochschulreife") +
+  ylab("Schulabgänger/-innen allgemeinbildender Schulen 2019 \nmit allgemeiner und Fachhochschulreife") +
   scale_color_manual(values = c("red", "black")) +
   theme(legend.position = "none")
 
+ggsave("Boxplot_SPD_Union_Schulab.mitAllgHS.png", path = "Grafiken/")
+
+
+```
 
 # Strukturvariablen Scatterplots
 
+```{r}
+
 # Verfügbares Einkommen
 
-a <- btw_trimmed_data %>%
+btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
-  mutate(Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc) %>%
-  select(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc,
+  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+         SPD = SPD.Zweit.End.Perc,
+         GRÜNE = GRÜNE.Zweit.End.Perc,
+         FDP = FDP.Zweit.End.Perc,
+         AFD = AFD.Zweit.End.Perc,
+         LINKE = LINKE.Zweit.End.Perc) %>%
+  select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
            Vfg.Einkommen)) %>%
-  pivot_longer(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc), names_to = "Age", values_to = "Percentage") %>%
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") %>%
   ggplot(aes(x = Percentage, y = Vfg.Einkommen, col = Age)) +
   geom_jitter() +
   facet_wrap("Age") +
   scale_color_manual(values = c("blue", "yellow", "green", "purple", "red", "black")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  labs(title = "Verfügbares Einkommen") +
+  xlab("Zweitstimmen (%)") +
+  ylab("Verfügbares Einkommen der privaten Haushalte 2018 \n(EUR je EW)")
+
+ggsave("Scatterplots_Vermögen.png", path = "Grafiken/")
 
 # Bevölkerung Ausländer
 
-a <- btw_trimmed_data %>%
+btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
-  mutate(Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc) %>%
-  select(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc,
+  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+         SPD = SPD.Zweit.End.Perc,
+         GRÜNE = GRÜNE.Zweit.End.Perc,
+         FDP = FDP.Zweit.End.Perc,
+         AFD = AFD.Zweit.End.Perc,
+         LINKE = LINKE.Zweit.End.Perc) %>%
+  select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
            Bvk.Aus)) %>%
-  pivot_longer(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc), names_to = "Age", values_to = "Percentage") %>%
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") %>%
   ggplot(aes(x = Percentage, y = Bvk.Aus, col = Age)) +
   geom_jitter() +
   facet_wrap("Age") +
   scale_color_manual(values = c("blue", "yellow", "green", "purple", "red", "black")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  labs(title = "Bevölkerung Ausländer") +
+  xlab("Zweitstimmen (%)") +
+  ylab("Bevölkerung Ausländer in 1000 (Stand 31.12.2019)")
+
+ggsave("Scatterplots_Vermögen.png", path = "Grafiken/")
 
 # Junge Wählerschaft
 
-a <- btw_trimmed_data %>%
+btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
-  mutate(Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+         SPD = SPD.Zweit.End.Perc,
+         GRÜNE = GRÜNE.Zweit.End.Perc,
+         FDP = FDP.Zweit.End.Perc,
+         AFD = AFD.Zweit.End.Perc,
+         LINKE = LINKE.Zweit.End.Perc,
          f18t34.Perctange = f18t24.Perctange + f25t34.Perctange) %>%
-  select(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc,
+  select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
            f18t34.Perctange)) %>%
-  pivot_longer(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc), names_to = "Age", values_to = "Percentage") %>%
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") %>%
   ggplot(aes(x = Percentage, y = f18t34.Perctange, col = Age)) +
   geom_jitter() +
   facet_wrap("Age") +
   scale_color_manual(values = c("blue", "yellow", "green", "purple", "red", "black")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  labs(title = "Alter von 18 bis 34") +
+  xlab("Zweitstimmen (%)") +
+  ylab("Alter von 18 bis 34 (%) (Stand 31.12.2019)")
+
+ggsave("Scatterplots_Alter_f18t34.png", path = "Grafiken/")
 
 # Ü 34 Wählerschaft
 
-a <- btw_trimmed_data %>%
+btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
-  mutate(Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+         SPD = SPD.Zweit.End.Perc,
+         GRÜNE = GRÜNE.Zweit.End.Perc,
+         FDP = FDP.Zweit.End.Perc,
+         AFD = AFD.Zweit.End.Perc,
+         LINKE = LINKE.Zweit.End.Perc,
          f34tInf.Perctange = f35t59.Perctange + f60t74.Perctange + f75tInf.Perctange) %>%
-  select(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc,
+  select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
            f34tInf.Perctange)) %>%
-  pivot_longer(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc), names_to = "Age", values_to = "Percentage") %>%
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") %>%
   ggplot(aes(x = Percentage, y = f34tInf.Perctange, col = Age)) +
   geom_jitter() +
   facet_wrap("Age") +
   scale_color_manual(values = c("blue", "yellow", "green", "purple", "red", "black")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  labs(title = "Alter ab 35") +
+  xlab("Zweitstimmen (%)") +
+  ylab("Alter ab 35 (%) (Stand 31.12.2019)")
+
+ggsave("Scatterplots_Alter_f35tInf.png", path = "Grafiken/")
 
 # Bevölkerungsdichte
 
-a <- btw_trimmed_data %>%
+btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
-  mutate(Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc) %>%
-  select(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc,
+  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+         SPD = SPD.Zweit.End.Perc,
+         GRÜNE = GRÜNE.Zweit.End.Perc,
+         FDP = FDP.Zweit.End.Perc,
+         AFD = AFD.Zweit.End.Perc,
+         LINKE = LINKE.Zweit.End.Perc) %>%
+  select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
            Bvk.Dcht)) %>%
-  pivot_longer(c(Union.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc), names_to = "Age", values_to = "Percentage") %>%
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") %>%
   ggplot(aes(x = Percentage, y = Bvk.Dcht, col = Age)) +
   geom_jitter() +
   facet_wrap("Age") +
   scale_color_manual(values = c("blue", "yellow", "green", "purple", "red", "black")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  labs(title = "Bevölkerungsdichte") +
+  xlab("Zweitstimmen (%)") +
+  ylab("Bevölkerungsdichte EW je km^2 (Stand 31.12.2019)")
 
-
-
-
-## Altersgruppen Scatterplots große Parteien
-
-a <-btw_trimmed_data %>%
-  select(c(CDU.Zweit.End.Perc,
-           SPD.Zweit.End.Perc,
-           AFD.Zweit.End.Perc,
-           FDP.Zweit.End.Perc,
-           GRÜNE.Zweit.End.Perc,
-           LINKE.Zweit.End.Perc,
-           f18t24.Perctange,
-           f25t34.Perctange,
-           f35t59.Perctange,
-           f60t74.Perctange,
-           f75tInf.Perctange)
-           ) %>%
-  pivot_longer(f18t24.Perctange:f75tInf.Perctange, names_to = "Age", values_to = "Percentage") %>%
-  ggplot(aes(x = Percentage)) +
-  geom_smooth(aes(y = CDU.Zweit.End.Perc), color = "black") +
-  geom_smooth(aes(y = SPD.Zweit.End.Perc), color = "red") +
-  geom_smooth(aes(y = AFD.Zweit.End.Perc), color = "blue") +
-  geom_smooth(aes(y = GRÜNE.Zweit.End.Perc), color = "green") +
-  geom_smooth(aes(y = LINKE.Zweit.End.Perc), color = "purple") +
-  geom_smooth(aes(y = FDP.Zweit.End.Perc), color = "yellow") +
-  facet_wrap("Age")
-
-
-  
-b <-btw_trimmed_data %>%
-  select(c(CDU.Zweit.End,
-           SPD.Zweit.End,
-           AFD.Zweit.End,
-           FDP.Zweit.End,
-           GRÜNE.Zweit.End,
-           LINKE.Zweit.End,
-           Schulab.berufSch,
-           Schulab.allgSch,
-           Schulab.ohneHS,
-           Schulab.mitHS,
-           Schulab.mitMittSA,
-           Schulab.mitAllgHS)) %>%
-  pivot_longer(Schulab.berufSch:Schulab.mitAllgHS, names_to = "Abschluss", values_to = "Percentage") %>%
-  ggplot(aes(x = Percentage)) +
-  geom_smooth(aes(y = CDU.Zweit.End), color = "black") +
-  geom_smooth(aes(y = SPD.Zweit.End), color = "red") +
-  geom_smooth(aes(y = AFD.Zweit.End), color = "blue") +
-  geom_smooth(aes(y = GRÜNE.Zweit.End), color = "green") +
-  geom_smooth(aes(y = LINKE.Zweit.End), color = "purple") +
-  geom_smooth(aes(y = FDP.Zweit.End), color = "yellow") +
-  facet_wrap("Abschluss")
-
-c <- btw_trimmed_data %>%
-  select(c(CDU.Zweit.End,
-           SPD.Zweit.End,
-           AFD.Zweit.End,
-           FDP.Zweit.End,
-           GRÜNE.Zweit.End,
-           LINKE.Zweit.End,
-           SozPfli.LandW,
-           SozPfli.ProdGewerb,
-           SozPfli.HandelGwVerk,
-           SozPfli.ÖffPrivDienstl,
-           SozPfli.Rest)) %>%
-  pivot_longer(SozPfli.LandW:SozPfli.Rest, names_to = "Beschäftigung", values_to = "Percentage") %>%
-  ggplot(aes(x = Percentage)) +
-  geom_smooth(aes(y = CDU.Zweit.End), color = "black") +
-  geom_smooth(aes(y = SPD.Zweit.End), color = "red") +
-  geom_smooth(aes(y = AFD.Zweit.End), color = "blue") +
-  geom_smooth(aes(y = GRÜNE.Zweit.End), color = "green") +
-  geom_smooth(aes(y = LINKE.Zweit.End), color = "purple") +
-  geom_smooth(aes(y = FDP.Zweit.End), color = "yellow") +
-  facet_wrap("Beschäftigung")
-
-btw_trimmed_data %>%
-  ggplot(aes(x = SozPfli.LandW)) +
-  geom_point(aes(y = GRÜNE.Zweit.End), color = "green") +
-  geom_smooth(aes(y = GRÜNE.Zweit.End), color = "green")
-
-btw_trimmed_data %>%
-  ggplot(aes(x = Bvk.Dcht)) +
-  geom_point(aes(y = GRÜNE.Zweit.End), color = "green") +
-  geom_smooth(aes(y = GRÜNE.Zweit.End), color = "green")
-
-
+ggsave("Scatterplots_Bevölkerungsdichte.png", path = "Grafiken/")
 ```
 
 # Chris
