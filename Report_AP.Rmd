@@ -707,6 +707,7 @@ ggsave("Brief_Urne_ScaledBar_BY_1721.png", path="Grafiken/", width = 7, height= 
 ```
 
 ## In welchen Wahlkreisen gab es die größte Veränderung zur Briefwahl?
+- Alle Wahlkreise deutliches Plus bei Urnenwahl im Vergleich zu 2017
 ```{r}
 
 btw_brief_urne_all %>% 
