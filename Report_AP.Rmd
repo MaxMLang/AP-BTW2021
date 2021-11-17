@@ -814,7 +814,7 @@ ggplot(aes(x=Var1, y=reorder(Var2,-value), fill=value)) +
 theme(axis.text.x=element_text(angle=90,hjust=1))
 ggsave("Kor_Matrix_FW_Struktur_Sliced.png", path = "Grafiken/", width = 7, height= 7)
 
-HW <- FW_Diff_Data %>%  s
+HW <- FW_Diff_Data %>%
   ggplot(aes(x= Unternehmen.HW, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
@@ -849,7 +849,7 @@ Boden.SieduVerk <- FW_Diff_Data %>%
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
-  ylab("")+
+  ylab("Anteil an Zweitstimmen für die Freien Wähler")+
   xlab("Bodenflächennutzung
        Siedlung und Verkehr in Prozent")+
   labs(colour= "Regierungsbeteiligung")
