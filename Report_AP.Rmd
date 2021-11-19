@@ -394,7 +394,7 @@ p1 <- FW_Diff_Data %>%
   scale_fill_continuous(name= "Anteil der Zweitstimmen in Prozent",low= "white", high= "orange", limit= c(0,15))+
   geom_sf(data = länder, color = "black", fill = NA)+
   ggtitle("Anteil der Zweitstimmen für die Freien Wähler (in %)")+
-  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung", caption = "NO")+
+  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung", caption = NULL)+
   theme_map()
 
 ggsave("FW_ZweitPerc_Map.png", path = "Grafiken/", width = 7, height= 7)
@@ -506,10 +506,13 @@ SozPfli.ÖffPrivDienstl <- FW_Diff_Data %>%
        Öffentliche und private Dienstleister in Prozent")+
   labs(colour= "Regierungsbeteiligung")
 
-p1 <- ggarrange(HW, MittSA,SozPfli.LandW, common.legend = TRUE, legend = "right", nrow= 1)
+LT_pos <- ggarrange(HW, MittSA,SozPfli.LandW, common.legend = TRUE, legend = "top", nrow= 1)
 ggsave("LT_FW_ZweitPerc_Scatter_PosKor.png", path = "Grafiken/", width = 15, height= 7)
 
-p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl, nrow = 1,common.legend = TRUE, legend = "right")
+
+
+
+LT_neg <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl, nrow = 1,common.legend = TRUE, legend = "top")
 
 ggsave("LT_FW_ZweitPerc_Scatter_NegKor.png", path = "Grafiken/", width = 15, height= 7)
 ```
