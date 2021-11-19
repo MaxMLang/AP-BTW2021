@@ -56,15 +56,6 @@ btw_kerg_trimmed_bundeslaender <- btw_kerg_trimmed_bundeslaender %>%
          Union.Zweit.End = CDU.Zweit.End + CSU.Zweit.End,
          Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc)
 
-btw_trimmed_data[is.na(btw_trimmed_data)] <- 0
-btw_trimmed_data <- btw_trimmed_data %>%
-  mutate(Union.Erst.Vor = CDU.Erst.Vor + CSU.Erst.Vor,
-         Union.Erst.End = CDU.Erst.End + CSU.Erst.End,
-         Union.Erst.End.Perc = CDU.Erst.End.Perc + CSU.Erst.End.Perc,
-         Union.Zweit.Vor = CDU.Zweit.Vor + CSU.Zweit.Vor,
-         Union.Zweit.End = CDU.Zweit.End + CSU.Zweit.End,
-         Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc)
-
 # Partei Farben
 partei_colors <- c("black", "red", "blue", "yellow", "purple", "green", "darkgrey")
 
@@ -405,39 +396,34 @@ ggsave("Ergebnis_UND_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
 # Mattia
 ```{r}
-btw_trimmed_data %>%
-  ggplot()+
-  geom_boxplot(aes(x = "UNION 1", y = Union.Erst.End.Perc), fill = "black", 
-               color = "darkgrey", outlier.color = "black", size = 1.02)+
-  geom_boxplot(aes(x = "SPD 1", y = SPD.Erst.End.Perc), fill = "red")+
-  geom_boxplot(aes(x = "AFD 1", y = AFD.Erst.End.Perc), fill = "blue", outlier.color = "#666666")+
-  geom_boxplot(aes(x = "GRÜNE 1", y = GRÜNE.Erst.End.Perc),fill = "green")+
-  geom_boxplot(aes(x = "FDP 1", y = FDP.Erst.End.Perc), fill = "yellow")+
-  
-  geom_boxplot(aes(x = "UNION 2", y = Union.Zweit.End.Perc), fill = "black", 
-               color = "darkgrey", outlier.color = "black")+
-  geom_boxplot(aes(x = "SPD 2", y = SPD.Zweit.End.Perc), fill = "red")+
-  geom_boxplot(aes(x = "AFD 2", y = AFD.Zweit.End.Perc), fill = "blue")+
-  geom_boxplot(aes(x = "GRÜNE 2", y = GRÜNE.Zweit.End.Perc),fill = "green")+
-  geom_boxplot(aes(x = "FDP 2", y = FDP.Zweit.End.Perc), fill = "yellow")+
-  #geom_boxplot(aes(x = "Zweitstimmen", y = GRÜNE.Zweit.End.Perc))+
-  labs(x = NULL, y = "Stimmenanteil in %", title = "Erst- und Zweitstimmen der Wahlkreise pro Partei")+
-  theme_light()+
- scale_x_discrete(limits = c("UNION 1", "UNION 2", "SPD 1", "SPD 2", "GRÜNE 1", "GRÜNE 2", "FDP 1", "FDP 2", "AFD 1", "AFD 2"))
 
-ggsave("MM_Erst_Zweit_große_Parteien.png", path = "Grafiken", width = 9, height = 7)
 ```
 
 # Max
+# Dateneinführung
+* Daten des Bundeswahlleiters
+* 299 Wahlkreise als statistische Einheiten
+* Zwei Datensätze: tabelarischen und flachen Aufbau
+* Strukturdatensatz
+* Strukturdaten für Wahlkreise enthalten Angaben über Gebiet und Bevölkerung, Flächennutzung, Unternehmensregister, Schulabgängerinnen und -abgänger beruflicher und allgemeinbildender Schulen, Kindertagesbetreuung, volkswirtschaftliche Gesamtrechnungen der Länder, sozialversicherungspflichtige Beschäftigte, Empfängerinnen und Empfängern von Leistungen nach SGB II und Arbeitslosenquoten.
+* Strukturdaten stammen überwiegend aus der „Regionaldatenbank Deutschland“, einer Gemeinschaftsveröffentlichung der Statistischen Ämter des Bundes und der Länder.
 
+* Besonderheiten
+* Bei den Stadt*Bundesländern liegen die Daten häufig nur für das gesamte Bundesland vor und nicht auf Wahlkreisebene
+* Kurze Erkärung des Wahlsystems:
+* Jede wählende Person hat eine Erst- und eine Zweitstimme
+* Die Erststimme wird für einen Direktkandidaten im jeweiligen Wahlkreis abgegeben, nur der/die Kandidat/Kandidatin mit meisten Stimmen kommt in den Bundestag
+* Zweitstimmen werden für eine Partei abgegeben, diese wählt dann anhand einer Landesliste die Abgeordneten aus
+
+* Verwendung zusätzlicher Daten für Erstellung von Karten
+
+# Grafiken für den Vortrag
 # SPD und Union (Gewinn Verluste) --> Vor: Soziodemografisch Union SPD
-## Boxplot DiffProzentPkt
-- Union keine Gewinne!
-- SPD so gut wie keine Verluste 
 ```{r}
 spd_zweit <- btw_kerg2_wk %>% 
   filter(Gruppenname == "SPD") %>% 
-  filter(Stimme == 2) 
+  filter(Stimme == 2) %>% 
+  arrange(Wahlkreis.Nr)
 
 spd_erst <- btw_kerg2_wk %>% 
   filter(Gruppenname == "SPD") %>% 
@@ -447,7 +433,8 @@ cor(spd_erst$DiffProzentPkt, spd_zweit$DiffProzentPkt)
 
 union_zweit <- btw_kerg2_wk %>% 
   filter(Gruppenname %in% c("CDU", "CSU")) %>% 
-  filter(Stimme == 2)
+  filter(Stimme == 2) %>% 
+  arrange(Wahlkreis.Nr)
 
 union_erst <- btw_kerg2_wk %>% 
   filter(Gruppenname %in% c("CDU", "CSU")) %>% 
@@ -458,51 +445,39 @@ cor(union_erst$DiffProzentPkt, union_zweit$DiffProzentPkt)
 SPD_CDU_CSU_Diff <- rbind(union_zweit, spd_zweit) %>% 
   select(Gruppenname, DiffProzentPkt)
 
-SPD_CDU_CSU_Diff%>% 
-  ggplot(aes(x= Gruppenname, y= DiffProzentPkt))+
-  geom_boxplot()
-
-
 SPD_CDU_CSU_Diff[["Gruppenname"]][which(SPD_CDU_CSU_Diff[["Gruppenname"]]%in% c("CDU","CSU"))] <- "Union"
 
-SPD_CDU_CSU_Diff %>% 
-  ggplot(aes(x= Gruppenname, y= DiffProzentPkt))+
-  geom_boxplot()+
-  geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
-  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Zweitstimmen von SPD und Union (bzgl. der Bundestagswahl 2017")+
-  xlab("Partei")+
-  ylab("Differenz Prozentpunkte (Zweitstimmen)")
 ```
 
-## SPD Gewinn/Verlust Map und Union Verlust Map
+# Scatterplot Union-SPD Verlust
+* Union hat keine Gewinne bei den Zweitstimmen erzielen können
+* SPD konnte bis auf 3 Wahlkreise überall Zuwächse (Zweitstimmen) verzeichnen
+* Wahlkreise in denen die Union starke Verluste hatte, hatte die SPD starke Zuwächse
+
+* Stärksten Zuwächse bei SPD in:
+* Mecklenburgische Seenplatte II – Landkreis Rostock III
+* Ludwigslust-Parchim II – Nordwestmecklenburg II – Landkreis Rostock I
+
+* Verluste der SPD:
+* Aachen I und Aachen II + Düren
+
+* Union geringste Verluste:
+* Nürnberg-Süd, Aachen II, Gelsenkirchen
 
 ```{r}
+data.frame(list(union_diff= union_zweit$DiffProzentPkt,
+                spd_diff= spd_zweit$DiffProzentPkt,
+                Wahlkreis.Nr= union_zweit$Wahlkreis.Nr)) %>% 
+  ggplot(aes(x= union_diff, y= spd_diff))+
+  geom_point(alpha= 0.7)+
+  scale_x_continuous(limits = c(-20, 5))+
+  geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
+  geom_vline(xintercept = 0, linetype= "dashed", colour= "black")+
+  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Zweitstimmen von SPD und Union (bzgl. der Bundestagswahl 2017")+
+  xlab("Union Differenz der Prozenpunkte (Zweitstimmen)")+
+  ylab("SPD Differenz der Prozentpunkte (Zweitstimmen)")
 
-spd_GV <- btw_trimmed_geo_data %>% 
-  ggplot()+
-  geom_sf(aes(geometry= geometry, fill= spd_zweit[["DiffProzentPkt"]]),
-          color= "darkgrey")+
-  geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_distiller(name= "Differenz der Prozentpunkte",palette= "RdBu", type = "div", limit= c(-20,20))+
-  ggtitle("Gewinne / Verluste an Prozentpunkten von Zweitstimmen der SPD")+
-  xlab("")+
-  ylab("")+
-  theme_map()
-
-ggsave("SPD_Zweit_GV_Map.png", path="Grafiken/", width = 7, height= 7)
-
-union_GV <- btw_trimmed_geo_data %>% 
-  ggplot()+
-  geom_sf(aes(geometry= geometry, fill= union_zweit$DiffProzentPkt),
-          color= "darkgrey")+
-  geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_distiller(name= "Differenz der Prozentpunkte",palette= "RdBu", type = "div", limit= c(-20,20))+
-  ggtitle("Gewinne / Verluste an Prozentpunkten von Zweitstimmen der Union")+
-  xlab("")+
-  ylab("")+
-  theme_map()
-
-ggsave("Union_Zweit_GV_Map.png", path="Grafiken/", width = 7, height= 7)
+ggsave("Zweit_Union_SPD_Diff_Scatter.png", path="Grafiken/", width = 7, height= 7)
 ```
 
 ### In welche Wahlkreisen hatte die SPD die stärksten Zuwächse?
