@@ -2,8 +2,8 @@ library(tidyverse)
 library(openxlsx)
 
 btw_kerg <- read.csv("Raw Data/btw21_kerg.csv", 
-                      skip = 2,
-                      sep= ";", 
+                     skip = 2,
+                     sep= ";", 
                      encoding = "UTF-8")
 btw_struktur <- read.csv("Raw Data/btw21_strukturdaten.csv",
                          skip= 8,
@@ -40,10 +40,10 @@ parteinamen <- names(btw_kerg)[seq(from= 4, to= length(names(btw_kerg)), by= 4)]
 
 colnames_cleaned <- vector()
 for (i in seq_along(parteinamen)){
- colnames_cleaned <- c(colnames_cleaned,paste(parteinamen[i],".Erst.End", sep = ""),
-                              paste(parteinamen[i],".Erst.Vor", sep = ""),
-                              paste(parteinamen[i], ".Zweit.End", sep = ""),
-                              paste(parteinamen[i], ".Zweit.Vor", sep = ""))
+  colnames_cleaned <- c(colnames_cleaned,paste(parteinamen[i],".Erst.End", sep = ""),
+                        paste(parteinamen[i],".Erst.Vor", sep = ""),
+                        paste(parteinamen[i], ".Zweit.End", sep = ""),
+                        paste(parteinamen[i], ".Zweit.Vor", sep = ""))
 }
 colnames(btw_kerg)[4:211] <- colnames_cleaned
 
@@ -155,7 +155,7 @@ btw_kerg_trimmed_wk <- btw_kerg_trimmed%>%
   filter(!(Gebiet %in% "Bundesgebiet"))
 
 
-  
+
 # Bundesländer
 btw_kerg_bundeslaender <- btw_kerg %>% 
   filter(Bundesland.Nr == 99)
@@ -186,7 +186,7 @@ btw_struktur[["Fläche.am.31.12.2019..km.."]] <- gsub("\\.","",btw_struktur[["Fl
 btw_struktur[["Fläche.am.31.12.2019..km.."]] <- gsub("\\,",".",btw_struktur[["Fläche.am.31.12.2019..km²."]])
 btw_struktur[,c(2,4:ncol(btw_struktur))] <- lapply(btw_struktur[c(2,4:ncol(btw_struktur))], as.numeric)
 
- 
+
 clean_colnames_btw_struktur <- c("Land",
                                  "Wahlkreis.Nr",
                                  "Wahlkreis.Name",
@@ -238,7 +238,7 @@ clean_colnames_btw_struktur <- c("Land",
                                  "ArbeitslosQ.W",
                                  "ArbeitslosQ.f15t24",
                                  "ArbeitslosQ.f55t64"
-                                 )
+)
 
 
 colnames(btw_struktur) <- clean_colnames_btw_struktur
@@ -260,7 +260,7 @@ btw_struk_laender[["Bundesland.Nr."]] <- 1:16
 # Bundesebene
 btw_struk_bund <- btw_struktur %>%
   filter(Wahlkreis.Nr>950)
-  
+
 btw_struk_bund$Wahlkreis.Nr <- NULL
 btw_struk_bund$Wahlkreis.Name <- NULL
 
