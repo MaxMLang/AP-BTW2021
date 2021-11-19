@@ -144,16 +144,16 @@ ggsave("Boxplot_SPD_Union_Schulab.mitAllgHS.png", path = "Grafiken/")
 ```{r}
 # Verfügbares Einkommen CDU
 
-a <- btw_trimmed_data %>%
+btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
-  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
-         is.Muenchen = ) %>%
+  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc) %>%
   ggplot(aes(x = Vfg.Einkommen, y = UNION)) +
   geom_jitter(colour = "blue") +
   labs(title = "Verfügbares Einkommen") +
   xlab("Verfügbares Einkommen der privaten Haushalte 2018 \n(EUR je EW)") +
   ylab("Zweitstimmen Union (%)")
 
+ggsave("Scatterplots_Vermögen_Union.png", path = "Grafiken/")
 
 b <- select(filter(btw_trimmed_data, Vfg.Einkommen>30000), Gebiet, Vfg.Einkommen, CDU.Zweit.End.Perc, CSU.Zweit.End.Perc)
 
@@ -191,10 +191,11 @@ is_Osten_data <- btw_trimmed_data %>%
          FDP = FDP.Zweit.End.Perc,
          AFD = AFD.Zweit.End.Perc,
          LINKE = LINKE.Zweit.End.Perc,
+         f18t34.Perctange = f18t24.Perctange + f25t34.Perctange,
          is.Osten = case_when(Bundesland.Nr %in% c(10:16) ~ "östliche Bundesländer",
                               Bundesland.Nr %in% c(1:9) ~ "westliche Bundesländer")) %>%
   select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
-           Vfg.Einkommen, is.Osten)) %>%
+           Vfg.Einkommen, f18t34.Perctange, is.Osten)) %>%
   pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") 
 
 ggplot(is_Osten_data, aes(x = Vfg.Einkommen, y = Percentage, col = Age)) +
@@ -209,6 +210,55 @@ ggplot(is_Osten_data, aes(x = Vfg.Einkommen, y = Percentage, col = Age)) +
 
 ggsave("Scatterplots_Vermögen_Osten.png", path = "Grafiken/")
 
+
+# Junge Wählerschaft Grüne
+
+a <- btw_trimmed_data %>%
+  mutate(f18t34.Perctange = f18t24.Perctange + f25t34.Perctange) %>%
+  ggplot(aes(x = f18t34.Perctange, y = GRÜNE.Zweit.End.Perc)) +
+  geom_jitter(colour = "green") +
+  labs(title = "Alter von 18 bis 34") +
+  xlab("Alter von 18 bis 34 (%) (Stand 31.12.2019)") +
+  ylab("Zweitstimmen (%)")
+
+# Junge Wählerschaft
+
+btw_trimmed_data %>%
+  replace(is.na(.), 0) %>%
+  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+         SPD = SPD.Zweit.End.Perc,
+         GRÜNE = GRÜNE.Zweit.End.Perc,
+         FDP = FDP.Zweit.End.Perc,
+         AFD = AFD.Zweit.End.Perc,
+         LINKE = LINKE.Zweit.End.Perc,
+         f18t34.Perctange = f18t24.Perctange + f25t34.Perctange) %>%
+  select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
+           f18t34.Perctange)) %>%
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") %>%
+  ggplot(aes(x = f18t34.Perctange, y = Percentage, col = Age)) +
+  geom_jitter(size = 1) +
+  facet_wrap("Age") +
+  scale_color_manual(values = c("blue", "yellow", "green", "purple", "red", "black")) +
+  theme(legend.position = "none") +
+  labs(title = "Alter von 18 bis 34") +
+  xlab("Alter von 18 bis 34 (%) (Stand 31.12.2019)") +
+  ylab("Zweitstimmen (%)")
+
+ggsave("Scatterplots_Alter_f18t34.png", path = "Grafiken/")
+
+# Junge Wählerschaft Osten
+
+ggplot(is_Osten_data, aes(x = f18t34.Perctange, y = Percentage, col = Age)) +
+  geom_jitter(size = 1, color = "grey") +
+  facet_wrap("Age") +
+  geom_jitter(data = filter(is_Osten_data, is.Osten == "östliche Bundesländer"), aes(x = f18t34.Perctange, y = Percentage, col = Age), size = 1) +
+  scale_color_manual(values = c("blue", "yellow", "green", "purple", "red", "black")) +
+  theme(legend.position = "none") +
+  labs(title = "Alter von 18 bis 34", subtitle = "Östliche Bundesländer (farbig)") +
+  xlab("Alter von 18 bis 34 (%) (Stand 31.12.2019)") +
+  ylab("Zweitstimmen (%)")
+
+ggsave("Scatterplots_Alter_f18t34_Osten.png", path = "Grafiken/")
 
 # Bevölkerung Ausländer
 
@@ -233,33 +283,6 @@ btw_trimmed_data %>%
   ylab("Bevölkerung Ausländer in 1000 (Stand 31.12.2019)")
 
 ggsave("Scatterplots_Ausländer.png", path = "Grafiken/")
-
-# Junge Wählerschaft
-
-btw_trimmed_data %>%
-  replace(is.na(.), 0) %>%
-  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
-         SPD = SPD.Zweit.End.Perc,
-         GRÜNE = GRÜNE.Zweit.End.Perc,
-         FDP = FDP.Zweit.End.Perc,
-         AFD = AFD.Zweit.End.Perc,
-         LINKE = LINKE.Zweit.End.Perc,
-         f18t34.Perctange = f18t24.Perctange + f25t34.Perctange) %>%
-  select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
-           f18t34.Perctange)) %>%
-  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") %>%
-  ggplot(aes(x = Percentage, y = f18t34.Perctange, col = Age)) +
-  geom_jitter() +
-  facet_wrap("Age") +
-  scale_color_manual(values = c("blue", "yellow", "green", "purple", "red", "black")) +
-  theme(legend.position = "none") +
-  labs(title = "Alter von 18 bis 34") +
-  xlab("Zweitstimmen (%)") +
-  ylab("Alter von 18 bis 34 (%) (Stand 31.12.2019)")
-
-ggsave("Scatterplots_Alter_f18t34.png", path = "Grafiken/")
-
-# Junge Wählerschaft Osten
 
 
 # Ü 34 Wählerschaft
