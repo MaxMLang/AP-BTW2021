@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 #library(Rcpp)
 library(sf)
-
+library(ggpubr)
 ```
 
 
@@ -213,19 +213,17 @@ ggsave("MM_Erst_Zweit_LINKE_Osten.png", path = "Grafiken", width = 9, height = 7
 ```{r}
 btw_trimmed_data %>%
   ggplot()+
-  geom_boxplot(aes(x = "UNION 1", y = Union.Erst.End.Perc), fill = "#333300", 
-               color = "#CCCCCC", outlier.color = "black", size = 1.02)+
-  geom_boxplot(aes(x = "SPD 1", y = SPD.Erst.End.Perc), fill = "#FF6666")+
-  geom_boxplot(aes(x = "AFD 1", y = AFD.Erst.End.Perc), fill = "#66CCFF", outlier.color = "#666666")+
-  geom_boxplot(aes(x = "GRÜNE 1", y = GRÜNE.Erst.End.Perc),fill = "#99FF66")+
-  geom_boxplot(aes(x = "FDP 1", y = FDP.Erst.End.Perc), fill = "#FFFF66")+
+  geom_boxplot(aes(x = "UNION 1", y = Union.Erst.End.Perc), fill = "black", color = "darkgrey", outlier.color = "black")+
+  geom_boxplot(aes(x = "SPD 1", y = SPD.Erst.End.Perc), fill = "red")+
+  geom_boxplot(aes(x = "AFD 1", y = AFD.Erst.End.Perc), fill = "blue")+
+  geom_boxplot(aes(x = "GRÜNE 1", y = GRÜNE.Erst.End.Perc),fill = "green")+
+  geom_boxplot(aes(x = "FDP 1", y = FDP.Erst.End.Perc), fill = "yellow")+
   
-  geom_boxplot(aes(x = "UNION 2", y = Union.Zweit.End.Perc), fill = "black", 
-               color = "darkgrey", outlier.color = "black")+
+  geom_boxplot(aes(x = "UNION 2", y = Union.Zweit.End.Perc), fill = "black", color = "darkgrey", outlier.color = "black")+
   geom_boxplot(aes(x = "SPD 2", y = SPD.Zweit.End.Perc), fill = "red")+
-  geom_boxplot(aes(x = "AFD 2", y = AFD.Zweit.End.Perc), fill = "#0099CC")+
-  geom_boxplot(aes(x = "GRÜNE 2", y = GRÜNE.Zweit.End.Perc),fill = "#66FF00")+
-  geom_boxplot(aes(x = "FDP 2", y = FDP.Zweit.End.Perc), fill = "#FFFF00")+
+  geom_boxplot(aes(x = "AFD 2", y = AFD.Zweit.End.Perc), fill = "blue")+
+  geom_boxplot(aes(x = "GRÜNE 2", y = GRÜNE.Zweit.End.Perc),fill = "green")+
+  geom_boxplot(aes(x = "FDP 2", y = FDP.Zweit.End.Perc), fill = "yellow")+
   #geom_boxplot(aes(x = "Zweitstimmen", y = GRÜNE.Zweit.End.Perc))+
   labs(x = NULL, y = "Stimmenanteil in %", title = "Erst- und Zweitstimmen der Wahlkreise pro Partei")+
   theme_light()+
@@ -233,13 +231,131 @@ btw_trimmed_data %>%
 
 #Verbessern:
 #Whiskers Union Farbe
-#Reihenfolge der Parteien
 #bessere Unterscheidung Erst/Zweitstimme
 
 
 
 ggsave("MM_Erst_Zweit_große_Parteien.png", path = "Grafiken", width = 9, height = 7)
 ```
+
+#Boxplot Erst- und Zweitstimmen Parteien einzeln grau
+
+```{r}
+ez_union <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = Union.Erst.End.Perc), fill = "#CCCCCC")+
+  geom_boxplot(aes(x = "Zweitstimme", y = Union.Zweit.End.Perc), fill = "#666666")+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "UNION")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+
+  theme_light()
+
+ez_spd <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = SPD.Erst.End.Perc), fill = "#CCCCCC")+
+  geom_boxplot(aes(x = "Zweitstimme", y = SPD.Zweit.End.Perc), fill = "#666666")+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "SPD")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ez_afd <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = AFD.Erst.End.Perc), fill = "#CCCCCC")+
+  geom_boxplot(aes(x = "Zweitstimme", y = AFD.Zweit.End.Perc), fill = "#666666")+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "AFD")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ez_gruene <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = GRÜNE.Erst.End.Perc), fill = "#CCCCCC")+
+  geom_boxplot(aes(x = "Zweitstimme", y = GRÜNE.Zweit.End.Perc), fill = "#666666")+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "Grüne")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ez_fdp <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = FDP.Erst.End.Perc), fill = "#CCCCCC")+
+  geom_boxplot(aes(x = "Zweitstimme", y = FDP.Zweit.End.Perc), fill = "#666666")+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "FDP")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ez_linke <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = LINKE.Erst.End.Perc), fill = "#CCCCCC")+
+  geom_boxplot(aes(x = "Zweitstimme", y = LINKE.Zweit.End.Perc), fill = "#666666")+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "LINKE")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ggarrange(ez_union, ez_spd, ez_gruene, ez_fdp, ez_afd, ez_linke)
+
+ggsave("MM_Erst_Zweit_sep_Parteien_grau.png", path = "Grafiken", width = 9, height = 7)
+```
+
+#Boxplot Erst- und Zweitstimmen Parteien einzeln in Parteifarben
+
+```{r}
+ezf_union <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = Union.Erst.End.Perc), fill = "black", outlier.size = 0.9, color = "darkgrey")+
+  geom_boxplot(aes(x = "Zweitstimme", y = Union.Zweit.End.Perc), fill = "black", outlier.size = 0.9, color = "darkgrey")+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "UNION")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+
+  theme_light()
+
+ezf_spd <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = SPD.Erst.End.Perc), fill = "red", outlier.size = 0.9)+
+  geom_boxplot(aes(x = "Zweitstimme", y = SPD.Zweit.End.Perc), fill = "red", outlier.size = 0.9)+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "SPD")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ezf_afd <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = AFD.Erst.End.Perc), fill = "blue", outlier.size = 0.85)+
+  geom_boxplot(aes(x = "Zweitstimme", y = AFD.Zweit.End.Perc), fill = "blue", outlier.size = 0.85)+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "AFD")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ezf_gruene <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = GRÜNE.Erst.End.Perc), fill = "green", outlier.size = 0.9)+
+  geom_boxplot(aes(x = "Zweitstimme", y = GRÜNE.Zweit.End.Perc), fill = "green", outlier.size = 0.9)+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "Grüne")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ezf_fdp <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = FDP.Erst.End.Perc), fill = "yellow", outlier.size = 0.9)+
+  geom_boxplot(aes(x = "Zweitstimme", y = FDP.Zweit.End.Perc), fill = "yellow", outlier.size = 0.9)+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "FDP")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ezf_linke <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "Erststimme", y = LINKE.Erst.End.Perc), fill = "purple", outlier.size = 0.8)+
+  geom_boxplot(aes(x = "Zweitstimme", y = LINKE.Zweit.End.Perc), fill = "purple", outlier.size = 0.8)+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "LINKE")+
+  scale_y_continuous(limits = c(0, 0.55), breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5))+
+  theme_light()
+
+ggarrange(ezf_union, ezf_spd, ezf_gruene, ezf_fdp, ezf_afd, ezf_linke)
+
+ggsave("MM_Erst_Zweit_sep_Parteien_bunt.png", path = "Grafiken", width = 9, height = 7)
+```
+
+
+
+
+
 
 
 #Boxplot Erst- und Zweitstimmen alle Parteien separiert
@@ -294,8 +410,28 @@ btw_trimmed_data %>%
 
 
 
-#nicht anschauen
+#saving
 ```{r}
+btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "UNION 1", y = Union.Erst.End.Perc), fill = "black", 
+               color = "darkgrey", outlier.color = "black", size = 1.02)+
+  geom_boxplot(aes(x = "SPD 1", y = SPD.Erst.End.Perc), fill = "red")+
+  geom_boxplot(aes(x = "AFD 1", y = AFD.Erst.End.Perc), fill = "blue", outlier.color = "#666666")+
+  geom_boxplot(aes(x = "GRÜNE 1", y = GRÜNE.Erst.End.Perc),fill = "green")+
+  geom_boxplot(aes(x = "FDP 1", y = FDP.Erst.End.Perc), fill = "yellow")+
+  
+  geom_boxplot(aes(x = "UNION 2", y = Union.Zweit.End.Perc), fill = "black", 
+               color = "darkgrey", outlier.color = "black")+
+  geom_boxplot(aes(x = "SPD 2", y = SPD.Zweit.End.Perc), fill = "red")+
+  geom_boxplot(aes(x = "AFD 2", y = AFD.Zweit.End.Perc), fill = "blue")+
+  geom_boxplot(aes(x = "GRÜNE 2", y = GRÜNE.Zweit.End.Perc),fill = "green")+
+  geom_boxplot(aes(x = "FDP 2", y = FDP.Zweit.End.Perc), fill = "yellow")+
+  #geom_boxplot(aes(x = "Zweitstimmen", y = GRÜNE.Zweit.End.Perc))+
+  labs(x = NULL, y = "Stimmenanteil in %", title = "Erst- und Zweitstimmen der Wahlkreise pro Partei")+
+  theme_light()+
+ scale_x_discrete(limits = c("UNION 1", "UNION 2", "SPD 1", "SPD 2", "GRÜNE 1", "GRÜNE 2", "FDP 1", "FDP 2", "AFD 1", "AFD 2"))
 
+ggsave("MM_Erst_Zweit_große_Parteien.png", path = "Grafiken", width = 9, height = 7)
 ```
 
