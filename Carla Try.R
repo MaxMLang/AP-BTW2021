@@ -1,7 +1,29 @@
 library(tidyverse)
 library('patchwork')
 
+x <- btw_trimmed_data %>%
+  replace(is.na(.), 0) %>%
+  mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+         SPD = SPD.Zweit.End.Perc,
+         GRÜNE = GRÜNE.Zweit.End.Perc,
+         FDP = FDP.Zweit.End.Perc,
+         AFD = AFD.Zweit.End.Perc,
+         LINKE = LINKE.Zweit.End.Perc,
+         is.Osten = case_when(Bundesland.Nr %in% c(10:16) ~ "östliche Bundesländer",
+                              Bundesland.Nr %in% c(1:9) ~ "westliche Bundesländer")) %>%
+  select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
+           Vfg.Einkommen, is.Osten)) %>%
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") 
 
+y <-  ggplot(x, aes(x = Vfg.Einkommen, y = Percentage, col = Age)) +
+  geom_jitter(size = 1, color = "grey") +
+  facet_wrap("Age") +
+  geom_jitter(data = filter(x, is.Osten == "östliche Bundesländer"), aes(x = Vfg.Einkommen, y = Percentage, col = Age), size = 1) +
+  scale_color_manual(values = c("blue", "yellow", "green", "purple", "red", "black")) +
+  theme(legend.position = "none") +
+  labs(title = "Verfügbares Einkommen") +
+  xlab("Verfügbares Einkommen der privaten Haushalte 2018 \n(EUR je EW)") +
+  ylab("Zweitstimmen (%)")
 
 
 ## Korrelation Parteien untereinander?
