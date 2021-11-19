@@ -16,6 +16,7 @@ library(reshape2)
 library(RColorBrewer)
 library(viridis)
 library(ggpubr)
+library(colorspace)
 
 #loading cleaned data sets
 btw_data <- readRDS("btw_data.RDS")
@@ -399,15 +400,30 @@ ggsave("Ergebnis_UND_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 ```
 
 # Max
+# Dateneinführung
+* Daten des Bundeswahlleiters
+* 299 Wahlkreise als statistische Einheiten
+* Zwei Datensätze: tabelarischen und flachen Aufbau
+* Strukturdatensatz
+* Strukturdaten für Wahlkreise enthalten Angaben über Gebiet und Bevölkerung, Flächennutzung, Unternehmensregister, Schulabgängerinnen und -abgänger beruflicher und allgemeinbildender Schulen, Kindertagesbetreuung, volkswirtschaftliche Gesamtrechnungen der Länder, sozialversicherungspflichtige Beschäftigte, Empfängerinnen und Empfängern von Leistungen nach SGB II und Arbeitslosenquoten.
+* Strukturdaten stammen überwiegend aus der „Regionaldatenbank Deutschland“, einer Gemeinschaftsveröffentlichung der Statistischen Ämter des Bundes und der Länder.
 
+* Besonderheiten
+* Bei den Stadt*Bundesländern liegen die Daten häufig nur für das gesamte Bundesland vor und nicht auf Wahlkreisebene
+* Kurze Erkärung des Wahlsystems:
+* Jede wählende Person hat eine Erst- und eine Zweitstimme
+* Die Erststimme wird für einen Direktkandidaten im jeweiligen Wahlkreis abgegeben, nur der/die Kandidat/Kandidatin mit meisten Stimmen kommt in den Bundestag
+* Zweitstimmen werden für eine Partei abgegeben, diese wählt dann anhand einer Landesliste die Abgeordneten aus
+
+* Verwendung zusätzlicher Daten für Erstellung von Karten
+
+# Grafiken für den Vortrag
 # SPD und Union (Gewinn Verluste) --> Vor: Soziodemografisch Union SPD
-## Boxplot DiffProzentPkt
-- Union keine Gewinne!
-- SPD so gut wie keine Verluste 
 ```{r}
 spd_zweit <- btw_kerg2_wk %>% 
   filter(Gruppenname == "SPD") %>% 
-  filter(Stimme == 2) 
+  filter(Stimme == 2) %>% 
+  arrange(Wahlkreis.Nr)
 
 spd_erst <- btw_kerg2_wk %>% 
   filter(Gruppenname == "SPD") %>% 
@@ -417,7 +433,8 @@ cor(spd_erst$DiffProzentPkt, spd_zweit$DiffProzentPkt)
 
 union_zweit <- btw_kerg2_wk %>% 
   filter(Gruppenname %in% c("CDU", "CSU")) %>% 
-  filter(Stimme == 2)
+  filter(Stimme == 2) %>% 
+  arrange(Wahlkreis.Nr)
 
 union_erst <- btw_kerg2_wk %>% 
   filter(Gruppenname %in% c("CDU", "CSU")) %>% 
@@ -428,51 +445,39 @@ cor(union_erst$DiffProzentPkt, union_zweit$DiffProzentPkt)
 SPD_CDU_CSU_Diff <- rbind(union_zweit, spd_zweit) %>% 
   select(Gruppenname, DiffProzentPkt)
 
-SPD_CDU_CSU_Diff%>% 
-  ggplot(aes(x= Gruppenname, y= DiffProzentPkt))+
-  geom_boxplot()
-
-
 SPD_CDU_CSU_Diff[["Gruppenname"]][which(SPD_CDU_CSU_Diff[["Gruppenname"]]%in% c("CDU","CSU"))] <- "Union"
 
-SPD_CDU_CSU_Diff %>% 
-  ggplot(aes(x= Gruppenname, y= DiffProzentPkt))+
-  geom_boxplot()+
-  geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
-  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Zweitstimmen von SPD und Union (bzgl. der Bundestagswahl 2017")+
-  xlab("Partei")+
-  ylab("Differenz Prozentpunkte (Zweitstimmen)")
 ```
 
-## SPD Gewinn/Verlust Map und Union Verlust Map
+# Scatterplot Union-SPD Verlust
+* Union hat keine Gewinne bei den Zweitstimmen erzielen können
+* SPD konnte bis auf 3 Wahlkreise überall Zuwächse (Zweitstimmen) verzeichnen
+* Wahlkreise in denen die Union starke Verluste hatte, hatte die SPD starke Zuwächse
+
+* Stärksten Zuwächse bei SPD in:
+* Mecklenburgische Seenplatte II – Landkreis Rostock III
+* Ludwigslust-Parchim II – Nordwestmecklenburg II – Landkreis Rostock I
+
+* Verluste der SPD:
+* Aachen I und Aachen II + Düren
+
+* Union geringste Verluste:
+* Nürnberg-Süd, Aachen II, Gelsenkirchen
 
 ```{r}
+data.frame(list(union_diff= union_zweit$DiffProzentPkt,
+                spd_diff= spd_zweit$DiffProzentPkt,
+                Wahlkreis.Nr= union_zweit$Wahlkreis.Nr)) %>% 
+  ggplot(aes(x= union_diff, y= spd_diff))+
+  geom_point(alpha= 0.7)+
+  scale_x_continuous(limits = c(-20, 5))+
+  geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
+  geom_vline(xintercept = 0, linetype= "dashed", colour= "black")+
+  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Zweitstimmen von SPD und Union (bzgl. der Bundestagswahl 2017")+
+  xlab("Union Differenz der Prozenpunkte (Zweitstimmen)")+
+  ylab("SPD Differenz der Prozentpunkte (Zweitstimmen)")
 
-spd_GV <- btw_trimmed_geo_data %>% 
-  ggplot()+
-  geom_sf(aes(geometry= geometry, fill= spd_zweit[["DiffProzentPkt"]]),
-          color= "darkgrey")+
-  geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_distiller(name= "Differenz der Prozentpunkte",palette= "RdBu", type = "div", limit= c(-20,20))+
-  ggtitle("Gewinne / Verluste an Prozentpunkten von Zweitstimmen der SPD")+
-  xlab("")+
-  ylab("")+
-  theme_map()
-
-ggsave("SPD_Zweit_GV_Map.png", path="Grafiken/", width = 7, height= 7)
-
-union_GV <- btw_trimmed_geo_data %>% 
-  ggplot()+
-  geom_sf(aes(geometry= geometry, fill= union_zweit$DiffProzentPkt),
-          color= "darkgrey")+
-  geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_distiller(name= "Differenz der Prozentpunkte",palette= "RdBu", type = "div", limit= c(-20,20))+
-  ggtitle("Gewinne / Verluste an Prozentpunkten von Zweitstimmen der Union")+
-  xlab("")+
-  ylab("")+
-  theme_map()
-
-ggsave("Union_Zweit_GV_Map.png", path="Grafiken/", width = 7, height= 7)
+ggsave("Zweit_Union_SPD_Diff_Scatter.png", path="Grafiken/", width = 7, height= 7)
 ```
 
 ### In welche Wahlkreisen hatte die SPD die stärksten Zuwächse?
@@ -486,8 +491,8 @@ spd_zweit %>%
 ### Welche Wahlkreise hatte die SPD einen Stimmverlust?
 ```{r}
 spd_zweit %>% 
-  slice(which(DiffProzentPkt<0)) %>% 
-  select(Gebietsname)
+  slice(which(DiffProzentPkt<0))  %>% 
+  select(Gebietsname, DiffProzentPkt)
 ```
 
 
@@ -514,6 +519,52 @@ union_zweit %>%
   slice(1:5) %>% 
   select(Gebietsname, DiffProzentPkt)
 ```
+### Bei den Erststimmen ?
+```{r}
+union_erst %>% 
+  arrange(desc(DiffProzentPkt)) %>% 
+  slice(1:5) %>% 
+  select(Gebietsname, DiffProzentPkt)
+```
+
+
+
+## SPD Gewinn/Verlust Map und Union Verlust Map
+* SPD v.a. Zuwächse in den neuen Bundesländern
+* Union flächendeckende Verluste
+
+```{r}
+
+spd_GV <- btw_trimmed_geo_data %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= spd_zweit[["DiffProzentPkt"]]),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_continuous_diverging(name= "Differenz der Prozentpunkte",palette= "Blue-Yellow 2", limit= c(-20,20))+
+  ggtitle("Gewinne / Verluste an Prozentpunkten von Zweitstimmen")+
+  labs(subtitle = "SPD")+
+  xlab("")+
+  ylab("")+
+  theme_map()
+
+union_GV <- btw_trimmed_geo_data %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= union_zweit$DiffProzentPkt),
+          color= "darkgrey")+
+  geom_sf(data = länder, color = "black", fill = NA)+
+  scale_fill_continuous_diverging(name= "Differenz der Prozentpunkte",palette= "Blue-Yellow 2", limit= c(-20,20))+
+  labs(subtitle = "Union")+
+  ggtitle("")+
+  xlab("")+
+  ylab("")+
+  theme_map()
+
+p1 <- ggarrange(spd_GV, union_GV,
+common.legend = TRUE, legend = "right", nrow= 1)
+
+ggsave("SPD_Union_Zweit_GV_Map.png", path="Grafiken/", width = 14, height= 10)
+```
+
 
 # Briefwahl in Bayern 
 ## Data Preparation
@@ -540,20 +591,17 @@ total_brief_urne_21_17_df <- data.frame(list(Jahr= as.factor(c("2017", "2017", "
 
 total_brief_urne_21_17_df <-  total_brief_urne_21_17_df %>%
   add_column(Gesamt.Anzahl = c(rep(total_brief_urne_21_17[2],2), rep(total_brief_urne_21_17[1],2)))
-```
 
-
-## 2021 Barplot Absolut nach Art
-```{r}
 total_brief_urne <- btw_by_brief_urne_wk21 %>% 
   mutate(Urnenwaehler= B - B1Briefwähler) %>% 
   select(B, Urnenwaehler, B1Briefwähler) %>% 
   colSums()
 names(total_brief_urne) <- c("Gesamt.Waehler", "Urnenwaehler", "Briefwaehler")
+```
 
 
-
-
+## 2021 Barplot Absolut nach Art
+```{r}
 data.frame(list(Art= c("Urne", "Brief"), Anzahl= c(total_brief_urne[2], total_brief_urne[3]))) %>% 
   ggplot(aes(x= Art, y= Anzahl)) +
   geom_bar(stat= "identity") + 
@@ -566,7 +614,7 @@ ggsave("Brief_Urne_Anzahl_BY_21.png", path="Grafiken/", width = 7, height= 7)
 
 ```
 
-## Anzahl Barplot (Facet nach Jahr) und Stacked scale Barplot 2017 zum Vergleich der Anteile
+## Stacked scaled Barplot 2017 zum Vergleich der Anteile
 ```{r}
 total_brief_urne_21_17_df %>% 
   mutate((Perc= Anzahl/Gesamt.Anzahl)) %>% 
@@ -578,32 +626,6 @@ total_brief_urne_21_17_df %>%
   ylab("Anteil")
 
 ggsave("Brief_Urne_ScaledBar_BY_1721.png", path="Grafiken/", width = 7, height= 7)
-```
-
-## In welchen Wahlkreisen gab es die größte Veränderung zur Briefwahl?
-- Alle Wahlkreise deutliches Plus bei Urnenwahl im Vergleich zu 2017
-```{r}
-
-btw_brief_urne_all %>% 
-  mutate(Urnenwaehler_21= B_21 - B1Briefwähler_21,
-         Urnenwaehler_17= B_17 - B1Briefwähler_17) %>% 
-  mutate(BriefDiff= B1Briefwähler_21/B_21- B1Briefwähler_17/B_17,
-         UrneDiff= Urnenwaehler_21/B_21 - Urnenwaehler_17/B_17) %>% 
-  arrange(BriefDiff) %>% 
-  left_join(y= wk_shp, by= c("schluessel"="WKR_NR")) %>% 
-  ggplot() +
-  geom_sf(aes(geometry= geometry, fill= BriefDiff))
-
-```
-
-
-
-## Ausgabe der Prozentualen Anteile nach Art pro Jahr
-```{r}
-total_brief_urne_21_17_df %>% 
-  mutate(Perc= Anzahl/Gesamt.Anzahl) %>% 
-  select(Jahr, Art, Perc) %>% 
-  arrange(Art)
 ```
 
 # Freie Wähler Landtagsbeteiligung + BTW
@@ -630,14 +652,14 @@ FW_Diff_Data$is.LT <- as.factor(FW_Diff_Data$is.LT)
 
 ## Bundesmap FW Stimmen
 ```{r}
-p1 <- FW_Diff_Data %>%
+FW_Diff_Data %>%
   summarise(geometry= geometry, FW.Zweit.End.Perc= FW.Zweit.End.Perc*100) %>% 
   ggplot()+
   geom_sf(aes(geometry= geometry, fill= FW.Zweit.End.Perc))+
   scale_fill_continuous(name= "Anteil der Zweitstimmen in Prozent",low= "white", high= "orange", limit= c(0,15))+
   geom_sf(data = länder, color = "black", fill = NA)+
   ggtitle("Anteil der Zweitstimmen für die Freien Wähler (in %)")+
-  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung", caption = "NO")+
+  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung")+
   theme_map()
 
 ggsave("FW_ZweitPerc_Map.png", path = "Grafiken/", width = 7, height= 7)
@@ -646,16 +668,25 @@ ggsave("FW_ZweitPerc_Map.png", path = "Grafiken/", width = 7, height= 7)
 
 ## Boxplots DiffProzentPkt und Zweit Prozent 
 ```{r}
-
-
 FW_Diff_Data %>% 
 ggplot(aes(x= is.LT, y= DiffProzentPkt))+
-  geom_boxplot()
+  geom_boxplot()+
+  scale_x_discrete(labels= c("Keine Landtagsvertretung", "Landtagsvertretung"))+
+  xlab("")+
+  ylab("Differenz der Prozentpunkte bei den Zweitstimmen")+
+  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung")+
+  ggtitle("Differenz der Prozentpunkt bei den Zweitstimmen mit/ohne Landtagsvertretung")
+
 ggsave("LT_FW_DiffPkt_Box.png", path = "Grafiken/", width = 7, height= 7)
 
 FW_Diff_Data %>% 
 ggplot(aes(x= is.LT, y= FW.Zweit.End.Perc))+
-  geom_boxplot()
+  geom_boxplot()+
+  scale_x_discrete(labels= c("Keine Landtagsvertretung", "Landtagsvertretung"))+
+  xlab("")+
+  ylab("Anteil an Zweitstimmen")+
+  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung")+
+  ggtitle("Anteil an Zweitstimmen mit/ohne Landtagsvertretung")
 
 
 ggsave("LT_FW_ZweitPerc_Box.png", path = "Grafiken/", width = 7, height= 7)
@@ -666,14 +697,6 @@ ggsave("LT_FW_ZweitPerc_Box.png", path = "Grafiken/", width = 7, height= 7)
 cor_matrix_FW <- cor(select(FW_Diff_Data,-c(1:21,26,76,79)))
 
 cor_matrix_FW_melted <- melt(cor_matrix_FW)
-
-# dev.off()
-cor_matrix_FW_melted %>% 
-  filter(Var1 %in% c("FW.Erst.End.Perc", "FW.Zweit.End.Perc")) %>% 
-ggplot(aes(x=Var1, y=reorder(Var2,-value), fill=value)) +  
-  geom_raster()+
-  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
-theme(axis.text.x=element_text(angle=90,hjust=1))
 
 cor_matrix_FW_melted_sliced <- cor_matrix_FW_melted %>% 
   filter(Var1 %in% c("FW.Zweit.End.Perc")) %>% 
@@ -757,17 +780,159 @@ p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl, nro
 ggsave("LT_FW_ZweitPerc_Scatter_NegKor.png", path = "Grafiken/", width = 15, height= 7)
 ```
 
+# Grafiken für den Anhang 
 
-# Hang zu extremen Randparteien (LINKE und AFD) speziell im Osten?
+## Vergleich der Gewinne/Verluste an Prozentpunkten der Erststimmen von SPD und Union (bzgl. der Bundestagswahl 2017)
 
 ```{r}
-p1 <- btw_trimmed_geo_data %>% 
+data.frame(list(union_diff= union_erst$DiffProzentPkt,
+                spd_diff= spd_erst$DiffProzentPkt,
+                Wahlkreis.Nr= union_erst$Wahlkreis.Nr)) %>% 
+  ggplot(aes(x= union_diff, y= spd_diff))+
+  geom_point(alpha= 0.7)+
+  scale_x_continuous(limits = c(-25, 10))+
+  geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
+  geom_vline(xintercept = 0, linetype= "dashed", colour= "black")+
+  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Erststimmen von SPD und Union (bzgl. der Bundestagswahl 2017")+
+  xlab("Union Differenz der Prozenpunkte (Erststimmen)")+
+  ylab("SPD Differenz der Prozentpunkte (Erststimmen)")
+
+ggsave("Erst_Union_SPD_Diff_Scatter.png", path="Grafiken/", width = 7, height= 7)
+```
+
+## In welchen Wahlkreisen gab es die größte Veränderung zur Briefwahl?
+- Alle Wahlkreise deutliches Plus bei Urnenwahl im Vergleich zu 2017
+```{r}
+
+btw_brief_urne_all %>% 
+  mutate(Urnenwaehler_21= B_21 - B1Briefwähler_21,
+         Urnenwaehler_17= B_17 - B1Briefwähler_17) %>% 
+  mutate(BriefDiff= B1Briefwähler_21/B_21- B1Briefwähler_17/B_17,
+         UrneDiff= Urnenwaehler_21/B_21 - Urnenwaehler_17/B_17) %>% 
+  arrange(BriefDiff) %>% 
+  left_join(y= wk_shp, by= c("schluessel"="WKR_NR")) %>% 
+  ggplot() +
+  geom_sf(aes(geometry= geometry, fill= BriefDiff))+
+  scale_fill_continuous_diverging(name="Differenz der Prozentpunkte (Briefwahl 2021/2017)", palette= "Blue-Yellow 2", limit= c(-0.1,0.3))+
+  theme_map()
+
+```
+### Ausgabe der Prozentualen Anteile nach Art pro Jahr
+```{r}
+total_brief_urne_21_17_df %>% 
+  mutate(Perc= Anzahl/Gesamt.Anzahl) %>% 
+  select(Jahr, Art, Perc) %>% 
+  arrange(Art)
+```
+
+# FW Korrelationsmatrix
+```{r}
+cor_matrix_FW_melted %>% 
+  filter(Var1 %in% c("FW.Erst.End.Perc", "FW.Zweit.End.Perc")) %>% 
+ggplot(aes(x=Var1, y=reorder(Var2,-value), fill=value)) +  
+  geom_raster()+
+  scale_fill_distiller("Korrelation (Pearson)",palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(colour = "white"))+
+  xlab("Anteil an Zweitstimmen für die freien Wähler")
+```
+
+```{r}
+btw_trimmed_geo_data <-  btw_trimmed_geo_data %>% 
+  mutate(CSU.Zweit.End.Perc_nafree =replace_na(CSU.Zweit.End.Perc,0)) %>%
+  mutate(CDU.Zweit.End.Perc_nafree =replace_na(CDU.Zweit.End.Perc,0)) %>%
+  mutate(Union.Zweit.End.Perc= CSU.Zweit.End.Perc_nafree + CDU.Zweit.End.Perc_nafree)
+```
+
+# Anteil an Zweitstimmen (Maps) für jede Partei
+```{r}
+btw_trimmed_geo_data %>% 
+  mutate(CSU.Zweit.End.Perc_nafree =replace_na(CSU.Zweit.End.Perc,0)) %>%
+  mutate(CDU.Zweit.End.Perc_nafree =replace_na(CDU.Zweit.End.Perc,0)) %>%
+  mutate(Union.Zweit.End.Perc= CSU.Zweit.End.Perc_nafree + CDU.Zweit.End.Perc_nafree) %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= Union.Zweit.End.Perc))+
+  scale_fill_continuous_sequential(name= "Zweitstimmenanteil der Union in Prozent", palette = "Grays",
+                                   breaks= seq(from=0,0.5, 0.05))+
+  theme_map()+
+  ggtitle("Zweitstimmenanteil in Prozent der Union (CDU/CSU)")
+```
+## Union
+```{r}
+btw_trimmed_geo_data %>% 
+  mutate(CSU.Zweit.End.Perc_nafree =replace_na(CSU.Zweit.End.Perc,0)) %>%
+  mutate(CDU.Zweit.End.Perc_nafree =replace_na(CDU.Zweit.End.Perc,0)) %>%
+  mutate(Union.Zweit.End.Perc= CSU.Zweit.End.Perc_nafree + CDU.Zweit.End.Perc_nafree) %>% 
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= Union.Zweit.End.Perc))+
+  scale_fill_continuous_sequential(name= "Zweitstimmenanteil der Union in Prozent", palette = "Grays",
+                                   breaks= seq(from=0,0.5, 0.05))+
+  theme_map()+
+  ggtitle("Zweitstimmenanteil in Prozent der Union (CDU/CSU)")
+```
+## SPD
+```{r}
+btw_trimmed_geo_data %>%
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= SPD.Zweit.End.Perc))+
+  scale_fill_continuous_sequential(name= "Zweitstimmenanteil der SPD in Prozent", palette = "Reds3",
+                                   breaks= seq(from=0,0.5, 0.05))+
+  theme_map()+
+  ggtitle("Zweitstimmenanteil in Prozent der SPD")
+```
+## AFD
+```{r}
+btw_trimmed_geo_data %>%
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= AFD.Zweit.End.Perc))+
+  scale_fill_continuous_sequential(name= "Zweitstimmenanteil der AFD in Prozent", palette = "Blues3",
+                                   breaks= seq(from=0,0.5, 0.05))+
+  theme_map()+
+  ggtitle("Zweitstimmenanteil in Prozent der AFD")
+```
+## FDP
+```{r}
+btw_trimmed_geo_data %>%
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= FDP.Zweit.End.Perc))+
+  scale_fill_continuous("Zweitstimmenanteil der FDP in Prozent", low= "#ffffff", high="#fff44f")+
+  theme_map()+
+  ggtitle("Zweitstimmenanteil in Prozent der FDP")
+```
+## Grüne
+```{r}
+btw_trimmed_geo_data %>%
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= GRÜNE.Zweit.End.Perc))+
+  scale_fill_continuous_sequential(name= "Zweitstimmenanteil der AFD in Prozent", palette = "Greens",
+                                   breaks= seq(from=0,0.5, 0.05))+
+  theme_map()+
+  ggtitle("Zweitstimmenanteil in Prozent der Grünen")
+```
+
+## Die Linke
+```{r}
+btw_trimmed_geo_data %>%
+  ggplot()+
+  geom_sf(aes(geometry= geometry, fill= LINKE.Zweit.End.Perc))+
+  scale_fill_continuous_sequential(name= "Zweitstimmenanteil der Linken in Prozent", palette = "Reds2",
+                                   breaks= seq(from=0,0.2, 0.05))+
+  theme_map()+
+  ggtitle("Zweitstimmenanteil in Prozent der Linken")
+```
+
+
+## Hang zu extremen Randparteien (LINKE und AFD) speziell im Osten?
+```{r}
+btw_trimmed_geo_data %>% 
   mutate(Rand.Zweit.End.Perc= LINKE.Zweit.End.Perc + AFD.Zweit.End.Perc) %>% 
   ggplot()+
   geom_sf(aes(geometry= geometry, fill= Rand.Zweit.End.Perc),
           color= "darkgrey")+
   geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_viridis(option= "magma", trans= "reverse")
+  scale_fill_viridis(option= "magma", trans= "reverse")+
+  ggtitle("Stimmanteile an Zweitstimmen der Randparteien (AFD und Die Linke)")+
+  labs(fill= "Stimmanteile der Randparteien (Zweitstimmen)")+
+  theme_map()
 
 ggsave("Randparteien_Bund_Map.png", path = "Grafiken/", width= 7, height= 7)
 ```
@@ -781,7 +946,7 @@ AFD_struktur <- btw_trimmed_geo_data %>%
   select(Bundesland.Nr ,AFD.Erst.End.Perc,AFD.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) %>%
   filter(Bundesland.Nr %in% 10:16)
 
-cor_matrix_AFD <- cor(AFD_struktur, use= "complete", method = "spearman") 
+cor_matrix_AFD <- cor(AFD_struktur) 
 cor_matrix_AFD_melted <- melt(cor_matrix_AFD) %>% 
   arrange(desc(value))
 
@@ -790,8 +955,10 @@ cor_matrix_AFD_melted %>%
   filter(Var1 %in% c("AFD.Zweit.End.Perc")) %>% 
 ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +  
   geom_raster()+
-  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
-theme(axis.text.x=element_text(angle=90,hjust=1))
+  scale_fill_distiller("Korrelation (Pearson)",palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(color="white"))+
+  xlab("Anteil der AFD Zweitstimmen in Prozent")+
+  ylab("Strukturvariablen")
 ```
 
 # Korrelationenen Struktur in den neuen Bundesländern LINKE
@@ -801,7 +968,7 @@ LINKE_struktur <- btw_trimmed_geo_data %>%
   select(Bundesland.Nr ,LINKE.Erst.End.Perc, LINKE.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) %>%
   filter(Bundesland.Nr %in% 10:16)
 
-cor_matrix_LINKE <- cor(LINKE_struktur, use= "complete", method = "spearman") 
+cor_matrix_LINKE <- cor(LINKE_struktur) 
 cor_matrix_LINKE_melted <- melt(cor_matrix_LINKE) %>% 
   arrange(desc(value))
 
@@ -810,33 +977,26 @@ cor_matrix_LINKE_melted %>%
   filter(Var1 %in% c("LINKE.Zweit.End.Perc")) %>% 
 ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +  
   geom_raster()+
-  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
-theme(axis.text.x=element_text(angle=90,hjust= 1))
+  scale_fill_distiller("Korrelation (Pearson)",palette= "RdBu", type = "div", limit= c(-1,1))+
+theme(axis.text.x=element_text(color="white"))+
+  xlab("Anteil der AFD Zweitstimmen in Prozent")+
+  ylab("Strukturvariablen")
 ```
-
-
 
 ## Ü60 AFD Scatterplot (WEST/OST)
 ```{r}
-btw_trimmed_data %>%
-  mutate(is.Osten= Bundesland.Nr %in% c(10:16)) %>% 
-ggplot(aes(y= AFD.Zweit.End.Perc, x= f75tInf.Perctange, col= is.Osten))+
-  geom_point(alpha= 0.5)
 
 btw_trimmed_data %>%
   mutate(is.Osten= Bundesland.Nr %in% c(10:16)) %>%
-  mutate(is.Berlin= Bundesland.Nr%in% c(11)) %>% 
-ggplot(aes(y= AFD.Zweit.End.Perc, x= f75tInf.Perctange, col= is.Berlin))+
-  facet_wrap(~is.Osten)+
-  geom_point(alpha= 0.5)
-
-btw_trimmed_data %>%
-  mutate(is.Osten= Bundesland.Nr %in% c(10:16)) %>%
-  mutate(is.Berlin= Bundesland.Nr%in% c(11)) %>% 
+  mutate(is.Osten_fct= as.factor(is.Osten)) %>% 
   mutate(f60tInf.Perctange= f60t74.Perctange+f75tInf.Perctange) %>% 
-ggplot(aes(y= AFD.Zweit.End.Perc, x= f60tInf.Perctange, col= is.Berlin))+
-  facet_wrap(~is.Osten)+
-  geom_point(alpha= 0.5)
+ggplot(aes(y= AFD.Zweit.End.Perc, x= f60tInf.Perctange))+
+  facet_wrap(~is.Osten_fct, labeller = labeller(is.Osten_fct= c("FALSE"= "Alte Bundesländer", 
+                                                                "TRUE"= "Neue Bundesländer")))+
+  geom_point(alpha= 0.5)+
+  ggtitle("Anteil der über 60-jährigen und Anteil der AFD Zweitstimmen in Ost und West")+
+  xlab("Anteil der über 60-jährigen in Prozent")+
+  ylab("Anteil an Zweitstimmen für die AFD")
   
 ggsave("AFD_ue60_O-W_Sctter.png", path = "Grafiken/", width= 7, height= 7)
 ```
@@ -844,19 +1004,20 @@ ggsave("AFD_ue60_O-W_Sctter.png", path = "Grafiken/", width= 7, height= 7)
 ## Ü60 Randparteien Scatterplot OST/WEST
 ```{r}
 btw_trimmed_data %>%
-  mutate(is.Osten= Bundesland.Nr %in% c(10:16)) %>%
+  mutate(is.Osten= as.factor(Bundesland.Nr %in% c(10:16))) %>%
   mutate(is.Berlin= Bundesland.Nr%in% c(11)) %>% 
   mutate(Rand.Zweit.End.Perc= LINKE.Zweit.End.Perc + AFD.Zweit.End.Perc) %>% 
   mutate(f60tInf.Perctange= f60t74.Perctange+f75tInf.Perctange) %>% 
-ggplot(aes(y= Rand.Zweit.End.Perc, x= f60tInf.Perctange, col= is.Berlin))+
-  facet_wrap(~is.Osten)+
-  geom_point(alpha= 0.25)
+ggplot(aes(y= Rand.Zweit.End.Perc, x= f60tInf.Perctange))+
+  facet_wrap(~is.Osten, labeller = labeller(is.Osten= c("FALSE"= "Alte Bundesländer", "TRUE"= "Neue Bundesländer")))+
+  geom_point()+
+  ggtitle("Anteil der über 60-jährigen und Anteil an Zweitstimmen für AFD und Linke")+
+  xlab("Anteil der über 60-jährigen in Prozent")+
+  ylab("Anteil an Zweitstimmen für Randparteien (AFD u. Linke")
 
 ggsave("Rand_ue60_O-W_Sctter.png", path = "Grafiken/", width= 7, height= 7)
 ```
 
-
-# Hilfsgrafiken für Argumentation etc,
 ## Heatmap Korrelationsmatrix Strukturvariablen 
 
 ```{r}
@@ -894,8 +1055,11 @@ cor_matrix_SPD_melted %>%
   filter(Var1 %in% c("SPD.Zweit.End.Perc")) %>% 
 ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +  
   geom_raster()+
-  scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
-theme(axis.text.x=element_text(angle=90,hjust=1))
+  scale_fill_distiller("Korrelation (Pearson)",palette= "RdBu", type = "div", limit= c(-1,1))+
+  theme(axis.text.x=element_text(color="white"))+
+  xlab("Anteil der SPD Zweitstimmen in Prozent")+
+  ylab("Strukturvariablen")
+  
 
 ggsave("Kor_Matrix_SPD_Struktur.png", path = "Grafiken/", width = 7, height= 7)
 ```
@@ -918,32 +1082,24 @@ cor_matrix_UNION_melted %>%
 ggplot(aes(x=Var1, y= reorder(Var2, -value), fill=value)) +  
   geom_raster()+
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
-theme(axis.text.x=element_text(angle=90,hjust=1))
+  theme(axis.text.x=element_text(color="white"))+
+  xlab("Anteil der Unions Zweitstimmen in Prozent")+
+  ylab("Strukturvariablen")
 
 ggsave("Kor_Matrix_UNION_Struktur.png", path = "Grafiken/", width = 7, height= 7)
 ```
 
-# Korrlationsscatterplots Strukturvariablen
-
+#### Andere Plots bzgl. Gewinn/Verluste (nicht in Anhang)
 ```{r}
-struktur_only <- btw_trimmed_data %>% 
-  select(76:ncol(btw_trimmed_data))
+SPD_CDU_CSU_Diff%>% 
+  ggplot(aes(x= Gruppenname, y= DiffProzentPkt))+
+  geom_boxplot()
 
-colSums(is.na(struktur_only))
-
-ggpairs(struktur_only[1:10],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
-ggpairs(struktur_only[11:20],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
-ggpairs(struktur_only[21:30],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
-ggpairs(struktur_only[31:40],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
-ggpairs(struktur_only[41:48],
-        lower = list(continuous = wrap("points", alpha = 0.3,    size=0.1)),
-        upper = list(continuous = wrap("cor", method = "spearman")))
+SPD_CDU_CSU_Diff %>% 
+  ggplot(aes(x= Gruppenname, y= DiffProzentPkt))+
+  geom_boxplot()+
+  geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
+  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Zweitstimmen von SPD und Union (bzgl. der Bundestagswahl 2017")+
+  xlab("Partei")+
+  ylab("Differenz Prozentpunkte (Zweitstimmen)")
 ```
