@@ -506,8 +506,8 @@ ez_fdp <- btw_trimmed_data %>%
   labs(x = NULL, y = "Stimmen mehr Erststimmen als Zweitstimmen in %", title = "Erst- und Zweitstimmen der Wahlkreise pro Partei")
 ez_linke <- btw_trimmed_data %>% 
   ggplot()+
-  geom_boxplot(aes(x = "", y = LINKE.Erst.Zweit.Diff.Perc), fill = "purple")+
-  labs(x= "LINKE")
+  geom_boxplot(aes(x = "LINKE", y = LINKE.Erst.Zweit.Diff.Perc), fill = "purple")+
+  labs(x= NULL)
 
 ggarrange(ez_union, ez_spd, ez_gruene, ez_fdp, ez_afd, ez_linke)
 
