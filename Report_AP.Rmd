@@ -482,26 +482,32 @@ ggsave("Ergebnis_UND_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
 # Mattia
 ```{r}
+#Boxplot Differenz Erst - Zweitstimmen
 ez_union <- btw_trimmed_data %>%
   ggplot()+
-  geom_boxplot(aes(y = Union.Erst.Zweit.Diff.Perc), fill = "black", 
-               color = "darkgrey", outlier.color = "black", size = 1.02)
+  geom_boxplot(aes(x = "UNION", y = Union.Erst.Zweit.Diff.Perc), fill = "black", 
+               color = "darkgrey", outlier.color = "black", size = 1.02)+
+  labs(x = NULL)
 ez_spd <- btw_trimmed_data %>%
   ggplot()+
-  geom_boxplot(aes(x = "SPD", y = SPD.Erst.Zweit.Diff.Perc), fill = "red")
+  geom_boxplot(aes(x = "SPD", y = SPD.Erst.Zweit.Diff.Perc), fill = "red")+
+  labs(x = NULL)
 ez_afd <- btw_trimmed_data %>%
   ggplot()+
-  geom_boxplot(aes(x = "AFD", y = AFD.Erst.Zweit.Diff.Perc), fill = "blue")
+  geom_boxplot(aes(x = "AFD", y = AFD.Erst.Zweit.Diff.Perc), fill = "blue")+
+  labs(x = NULL)
 ez_gruene <- btw_trimmed_data %>%
   ggplot()+
-  geom_boxplot(aes(x = "GRÜNE", y = GRÜNE.Erst.Zweit.Diff.Perc),fill = "green")
+  geom_boxplot(aes(x = "GRÜNE", y = GRÜNE.Erst.Zweit.Diff.Perc),fill = "green")+
+  labs(x = NULL)
 ez_fdp <- btw_trimmed_data %>%
   ggplot()+
   geom_boxplot(aes(x = "FDP", y = FDP.Erst.Zweit.Diff.Perc), fill = "yellow")+
   labs(x = NULL, y = "Stimmen mehr Erststimmen als Zweitstimmen in %", title = "Erst- und Zweitstimmen der Wahlkreise pro Partei")
 ez_linke <- btw_trimmed_data %>% 
   ggplot()+
-  geom_boxplot(aes(x = "", y = LINKE.Erst.Zweit.Diff.Perc), fill = "purple")
+  geom_boxplot(aes(x = "", y = LINKE.Erst.Zweit.Diff.Perc), fill = "purple")+
+  labs(x= "LINKE")
 
 ggarrange(ez_union, ez_spd, ez_gruene, ez_fdp, ez_afd, ez_linke)
 
