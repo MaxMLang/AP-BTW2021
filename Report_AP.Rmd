@@ -56,6 +56,23 @@ btw_kerg_trimmed_bundeslaender <- btw_kerg_trimmed_bundeslaender %>%
          Union.Zweit.End = CDU.Zweit.End + CSU.Zweit.End,
          Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc)
 
+btw_trimmed_data[is.na(btw_trimmed_data)] <- 0
+btw_trimmed_data <- btw_trimmed_data %>%
+  mutate(Union.Erst.Vor = CDU.Erst.Vor + CSU.Erst.Vor,
+         Union.Erst.End = CDU.Erst.End + CSU.Erst.End,
+         Union.Erst.End.Perc = CDU.Erst.End.Perc + CSU.Erst.End.Perc,
+         Union.Zweit.Vor = CDU.Zweit.Vor + CSU.Zweit.Vor,
+         Union.Zweit.End = CDU.Zweit.End + CSU.Zweit.End,
+         Union.Zweit.End.Perc = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
+         Union.Erst.Zweit.Diff.Perc = Union.Erst.End.Perc - Union.Zweit.End.Perc,
+         SPD.Erst.Zweit.Diff.Perc = SPD.Erst.End.Perc - SPD.Zweit.End.Perc,
+         AFD.Erst.Zweit.Diff.Perc = AFD.Erst.End.Perc - AFD.Zweit.End.Perc,
+         GRÜNE.Erst.Zweit.Diff.Perc = GRÜNE.Erst.End.Perc - GRÜNE.Zweit.End.Perc,
+         FDP.Erst.Zweit.Diff.Perc = FDP.Erst.End.Perc - FDP.Zweit.End.Perc,
+         LINKE.Erst.Zweit.Diff.Perc = LINKE.Erst.End.Perc - LINKE.Zweit.End.Perc,
+         FW.Erst.Zweit.Diff.Perc = FW.Erst.End.Perc - FW.Zweit.End.Perc,
+         Sonstige.Erst.Zweit.Diff.Perc = Sonstige.Erst.End.Perc - Sonstige.Zweit.End.Perc)
+
 # Partei Farben
 partei_colors <- c("black", "red", "blue", "yellow", "purple", "green", "darkgrey")
 
@@ -479,27 +496,79 @@ ggsave("Ergebnis_UND_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
 # Mattia
 ```{r}
-btw_trimmed_data %>%
+#Boxplot Differenz Erst - Zweitstimmen pro Partei
+ez_union <- btw_trimmed_data %>%
   ggplot()+
-  geom_boxplot(aes(x = "UNION 1", y = Union.Erst.End.Perc), fill = "black", 
+  geom_boxplot(aes(x = "UNION", y = Union.Erst.Zweit.Diff.Perc), fill = "black",
                color = "darkgrey", outlier.color = "black", size = 1.02)+
-  geom_boxplot(aes(x = "SPD 1", y = SPD.Erst.End.Perc), fill = "red")+
-  geom_boxplot(aes(x = "AFD 1", y = AFD.Erst.End.Perc), fill = "blue", outlier.color = "#666666")+
-  geom_boxplot(aes(x = "GRÜNE 1", y = GRÜNE.Erst.End.Perc),fill = "green")+
-  geom_boxplot(aes(x = "FDP 1", y = FDP.Erst.End.Perc), fill = "yellow")+
-  
-  geom_boxplot(aes(x = "UNION 2", y = Union.Zweit.End.Perc), fill = "black", 
-               color = "darkgrey", outlier.color = "black")+
-  geom_boxplot(aes(x = "SPD 2", y = SPD.Zweit.End.Perc), fill = "red")+
-  geom_boxplot(aes(x = "AFD 2", y = AFD.Zweit.End.Perc), fill = "blue")+
-  geom_boxplot(aes(x = "GRÜNE 2", y = GRÜNE.Zweit.End.Perc),fill = "green")+
-  geom_boxplot(aes(x = "FDP 2", y = FDP.Zweit.End.Perc), fill = "yellow")+
-  #geom_boxplot(aes(x = "Zweitstimmen", y = GRÜNE.Zweit.End.Perc))+
-  labs(x = NULL, y = "Stimmenanteil in %", title = "Erst- und Zweitstimmen der Wahlkreise pro Partei")+
-  theme_light()+
- scale_x_discrete(limits = c("UNION 1", "UNION 2", "SPD 1", "SPD 2", "GRÜNE 1", "GRÜNE 2", "FDP 1", "FDP 2", "AFD 1", "AFD 2"))
+  labs(x = NULL)+
+  scale_y_continuous(limits = c(-0.1, 0.2))
+ez_spd <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "SPD", y = SPD.Erst.Zweit.Diff.Perc), fill = "red")+
+  labs(x = NULL)
+ez_afd <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "AFD", y = AFD.Erst.Zweit.Diff.Perc), fill = "blue")+
+  labs(x = NULL)
+ez_gruene <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "GRÜNE", y = GRÜNE.Erst.Zweit.Diff.Perc),fill = "green")+
+  labs(x = NULL)+
+  scale_y_continuous(limits = c(-0.1, 0.2))
+ez_fdp <- btw_trimmed_data %>%
+  ggplot()+
+  geom_boxplot(aes(x = "FDP", y = FDP.Erst.Zweit.Diff.Perc), fill = "yellow")+
+  labs(x = NULL, y = "Stimmen mehr Erststimmen als Zweitstimmen in %", title = "Erst- und Zweitstimmen der Wahlkreise pro Partei")
+ez_linke <- btw_trimmed_data %>% 
+  ggplot()+
+  geom_boxplot(aes(x = "LINKE", y = LINKE.Erst.Zweit.Diff.Perc), fill = "purple")+
+  labs(x= NULL)+
+  scale_y_continuous(limits = c(-0.1, 0.2))
+ggarrange(ez_union, ez_gruene, ez_linke, nrow = 1)
+ggarrange(ez_spd, ez_fdp, ez_afd, nrow = 1)
 
-ggsave("MM_Erst_Zweit_große_Parteien.png", path = "Grafiken", width = 9, height = 7)
+
+#Scatterplot Zusammenhang Erst-Zweitstimmen pro Partei
+ezd_union <- btw_trimmed_data %>%
+  ggplot()+
+  geom_point(aes(x = Union.Erst.End.Perc, y = Union.Zweit.End.Perc), color = "black", shape = 21)+
+  scale_x_continuous(limits = c(0, 0.55), position = "bottom")+
+  scale_y_continuous(limits = c(0, 0.55))+
+  labs(x = NULL, y = "Zweitstimmen in %")
+ezd_spd <- btw_trimmed_data %>%
+  ggplot()+
+  geom_point(aes(x = SPD.Erst.End.Perc, y = SPD.Zweit.End.Perc), shape = 21, fill = "red", color = "black", alpha = 0.5)+
+  scale_x_continuous(limits = c(0, 0.55))+
+  scale_y_continuous(limits = c(0, 0.55))+
+  labs(x = NULL, y = NULL)
+ezd_gruene <- btw_trimmed_data %>%
+  ggplot()+
+  geom_point(aes(x = GRÜNE.Erst.End.Perc, y = GRÜNE.Zweit.End.Perc), shape = 21, fill = "green", color = "black")+
+  scale_x_continuous(limits = c(0, 0.55))+
+  scale_y_continuous(limits = c(0, 0.55))+
+  labs(x = NULL, y = NULL)
+ezd_afd <- btw_trimmed_data %>%
+  ggplot()+
+  geom_point(aes(x = AFD.Erst.End.Perc, y = AFD.Zweit.End.Perc), shape = 21, fill = "blue", color = "black")+
+  scale_x_continuous(limits = c(0, 0.4))+
+  scale_y_continuous(limits = c(0, 0.4))+
+  labs(x = "Erststimmen in %", y = NULL)
+ezd_fdp <- btw_trimmed_data %>%
+  ggplot()+
+  geom_point(aes(x = FDP.Erst.End.Perc, y = FDP.Zweit.End.Perc), shape = 21, fill = "yellow", color = "black")+ #alpha
+  scale_x_continuous(limits = c(0, 0.4))+
+  scale_y_continuous(limits = c(0, 0.4))+
+  labs(x = "", y = "Zweitstimmen in %")
+ezd_linke <- btw_trimmed_data %>%
+  ggplot()+
+  geom_point(aes(x = LINKE.Erst.End.Perc, y = LINKE.Zweit.End.Perc), shape = 21, fill = "purple", color = "black")+
+  scale_x_continuous(limits = c(0, 0.4))+
+  scale_y_continuous(limits = c(0, 0.4))+
+  labs(x = "", y = NULL)
+ggarrange(ezd_union, ezd_spd, ezd_gruene, ezd_fdp, ezd_afd, ezd_linke, labels = c("UNION", "SPD", "GRÜNE", "FDP", "AFD", "LINKE"), label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
+
+#ggsave("MM_Erst_Zweit_große_Parteien.png", path = "Grafiken", width = 9, height = 7)
 ```
 
 # Max
