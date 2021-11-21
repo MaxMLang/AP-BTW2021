@@ -487,7 +487,8 @@ ez_union <- btw_trimmed_data %>%
   ggplot()+
   geom_boxplot(aes(x = "UNION", y = Union.Erst.Zweit.Diff.Perc), fill = "black", 
                color = "darkgrey", outlier.color = "black", size = 1.02)+
-  labs(x = NULL)
+  labs(x = NULL)+
+  scale_y_continuous(limits = c(-0.1, 0.2))
 ez_spd <- btw_trimmed_data %>%
   ggplot()+
   geom_boxplot(aes(x = "SPD", y = SPD.Erst.Zweit.Diff.Perc), fill = "red")+
@@ -499,7 +500,8 @@ ez_afd <- btw_trimmed_data %>%
 ez_gruene <- btw_trimmed_data %>%
   ggplot()+
   geom_boxplot(aes(x = "GRÜNE", y = GRÜNE.Erst.Zweit.Diff.Perc),fill = "green")+
-  labs(x = NULL)
+  labs(x = NULL)+
+  scale_y_continuous(limits = c(-0.1, 0.2))
 ez_fdp <- btw_trimmed_data %>%
   ggplot()+
   geom_boxplot(aes(x = "FDP", y = FDP.Erst.Zweit.Diff.Perc), fill = "yellow")+
@@ -507,44 +509,52 @@ ez_fdp <- btw_trimmed_data %>%
 ez_linke <- btw_trimmed_data %>% 
   ggplot()+
   geom_boxplot(aes(x = "LINKE", y = LINKE.Erst.Zweit.Diff.Perc), fill = "purple")+
-  labs(x= NULL)
+  labs(x= NULL)+
+  scale_y_continuous(limits = c(-0.1, 0.2))
 
-ggarrange(ez_union, ez_spd, ez_gruene, ez_fdp, ez_afd, ez_linke)
+ggarrange(ez_union, ez_gruene, ez_linke, nrow = 1)
+ggarrange(ez_spd, ez_fdp, ez_afd)
 
 
 ezd_union <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = Union.Erst.End.Perc, y = Union.Zweit.End.Perc))+
-  scale_x_continuous(limits = c(0, 0.55))+
-  scale_y_continuous(limits = c(0, 0.55))
+  geom_point(aes(x = Union.Erst.End.Perc, y = Union.Zweit.End.Perc), color = "black", shape = 21)+
+  scale_x_continuous(limits = c(0, 0.55), position = "bottom")+
+  scale_y_continuous(limits = c(0, 0.55))+
+  labs(x = NULL, y = "Zweitstimmen in %")
 ezd_spd <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = SPD.Erst.End.Perc, y = SPD.Zweit.End.Perc))+
+  geom_point(aes(x = SPD.Erst.End.Perc, y = SPD.Zweit.End.Perc), shape = 21, fill = "red", color = "black", alpha = 0.5)+
   scale_x_continuous(limits = c(0, 0.55))+
-  scale_y_continuous(limits = c(0, 0.55))
+  scale_y_continuous(limits = c(0, 0.55))+
+  labs(x = NULL, y = NULL)
 ezd_gruene <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = GRÜNE.Erst.End.Perc, y = GRÜNE.Zweit.End.Perc))+
+  geom_point(aes(x = GRÜNE.Erst.End.Perc, y = GRÜNE.Zweit.End.Perc), shape = 21, fill = "green", color = "black")+
   scale_x_continuous(limits = c(0, 0.55))+
-  scale_y_continuous(limits = c(0, 0.55))
+  scale_y_continuous(limits = c(0, 0.55))+
+  labs(x = NULL, y = NULL)
 
 ezd_afd <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = AFD.Erst.End.Perc, y = AFD.Zweit.End.Perc))+
+  geom_point(aes(x = AFD.Erst.End.Perc, y = AFD.Zweit.End.Perc), shape = 21, fill = "blue", color = "black")+
   scale_x_continuous(limits = c(0, 0.4))+
-  scale_y_continuous(limits = c(0, 0.4))
+  scale_y_continuous(limits = c(0, 0.4))+
+  labs(x = "Erststimmen in %", y = NULL)
 ezd_fdp <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = FDP.Erst.End.Perc, y = FDP.Zweit.End.Perc))+ #alpha
+  geom_point(aes(x = FDP.Erst.End.Perc, y = FDP.Zweit.End.Perc), shape = 21, fill = "yellow", color = "black")+ #alpha
   scale_x_continuous(limits = c(0, 0.4))+
-  scale_y_continuous(limits = c(0, 0.4))
+  scale_y_continuous(limits = c(0, 0.4))+
+  labs(x = "", y = "Zweitstimmen in %")
 ezd_linke <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = LINKE.Erst.End.Perc, y = LINKE.Zweit.End.Perc))+
+  geom_point(aes(x = LINKE.Erst.End.Perc, y = LINKE.Zweit.End.Perc), shape = 21, fill = "purple", color = "black")+
   scale_x_continuous(limits = c(0, 0.4))+
-  scale_y_continuous(limits = c(0, 0.4))
+  scale_y_continuous(limits = c(0, 0.4))+
+  labs(x = "", y = NULL)
 
-ggarrange(ezd_union, ezd_spd, ezd_gruene, ezd_fdp, ezd_afd, ezd_linke)
+ggarrange(ezd_union, ezd_spd, ezd_gruene, ezd_fdp, ezd_afd, ezd_linke, labels = c("UNION", "SPD", "GRÜNE", "FDP", "AFD", "LINKE"), label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
 
 #ggsave("MM_Erst_Zweit_große_Parteien.png", path = "Grafiken", width = 9, height = 7)
 ```
