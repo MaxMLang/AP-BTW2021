@@ -74,7 +74,10 @@ btw_trimmed_data <- btw_trimmed_data %>%
          Sonstige.Erst.Zweit.Diff.Perc = Sonstige.Erst.End.Perc - Sonstige.Zweit.End.Perc)
 
 # Partei Farben
-partei_colors <- c("black", "red", "blue", "yellow", "purple", "green", "darkgrey")
+partein_fuer_farben <- c("CDU/CSU", "SPD", "AFD", "FDP", "Linke", "Grüne", "Sonstige")
+partei_colors <- c("#32302e", "#E3000F", "#0099ff", "#ffed00", "#D23C77", "#46962b", "darkgrey")
+names(partei_colors) <- partein_fuer_farben
+
 
 theme_set(theme_light())
 
@@ -167,7 +170,7 @@ btw_trimmed_data %>%
   geom_jitter(colour = "red") +
   labs(title = "Arbeitslosenquote") +
   xlab("Arbeitslosenquote Februar 2021") +
-  ylab("Zweitstimmen SPD (%)")
+  ylab("Zweitstimmen SPD (in %)")
 
 ggsave("Scatterplots_ArbeitslosQ_SPD.png", path = "Grafiken/")
 
@@ -456,10 +459,11 @@ ergebnis_erststimmen <- ergebnisse_table %>%
   ggplot(mapping = aes(x = partei, y = stimmen_erst_perc)) +
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
-  ylab("Stimmen") +
-  ggtitle(label = "Ergebnis: Erststimmen Bundestagswahl 2021") +
+  ylab("Erststimmenanteil (in %)") +
+  ggtitle(label = "Entgültige Erststimmen der Bundestagswahl 2021") +
   scale_y_continuous(labels = scales::percent,
-                     breaks = scales::pretty_breaks(n = 10))
+                     breaks = scales::pretty_breaks(n = 10),
+                     limits = c(0,0.3))
   
   ggsave("Ergebnis_Erststimmen.png", path="Grafiken/", width = 7, height= 7)
   
@@ -467,11 +471,11 @@ ergebnis_zweitstimmen <- ergebnisse_table %>%
   ggplot(mapping = aes(x = partei, y = stimmen_zweit_perc)) +
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
-  ylab("Stimmen") +
-  ggtitle(label = "Ergebnis: Zweitstimmen Bundestagswahl 2021") +
+  ylab("Zweitstimmenanteil (in %)") +
+  ggtitle(label = "Entgültige Zweitstimmen der Bundestagswahl 2021") +
   scale_y_continuous(labels = scales::percent,
-                     breaks = scales::pretty_breaks(n = 10))
-  
+                     breaks = scales::pretty_breaks(n = 10),
+                     limits = c(0,0.3))
 ggsave("Ergebnis_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
 diff_zweitstimmen <- ergebnisse_table %>%
@@ -480,10 +484,12 @@ diff_zweitstimmen <- ergebnisse_table %>%
                        y = stimmen_zweit_diff_perc/100)) +
   geom_bar(stat = "identity", fill = partei_colors[1:6]) +
   xlab("Partei") +
-  ylab("Stimmendifferenz") +
-  ggtitle(label = "Differenz an Prozentpunkten der Zweitstimmen (Bundestagswahl 2017 und 2021)") +
+  ylab("Differenz der Zweitstimmen zur BTW 2017 (in Prozentpunkten)") +
+  ggtitle(label = "Differenz an Prozentpunkten der Zweitstimmen zwischen der Bundestagswahl 2017 und 2021 je Partei") +
   scale_y_continuous(labels = scales::percent,
-                     breaks = scales::pretty_breaks(n = 10))
+                     breaks = scales::pretty_breaks(n = 10),
+                     limits = c(-0.1, 0.1)) +
+  labs(caption = "BTW: Bundestagswahl")
 
 ggsave("Differenzen_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
@@ -533,40 +539,68 @@ ggarrange(ez_spd, ez_fdp, ez_afd, nrow = 1)
 ezd_union <- btw_trimmed_data %>%
   ggplot()+
   geom_point(aes(x = Union.Erst.End.Perc, y = Union.Zweit.End.Perc), fill = "black", color = "black", shape = 21, alpha = 0.25)+
-  scale_x_continuous(limits = c(0, 0.55), position = "bottom")+
-  scale_y_continuous(limits = c(0, 0.55))+
-  labs(x = NULL, y = "Zweitstimmen in %")
+  scale_x_continuous(labels = scales::percent,
+                     limits = c(0, 0.55), position = "bottom")+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, 0.55))+
+  labs(x = "Erststimmanteile (in %)", y = "Zweitstimmanteile (in %)") +
+  ggtitle("Union")
 ezd_spd <- btw_trimmed_data %>%
   ggplot()+
   geom_point(aes(x = SPD.Erst.End.Perc, y = SPD.Zweit.End.Perc), shape = 21, fill = "red", color = "black", alpha = 0.5)+
-  scale_x_continuous(limits = c(0, 0.55))+
-  scale_y_continuous(limits = c(0, 0.55))+
-  labs(x = NULL, y = NULL)
+  scale_x_continuous(labels = scales::percent,
+                     limits = c(0, 0.55))+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, 0.55))+
+  labs(x = "Erststimmanteile (in %)", y = NULL) +
+  ggtitle("SPD")
 ezd_gruene <- btw_trimmed_data %>%
   ggplot()+
   geom_point(aes(x = GRÜNE.Erst.End.Perc, y = GRÜNE.Zweit.End.Perc), shape = 21, fill = "green", color = "black", alpha = 0.5)+
-  scale_x_continuous(limits = c(0, 0.55))+
-  scale_y_continuous(limits = c(0, 0.55))+
-  labs(x = NULL, y = NULL)
+  scale_x_continuous(labels = scales::percent,
+                     limits = c(0, 0.4))+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, 0.4))+
+  labs(x = NULL, y = "Zweitstimmanteile (in %)") +
+  ggtitle("GRÜNE")
 ezd_afd <- btw_trimmed_data %>%
   ggplot()+
   geom_point(aes(x = AFD.Erst.End.Perc, y = AFD.Zweit.End.Perc), shape = 21, fill = "blue", color = "black", alpha = 0.5)+
-  scale_x_continuous(limits = c(0, 0.4))+
-  scale_y_continuous(limits = c(0, 0.4))+
-  labs(x = "Erststimmen in %", y = NULL)
+  scale_x_continuous(labels = scales::percent,
+                     limits = c(0, 0.4))+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, 0.4))+
+  labs(x = "Erststimmanteile (in %)", y = "Zweitstimmanteile (in %)") +
+  ggtitle("AFD")
 ezd_fdp <- btw_trimmed_data %>%
   ggplot()+
   geom_point(aes(x = FDP.Erst.End.Perc, y = FDP.Zweit.End.Perc), shape = 21, fill = "yellow", color = "black", alpha = 0.3)+
-  scale_x_continuous(limits = c(0, 0.4))+
-  scale_y_continuous(limits = c(0, 0.4))+
-  labs(x = "", y = "Zweitstimmen in %")
+  scale_x_continuous(labels = scales::percent,
+                     limits = c(0, 0.4))+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, 0.4))+
+  labs(x = NULL, y = NULL) +
+  ggtitle("FDP")
 ezd_linke <- btw_trimmed_data %>%
   ggplot()+
   geom_point(aes(x = LINKE.Erst.End.Perc, y = LINKE.Zweit.End.Perc), shape = 21, fill = "purple", color = "black", alpha = 0.5)+
-  scale_x_continuous(limits = c(0, 0.4))+
-  scale_y_continuous(limits = c(0, 0.4))+
-  labs(x = "", y = NULL)
-ggarrange(ezd_union, ezd_spd, ezd_gruene, ezd_fdp, ezd_afd, ezd_linke, labels = c("UNION", "SPD", "GRÜNE", "FDP", "AFD", "LINKE"), label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
+  scale_x_continuous(labels = scales::percent,
+                     limits = c(0, 0.4))+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, 0.4))+
+  labs(x = "Erststimmanteile (in %)", y = NULL) +
+  ggtitle("LINKE")
+ggarrange(ezd_union, ezd_spd, ezd_gruene, ezd_fdp, ezd_afd, ezd_linke, label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
+
+MM_Erst_Zweit_CDU_SPD <- ggarrange(ezd_union, ezd_spd, label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
+annotate_figure(MM_Erst_Zweit_CDU_SPD, top = text_grob("Erststimmen vs. Zweitstimmen", color = "black", size = 14))
+
+ggsave("MM_Erst_Zweit_CDU_SPD.png", path = "Grafiken", width = 9, height = 5)
+
+MM_Erst_Zweit_Rest <- ggarrange(ezd_gruene, ezd_fdp, ezd_afd, ezd_linke, label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
+annotate_figure(MM_Erst_Zweit_Rest, top = text_grob("Erststimmen vs. Zweitstimmen", color = "black", size = 14))
+
+ggsave("MM_Erst_Zweit_Rest.png", path = "Grafiken", width = 9, height = 5)
 
 #ggsave("MM_Erst_Zweit_große_Parteien.png", path = "Grafiken", width = 9, height = 7)
 ```
