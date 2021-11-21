@@ -532,7 +532,7 @@ ggarrange(ez_spd, ez_fdp, ez_afd, nrow = 1)
 #Scatterplot Zusammenhang Erst-Zweitstimmen pro Partei
 ezd_union <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = Union.Erst.End.Perc, y = Union.Zweit.End.Perc), color = "black", shape = 21)+
+  geom_point(aes(x = Union.Erst.End.Perc, y = Union.Zweit.End.Perc), fill = "black", color = "black", shape = 21, alpha = 0.25)+
   scale_x_continuous(limits = c(0, 0.55), position = "bottom")+
   scale_y_continuous(limits = c(0, 0.55))+
   labs(x = NULL, y = "Zweitstimmen in %")
@@ -544,25 +544,25 @@ ezd_spd <- btw_trimmed_data %>%
   labs(x = NULL, y = NULL)
 ezd_gruene <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = GRÜNE.Erst.End.Perc, y = GRÜNE.Zweit.End.Perc), shape = 21, fill = "green", color = "black")+
+  geom_point(aes(x = GRÜNE.Erst.End.Perc, y = GRÜNE.Zweit.End.Perc), shape = 21, fill = "green", color = "black", alpha = 0.5)+
   scale_x_continuous(limits = c(0, 0.55))+
   scale_y_continuous(limits = c(0, 0.55))+
   labs(x = NULL, y = NULL)
 ezd_afd <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = AFD.Erst.End.Perc, y = AFD.Zweit.End.Perc), shape = 21, fill = "blue", color = "black")+
+  geom_point(aes(x = AFD.Erst.End.Perc, y = AFD.Zweit.End.Perc), shape = 21, fill = "blue", color = "black", alpha = 0.5)+
   scale_x_continuous(limits = c(0, 0.4))+
   scale_y_continuous(limits = c(0, 0.4))+
   labs(x = "Erststimmen in %", y = NULL)
 ezd_fdp <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = FDP.Erst.End.Perc, y = FDP.Zweit.End.Perc), shape = 21, fill = "yellow", color = "black")+ #alpha
+  geom_point(aes(x = FDP.Erst.End.Perc, y = FDP.Zweit.End.Perc), shape = 21, fill = "yellow", color = "black", alpha = 0.3)+
   scale_x_continuous(limits = c(0, 0.4))+
   scale_y_continuous(limits = c(0, 0.4))+
   labs(x = "", y = "Zweitstimmen in %")
 ezd_linke <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = LINKE.Erst.End.Perc, y = LINKE.Zweit.End.Perc), shape = 21, fill = "purple", color = "black")+
+  geom_point(aes(x = LINKE.Erst.End.Perc, y = LINKE.Zweit.End.Perc), shape = 21, fill = "purple", color = "black", alpha = 0.5)+
   scale_x_continuous(limits = c(0, 0.4))+
   scale_y_continuous(limits = c(0, 0.4))+
   labs(x = "", y = NULL)
