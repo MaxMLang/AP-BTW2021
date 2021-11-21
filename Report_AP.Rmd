@@ -1086,6 +1086,7 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.5, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der Union (CDU/CSU)")
+
 ```
 ## Union
 ```{r}
@@ -1099,6 +1100,8 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.5, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der Union (CDU/CSU)")
+
+ggsave("Union_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
 ```
 ## SPD
 ```{r}
@@ -1109,6 +1112,7 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.5, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der SPD")
+ggsave("SPD_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
 ```
 ## AFD
 ```{r}
@@ -1119,6 +1123,7 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.5, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der AFD")
+ggsave("AFD_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
 ```
 ## FDP
 ```{r}
@@ -1128,6 +1133,7 @@ btw_trimmed_geo_data %>%
   scale_fill_continuous("Zweitstimmenanteil der FDP in Prozent", low= "#ffffff", high="#fff44f")+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der FDP")
+ggsave("FDP_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
 ```
 ## Grüne
 ```{r}
@@ -1138,6 +1144,7 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.5, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der Grünen")
+ggsave("Gruene_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
 ```
 
 ## Die Linke
@@ -1149,6 +1156,7 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.2, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der Linken")
+ggsave("Linke_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
 ```
 
 
