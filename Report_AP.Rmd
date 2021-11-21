@@ -691,14 +691,18 @@ SPD_CDU_CSU_Diff[["Gruppenname"]][which(SPD_CDU_CSU_Diff[["Gruppenname"]]%in% c(
 data.frame(list(union_diff= union_zweit$DiffProzentPkt,
                 spd_diff= spd_zweit$DiffProzentPkt,
                 Wahlkreis.Nr= union_zweit$Wahlkreis.Nr)) %>% 
-  ggplot(aes(x= union_diff, y= spd_diff))+
+  ggplot(aes(x= union_diff/100, y= spd_diff/100))+
   geom_point(alpha= 0.7)+
-  scale_x_continuous(limits = c(-20, 5))+
   geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
   geom_vline(xintercept = 0, linetype= "dashed", colour= "black")+
-  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Zweitstimmen von SPD und Union (bzgl. der Bundestagswahl 2017")+
-  xlab("Union Differenz der Prozenpunkte (Zweitstimmen)")+
-  ylab("SPD Differenz der Prozentpunkte (Zweitstimmen)")
+  ggtitle("Differenz an Prozentpunkten der Zweitstimmen zwischen der \n Bundestagswahl 2017 und 2021 SPD und Union")+
+  xlab("Union Differenz der Zweitstimmen (in Prozentpunkten)")+
+  ylab("SPD Differenz der Zweitstimmen (in Prozentpunkten)")+
+  scale_y_continuous(labels = scales::percent,
+                     breaks = scales::pretty_breaks(n = 10),
+                     limits = c(-0.1, 0.2))+
+  scale_x_continuous(labels = scales::percent,
+                     limits = c(-0.2, 0.05))
 
 ggsave("Zweit_Union_SPD_Diff_Scatter.png", path="Grafiken/", width = 7, height= 7)
 ```
@@ -760,30 +764,34 @@ union_erst %>%
 
 spd_GV <- btw_trimmed_geo_data %>% 
   ggplot()+
-  geom_sf(aes(geometry= geometry, fill= spd_zweit[["DiffProzentPkt"]]),
+  geom_sf(aes(geometry= geometry, fill= spd_zweit[["DiffProzentPkt"]] / 100),
           color= "darkgrey")+
   geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_continuous_diverging(name= "Differenz der Prozentpunkte",palette= "Blue-Yellow 2", limit= c(-20,20))+
-  ggtitle("Gewinne / Verluste an Prozentpunkten von Zweitstimmen")+
-  labs(subtitle = "SPD")+
+  scale_fill_continuous_diverging(labels = scales::percent,
+                                  name= "Differenz der Prozentpunkte",
+                                  palette= "Blue-Yellow 2", limit= c(-20,20))+
+  ggtitle("SPD")+
   xlab("")+
   ylab("")+
   theme_map()
 
 union_GV <- btw_trimmed_geo_data %>% 
   ggplot()+
-  geom_sf(aes(geometry= geometry, fill= union_zweit$DiffProzentPkt),
+  geom_sf(aes(geometry= geometry, fill= union_zweit$DiffProzentPkt / 100),
           color= "darkgrey")+
   geom_sf(data = länder, color = "black", fill = NA)+
-  scale_fill_continuous_diverging(name= "Differenz der Prozentpunkte",palette= "Blue-Yellow 2", limit= c(-20,20))+
-  labs(subtitle = "Union")+
-  ggtitle("")+
+  scale_fill_continuous_diverging(labels = scales::percent,
+                                  name= "Differenz der Zweitstimmen (in Prozentpunkten)",
+                                  palette= "Blue-Yellow 2", limit= c(-20,20))+
+  ggtitle("Union")+
   xlab("")+
   ylab("")+
   theme_map()
 
 p1 <- ggarrange(spd_GV, union_GV,
 common.legend = TRUE, legend = "right", nrow= 1)
+
+# annotate_figure "Gewinne und Verluste von Zweitstimmen (in Prozentpunkten) - SPD und Union"
 
 ggsave("SPD_Union_Zweit_GV_Map.png", path="Grafiken/", width = 14, height= 10)
 ```
