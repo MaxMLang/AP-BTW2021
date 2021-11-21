@@ -769,7 +769,7 @@ spd_GV <- btw_trimmed_geo_data %>%
   geom_sf(data = länder, color = "black", fill = NA)+
   scale_fill_continuous_diverging(labels = scales::percent,
                                   name= "Differenz der Prozentpunkte",
-                                  palette= "Blue-Yellow 2", limit= c(-20,20))+
+                                  palette= "Blue-Yellow 2", limit= c(-0.2,0.2))+
   ggtitle("SPD")+
   xlab("")+
   ylab("")+
@@ -782,16 +782,15 @@ union_GV <- btw_trimmed_geo_data %>%
   geom_sf(data = länder, color = "black", fill = NA)+
   scale_fill_continuous_diverging(labels = scales::percent,
                                   name= "Differenz der Zweitstimmen (in Prozentpunkten)",
-                                  palette= "Blue-Yellow 2", limit= c(-20,20))+
+                                  palette= "Blue-Yellow 2", limit= c(-0.2,0.2))+
   ggtitle("Union")+
   xlab("")+
   ylab("")+
   theme_map()
 
-p1 <- ggarrange(spd_GV, union_GV,
+SPD_Union_Zweit_GV_Map <- ggarrange(spd_GV, union_GV,
 common.legend = TRUE, legend = "right", nrow= 1)
-
-# annotate_figure "Gewinne und Verluste von Zweitstimmen (in Prozentpunkten) - SPD und Union"
+annotate_figure(SPD_Union_Zweit_GV_Map, top = text_grob("Differenz der Zweitstimmen zwischen Bundestagswahl 2017 und 2021 in Prozentpunkten für SPD und Union", color = "black", size = 17, vjust = 4.5))
 
 ggsave("SPD_Union_Zweit_GV_Map.png", path="Grafiken/", width = 14, height= 10)
 ```
@@ -852,9 +851,9 @@ total_brief_urne_21_17_df %>%
   ggplot(aes(x= Jahr, y= Anzahl, fill= Art))+
   geom_bar(stat = "identity", position = "fill")+
   scale_fill_manual(values = c("#8dd3c7", "darkgrey"))+
-  ggtitle("Vergleich der Anteile von Brief- und Urnenwahl
-       zwischen 2017 und 2021")+
-  ylab("Anteil")
+  ggtitle("Vergleich der Anteile von Brief- und Urnenwahl zwischen 2017 und 2021")+
+  ylab("Anteil der Wahlart (in %)") +
+  scale_y_continuous(labels = scales::percent)
 
 ggsave("Brief_Urne_ScaledBar_BY_1721.png", path="Grafiken/", width = 7, height= 7)
 ```
@@ -884,13 +883,13 @@ FW_Diff_Data$is.LT <- as.factor(FW_Diff_Data$is.LT)
 ## Bundesmap FW Stimmen
 ```{r}
 FW_Diff_Data %>%
-  summarise(geometry= geometry, FW.Zweit.End.Perc= FW.Zweit.End.Perc*100) %>% 
+  summarise(geometry= geometry, FW.Zweit.End.Perc= FW.Zweit.End.Perc) %>% 
   ggplot()+
   geom_sf(aes(geometry= geometry, fill= FW.Zweit.End.Perc))+
-  scale_fill_continuous(name= "Anteil der Zweitstimmen in Prozent",low= "white", high= "orange", limit= c(0,15))+
+  scale_fill_continuous(name= "Anteil der Zweitstimmen (in %)",low= "white", high= "orange", limit= c(0,0.18), labels = scales::percent)+
   geom_sf(data = länder, color = "black", fill = NA)+
   ggtitle("Anteil der Zweitstimmen für die Freien Wähler (in %)")+
-  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung")+
+  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung") +
   theme_map()
 
 ggsave("FW_ZweitPerc_Map.png", path = "Grafiken/", width = 7, height= 7)
@@ -948,65 +947,79 @@ HW <- FW_Diff_Data %>%
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
-  ylab("Anteil an Zweitstimmen für die Freien Wähler")+
-  xlab("Handwerksunternehmen (je 1000 EW)")+
-  labs(colour= "Regierungsbeteiligung")
+  ylab("Anteil an Zweitstimmen (in %)")+
+  xlab("\n\nHandwerksunternehmen (je 1000 Einwohner)")+
+  labs(colour= "Regierungsbeteiligung") +
+  scale_y_continuous(labels = scales::percent)
   
 MittSA <- FW_Diff_Data %>% 
-  ggplot(aes(x= Schulab.mitMittSA, y= FW.Zweit.End.Perc))+
+  ggplot(aes(x= Schulab.mitMittSA/100, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
   ylab("")+
-  xlab("Schulabgänger/-innen mit 
-       mittlerem Schulabschluss in Prozent")+
-  labs(colour= "Regierungsbeteiligung in Prozent")
+  xlab("\nSchulabgänger/-innen mit 
+       mittlerem Schulabschluss (in %)")+
+  labs(colour= "Regierungsbeteiligung (in %)") +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_x_continuous(labels = scales::percent)
 
 SozPfli.LandW <- FW_Diff_Data %>% 
-  ggplot(aes(x= SozPfli.LandW, y= FW.Zweit.End.Perc))+
+  ggplot(aes(x= SozPfli.LandW/100, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
   ylab("")+
   xlab("Sozialversicherungspflichtige Beschäftigte 
   Land- und Forstwirtschaft, 
-       Fischerei in Prozent")+
-  labs(colour= "Regierungsbeteiligung")
+       Fischerei (in %)")+
+  labs(colour= "Regierungsbeteiligung") +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_x_continuous(labels = scales::percent)
 
 Boden.SieduVerk <- FW_Diff_Data %>% 
-  ggplot(aes(x= Boden.SieduVerk, y= FW.Zweit.End.Perc))+
+  ggplot(aes(x= Boden.SieduVerk/100, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
-  ylab("Anteil an Zweitstimmen für die Freien Wähler")+
+  ylab("Anteil an Zweitstimmen (in %)")+
   xlab("Bodenflächennutzung
-       Siedlung und Verkehr in Prozent")+
-  labs(colour= "Regierungsbeteiligung")
+       Siedlung und Verkehr (in %)")+
+  labs(colour= "Regierungsbeteiligung") +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_x_continuous(labels = scales::percent)
   
 Schulab.mitAllgHS <- FW_Diff_Data %>% 
-  ggplot(aes(x= Schulab.mitAllgHS, y= FW.Zweit.End.Perc))+
+  ggplot(aes(x= Schulab.mitAllgHS/100, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
   ylab("")+
   xlab("Schulabgänger/-innen mit 
-       allgemeiner und Fachhochschulreife in Prozent")+
-  labs(colour= "Regierungsbeteiligung")
+       allgemeiner und Fachhochschulreife (in %)")+
+  labs(colour= "Regierungsbeteiligung") +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_x_continuous(labels = scales::percent)
 
 SozPfli.ÖffPrivDienstl <- FW_Diff_Data %>% 
-  ggplot(aes(x= SozPfli.ÖffPrivDienstl, y= FW.Zweit.End.Perc))+
+  ggplot(aes(x= SozPfli.ÖffPrivDienstl/100, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja (Wahlkreis liegt in Bayern)"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
   ylab("")+
   xlab("Sozialversicherungspflichtige - 
-       Öffentliche und private Dienstleister in Prozent")+
-  labs(colour= "Regierungsbeteiligung")
+       Öffentliche und private Dienstleister (in %)")+
+  labs(colour= "Regierungsbeteiligung") +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_x_continuous(labels = scales::percent)
 
-p1 <- ggarrange(HW, MittSA,SozPfli.LandW, common.legend = TRUE, legend = "right", nrow= 1)
+p1 <- ggarrange(HW, MittSA,SozPfli.LandW, common.legend = TRUE, legend = "top", nrow= 1)
+annotate_figure(p1, top = text_grob("Beispiele positiver Korrelation: Anteil an Zweitstimmen und ausgewählte Strukturvariablen", color = "black", size = 15))
 ggsave("LT_FW_ZweitPerc_Scatter_PosKor.png", path = "Grafiken/", width = 15, height= 7)
 
-p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl, nrow = 1,common.legend = TRUE, legend = "right")
+
+p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl, nrow = 1,common.legend = TRUE, legend = "top")
+annotate_figure(p1, top = text_grob("Beispiele negativer Korrelation: Anteil an Zweitstimmen und ausgewählte Strukturvariablen", color = "black", size = 15))
 
 ggsave("LT_FW_ZweitPerc_Scatter_NegKor.png", path = "Grafiken/", width = 15, height= 7)
 ```
