@@ -502,7 +502,7 @@ diff_zweitstimmen <- ergebnisse_table %>%
   geom_bar(stat = "identity", fill = partei_colors[1:6]) +
   xlab("Partei") +
   ylab("Differenz der Zweitstimmen zur BTW 2017 (in Prozentpunkten)") +
-  ggtitle(label = "Differenz an Prozentpunkten der Zweitstimmen zwischen der Bundestagswahl 2017 und 2021 je Partei") +
+  ggtitle(label = "Differenz an Prozentpunkten der Zweitstimmen \nzwischen der Bundestagswahl 2017 und 2021 je Partei") +
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10),
                      limits = c(-0.1, 0.1)) +
