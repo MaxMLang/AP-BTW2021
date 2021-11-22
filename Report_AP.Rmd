@@ -1013,13 +1013,13 @@ SozPfli.ÖffPrivDienstl <- FW_Diff_Data %>%
   scale_y_continuous(labels = scales::percent) + 
   scale_x_continuous(labels = scales::percent)
 
-p1 <- ggarrange(HW, MittSA,SozPfli.LandW, common.legend = TRUE, legend = "top", nrow= 1)
-annotate_figure(p1, top = text_grob("Beispiele positiver Korrelation: Anteil an Zweitstimmen und ausgewählte Strukturvariablen", color = "black", size = 15))
+p1 <- ggarrange(HW,SozPfli.LandW, common.legend = TRUE, legend = "top", nrow= 1)
+annotate_figure(p1, top = text_grob("Beispiele positiver Korrelation: Anteil an Zweitstimmen für freie Wähle und ausgewählte Strukturvariablen", color = "black", size = 15))
 ggsave("LT_FW_ZweitPerc_Scatter_PosKor.png", path = "Grafiken/", width = 15, height= 7)
 
 
-p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl, nrow = 1,common.legend = TRUE, legend = "top")
-annotate_figure(p1, top = text_grob("Beispiele negativer Korrelation: Anteil an Zweitstimmen und ausgewählte Strukturvariablen", color = "black", size = 15))
+p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, nrow = 1,common.legend = TRUE, legend = "top")
+annotate_figure(p1, top = text_grob("Beispiele negativer Korrelation: Anteil an Zweitstimmen für Freie Wähler und ausgewählte Strukturvariablen", color = "black", size = 15))
 
 ggsave("LT_FW_ZweitPerc_Scatter_NegKor.png", path = "Grafiken/", width = 15, height= 7)
 ```
