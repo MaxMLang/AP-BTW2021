@@ -1114,7 +1114,7 @@ btw_trimmed_geo_data %>%
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der Union (CDU/CSU)")
 
-ggsave("Union_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
+ggsave("Union_Zweit_Map.png", path = "Grafiken/", width= 9, height= 9)
 ```
 ## SPD
 ```{r}
@@ -1125,7 +1125,7 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.5, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der SPD")
-ggsave("SPD_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
+ggsave("SPD_Zweit_Map.png", path = "Grafiken/", width= 9, height= 9)
 ```
 ## AFD
 ```{r}
@@ -1136,7 +1136,7 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.5, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der AFD")
-ggsave("AFD_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
+ggsave("AFD_Zweit_Map.png", path = "Grafiken/", width= 9, height= 9)
 ```
 ## FDP
 ```{r}
@@ -1146,7 +1146,7 @@ btw_trimmed_geo_data %>%
   scale_fill_continuous("Zweitstimmenanteil der FDP in Prozent", low= "#ffffff", high="#fff44f")+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der FDP")
-ggsave("FDP_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
+ggsave("FDP_Zweit_Map.png", path = "Grafiken/", width= 9, height= 9)
 ```
 ## Grüne
 ```{r}
@@ -1157,7 +1157,7 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.5, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der Grünen")
-ggsave("Gruene_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
+ggsave("Gruene_Zweit_Map.png", path = "Grafiken/", width= 9, height= 9)
 ```
 
 ## Die Linke
@@ -1169,7 +1169,7 @@ btw_trimmed_geo_data %>%
                                    breaks= seq(from=0,0.2, 0.05))+
   theme_map()+
   ggtitle("Zweitstimmenanteil in Prozent der Linken")
-ggsave("Linke_Zweit_Map.png", path = "Grafiken/", width= 7, height= 7)
+ggsave("Linke_Zweit_Map.png", path = "Grafiken/", width= 9, height= 9)
 ```
 
 
@@ -1186,7 +1186,7 @@ btw_trimmed_geo_data %>%
   labs(fill= "Stimmanteile der Randparteien (Zweitstimmen)")+
   theme_map()
 
-ggsave("Randparteien_Bund_Map.png", path = "Grafiken/", width= 7, height= 7)
+ggsave("Randparteien_Bund_Map.png", path = "Grafiken/", width= 9, height= 9)
 ```
 
 
@@ -1196,7 +1196,7 @@ ggsave("Randparteien_Bund_Map.png", path = "Grafiken/", width= 7, height= 7)
 ```{r}
 AFD_struktur <- btw_trimmed_geo_data %>% 
   select(Bundesland.Nr ,AFD.Erst.End.Perc,AFD.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) %>%
-  filter(Bundesland.Nr %in% 10:16)
+  filter(Bundesland.Nr %in% 11:16)
 
 cor_matrix_AFD <- cor(AFD_struktur) 
 cor_matrix_AFD_melted <- melt(cor_matrix_AFD) %>% 
@@ -1218,7 +1218,7 @@ theme(axis.text.x=element_text(color="white"))+
 ```{r}
 LINKE_struktur <- btw_trimmed_geo_data %>% 
   select(Bundesland.Nr ,LINKE.Erst.End.Perc, LINKE.Zweit.End.Perc, 76:ncol(btw_trimmed_geo_data), -geometry) %>%
-  filter(Bundesland.Nr %in% 10:16)
+  filter(Bundesland.Nr %in% 11:16)
 
 cor_matrix_LINKE <- cor(LINKE_struktur) 
 cor_matrix_LINKE_melted <- melt(cor_matrix_LINKE) %>% 
@@ -1239,7 +1239,7 @@ theme(axis.text.x=element_text(color="white"))+
 ```{r}
 
 btw_trimmed_data %>%
-  mutate(is.Osten= Bundesland.Nr %in% c(10:16)) %>%
+  mutate(is.Osten= Bundesland.Nr %in% c(11:16)) %>%
   mutate(is.Osten_fct= as.factor(is.Osten)) %>% 
   mutate(f60tInf.Perctange= f60t74.Perctange+f75tInf.Perctange) %>% 
 ggplot(aes(y= AFD.Zweit.End.Perc, x= f60tInf.Perctange))+
@@ -1250,13 +1250,13 @@ ggplot(aes(y= AFD.Zweit.End.Perc, x= f60tInf.Perctange))+
   xlab("Anteil der über 60-jährigen in Prozent")+
   ylab("Anteil an Zweitstimmen für die AFD")
   
-ggsave("AFD_ue60_O-W_Sctter.png", path = "Grafiken/", width= 7, height= 7)
+ggsave("AFD_ue60_O-W_Sctter.png", path = "Grafiken/", width= 9, height= 9)
 ```
 
 ## Ü60 Randparteien Scatterplot OST/WEST
 ```{r}
 btw_trimmed_data %>%
-  mutate(is.Osten= as.factor(Bundesland.Nr %in% c(10:16))) %>%
+  mutate(is.Osten= as.factor(Bundesland.Nr %in% c(11:16))) %>%
   mutate(is.Berlin= Bundesland.Nr%in% c(11)) %>% 
   mutate(Rand.Zweit.End.Perc= LINKE.Zweit.End.Perc + AFD.Zweit.End.Perc) %>% 
   mutate(f60tInf.Perctange= f60t74.Perctange+f75tInf.Perctange) %>% 
@@ -1267,7 +1267,7 @@ ggplot(aes(y= Rand.Zweit.End.Perc, x= f60tInf.Perctange))+
   xlab("Anteil der über 60-jährigen in Prozent")+
   ylab("Anteil an Zweitstimmen für Randparteien (AFD u. Linke")
 
-ggsave("Rand_ue60_O-W_Sctter.png", path = "Grafiken/", width= 7, height= 7)
+ggsave("Rand_ue60_O-W_Sctter.png", path = "Grafiken/", width= 9, height= 9)
 ```
 
 ## Heatmap Korrelationsmatrix Strukturvariablen 
