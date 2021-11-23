@@ -477,7 +477,7 @@ ergebnis_erststimmen <- ergebnisse_table %>%
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
   ylab("Erststimmenanteil (in %)") +
-  ggtitle(label = "Entgültige Erststimmen der Bundestagswahl 2021") +
+  ggtitle(label = "Endgültige Erststimmen der Bundestagswahl 2021") +
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10),
                      limits = c(0,0.3))
@@ -489,7 +489,7 @@ ergebnis_zweitstimmen <- ergebnisse_table %>%
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
   ylab("Zweitstimmenanteil (in %)") +
-  ggtitle(label = "Entgültige Zweitstimmen der Bundestagswahl 2021") +
+  ggtitle(label = "Endgültige Zweitstimmen der Bundestagswahl 2021") +
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10),
                      limits = c(0,0.3))
