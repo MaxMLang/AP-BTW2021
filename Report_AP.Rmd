@@ -105,60 +105,6 @@ theme_map <- function(...) {
 
 # Carla
 
-# SPD vs CDU Boxplots
-```{r}
-# Verfügbares Einkommen
-
-spd_vs_union <- btw_trimmed_data %>%
-  replace(is.na(.), 0) %>%
-  mutate(Union.Zweit.End = CDU.Zweit.End + CSU.Zweit.End) %>%
-  mutate(UnionvsSPD = case_when((SPD.Zweit.End > Union.Zweit.End)
-                                ~ "Wahlkreise in denen die SPD mehr Zweitstimmen \nals die Union erreicht hat", 
-                                (SPD.Zweit.End < Union.Zweit.End)
-                                ~ "Wahlkreise in denen die Union mehr Zweitstimmen \nals die SPD erreicht hat"))
-
-spd_vs_union %>%
-  ggplot(aes(x = UnionvsSPD, y = Vfg.Einkommen, col = UnionvsSPD)) +
-  geom_boxplot() +
-  ylim(15000, 35000) +
-  labs(title = "Verfügbares Einkommen") +
-  xlab(" ") +
-  ylab("Verfügbares Einkommen der privaten Haushalte 2018 \n(EUR je EW)") +
-  scale_color_manual(values = c("red", "black")) +
-  theme(legend.position = "none")
-
-ggsave("Boxplot_SPD_Union_Einkommen.png", path = "Grafiken/")
-
-# Arbeitslosenquote
-
-spd_vs_union %>%
-  ggplot(aes(x = UnionvsSPD, y = ArbeitslosQ, col = UnionvsSPD)) +
-  geom_boxplot() +
-  labs(title = "Arbeitslosenquote") +
-  xlab(" ") +
-  ylab("Arbeitslosenquote Februar 2021") +
-  scale_color_manual(values = c("red", "black")) +
-  theme(legend.position = "none")
-
-ggsave("Boxplot_SPD_Union_Arbeitslosenquote.png", path = "Grafiken/")
-
-# Schulabgänger/-innen allgemeinblldender Schulen 2019 - mit allgemeiner und Fachhochschulreife
-
-spd_vs_union %>%
-  ggplot(aes(x = UnionvsSPD, y = Schulab.mitAllgHS, col = UnionvsSPD)) +
-  geom_boxplot() +
-  ylim(20, 60) +
-  labs(title = "Schulabgänger/-innen mit allgemeiner und Fachhochschulreife") +
-  xlab(" ") +
-  ylab("Schulabgänger/-innen allgemeinbildender Schulen 2019 \nmit allgemeiner und Fachhochschulreife") +
-  scale_color_manual(values = c("red", "black")) +
-  theme(legend.position = "none")
-
-ggsave("Boxplot_SPD_Union_Schulab.mitAllgHS.png", path = "Grafiken/")
-
-
-```
-
 # Strukturvariablen Scatterplots
 
 ```{r}
@@ -179,6 +125,8 @@ btw_trimmed_data %>%
 ggsave("Scatterplots_ArbeitslosQ_SPD.png", path = "Grafiken/")
 
 ausreisser_spd <- select(filter(btw_trimmed_data, ArbeitslosQ == max(ArbeitslosQ)), Gebiet, ArbeitslosQ)
+ausreisser_spd2 <- select(filter(btw_trimmed_data, SPD.Zweit.End.Perc == max(SPD.Zweit.End.Perc)), Gebiet, SPD.Zweit.End.Perc)
+
 
 # Verfügbares Einkommen CDU
 
@@ -237,10 +185,10 @@ is_Osten_data <- btw_trimmed_data %>%
          AFD = AFD.Zweit.End.Perc,
          LINKE = LINKE.Zweit.End.Perc,
          f18t34.Perctange = f18t24.Perctange + f25t34.Perctange,
-         is.Osten = case_when(Bundesland.Nr %in% c(10:16) ~ "östliche Bundesländer",
-                              Bundesland.Nr %in% c(1:9) ~ "westliche Bundesländer")) %>%
+         is.Osten = case_when(Bundesland.Nr %in% c(12:16) ~ "östliche Bundesländer",
+                              Bundesland.Nr %in% c(1:11) ~ "westliche Bundesländer")) %>%
   select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
-           Vfg.Einkommen, f18t34.Perctange, is.Osten)) %>%
+           Vfg.Einkommen, f18t34.Perctange, is.Osten, Gebiet)) %>%
   pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage")
 
 ggplot(is_Osten_data, aes(x = Vfg.Einkommen, y = Percentage, col = Age)) +
