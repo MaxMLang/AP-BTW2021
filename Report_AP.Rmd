@@ -695,8 +695,8 @@ data.frame(list(union_diff= union_zweit$DiffProzentPkt,
   geom_point(alpha= 0.7)+
   geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
   geom_vline(xintercept = 0, linetype= "dashed", colour= "black")+
-  ggtitle("Differenz an Prozentpunkten der Zweitstimmen zwischen der \n Bundestagswahl 2017 und 2021 SPD und Union")+
-  xlab("Union Differenz der Zweitstimmen (in Prozentpunkten)")+
+  ggtitle("Differenz an Prozentpunkten der Zweitstimmen zwischen der\n Bundestagswahl 2017 und 2021 SPD und UNION")+
+  xlab("UNION Differenz der Zweitstimmen (in Prozentpunkten)")+
   ylab("SPD Differenz der Zweitstimmen (in Prozentpunkten)")+
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10),
@@ -774,6 +774,7 @@ spd_GV <- btw_trimmed_geo_data %>%
   xlab("")+
   ylab("")+
   theme_map()
+ggsave("SPD_GV.png", path="Grafiken/", width = 9, height= 9)
 
 union_GV <- btw_trimmed_geo_data %>% 
   ggplot()+
@@ -781,16 +782,19 @@ union_GV <- btw_trimmed_geo_data %>%
           color= "darkgrey")+
   geom_sf(data = länder, color = "black", fill = NA)+
   scale_fill_continuous_diverging(labels = scales::percent,
-                                  name= "Differenz der Zweitstimmen (in Prozentpunkten)",
+                                  name= "Differenz der Prozentpunkte",
                                   palette= "Blue-Yellow 2", limit= c(-0.2,0.2))+
-  ggtitle("Union")+
+  ggtitle("UNION")+
   xlab("")+
   ylab("")+
   theme_map()
 
+ggsave("Union_GV.png", path="Grafiken/", width = 9, height= 9)
+
+
 SPD_Union_Zweit_GV_Map <- ggarrange(spd_GV, union_GV,
 common.legend = TRUE, legend = "right", nrow= 1)
-annotate_figure(SPD_Union_Zweit_GV_Map, top = text_grob("Differenz der Zweitstimmen zwischen Bundestagswahl 2017 und 2021 in Prozentpunkten für SPD und Union", color = "black", size = 17, vjust = 4.5))
+annotate_figure(SPD_Union_Zweit_GV_Map, top = text_grob("Differenz der Zweitstimmen zwischen Bundestagswahl 2017 und 2021 in Prozentpunkten für SPD und UNION", color = "black", size = 17, vjust = 4.5))
 
 ggsave("SPD_Union_Zweit_GV_Map.png", path="Grafiken/", width = 14, height= 10)
 ```
