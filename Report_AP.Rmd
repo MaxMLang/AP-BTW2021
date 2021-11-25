@@ -113,16 +113,16 @@ theme_map <- function(...) {
 
 btw_trimmed_data %>%
   ggplot(aes(x = ArbeitslosQ / 100, y = SPD.Zweit.End.Perc)) +
-  geom_jitter(colour = partei_colors["SPD"]) +
+  geom_jitter(fill = partei_colors["SPD"], shape = 21, alpha = 0.4) +
   labs(title = "Arbeitslosenquote und Zweitstimmen SPD") +
   xlab("Arbeitslosenquote* (in %)") +
   ylab("Zweitstimmen SPD (in %)") +
   labs(caption = "* Stand: Februar 2021") +
-  scale_y_continuous(labels = scales::percent) +
-  scale_x_continuous(labels = scales::percent)
+  scale_y_continuous(labels = scales::percent, limits = c(0, 0.5)) +
+  scale_x_continuous(labels = scales::percent, limits = c(0, 0.16))
 
 
-ggsave("Scatterplots_ArbeitslosQ_SPD.png", path = "Grafiken/")
+ggsave("Scatterplots_ArbeitslosQ_SPD.png", path = "Grafiken/", height = 6, width = 6)
 
 ausreisser_spd <- select(filter(btw_trimmed_data, ArbeitslosQ == max(ArbeitslosQ)), Gebiet, ArbeitslosQ)
 ausreisser_spd2 <- select(filter(btw_trimmed_data, SPD.Zweit.End.Perc == max(SPD.Zweit.End.Perc)), Gebiet, SPD.Zweit.End.Perc)
@@ -134,14 +134,14 @@ btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
   mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc) %>%
   ggplot(aes(x = Vfg.Einkommen, y = UNION)) +
-  geom_jitter(colour = partei_colors["CDU/CSU"]) +
+  geom_jitter(fill = partei_colors["CDU/CSU"], shape = 21, alpha = 0.4) +
   labs(title = "Verfügbares Einkommen und Zweitstimmen Union") +
-  xlab("Verfügbares Einkommen der privaten Haushalte* \n(EUR je EW)") +
+  xlab("Verfügbares Einkommen der privaten Haushalte* (EUR je EW)") +
   ylab("Zweitstimmen Union (in %)") +
   labs(caption = "* Stand: 2018") +
-  scale_y_continuous(labels = scales::percent)
+  scale_y_continuous(labels = scales::percent, limits = c(0, 0.5))
 
-ggsave("Scatterplots_Vermögen_Union.png", path = "Grafiken/", width = 9, height = 9)
+ggsave("Scatterplots_Vermögen_Union.png", path = "Grafiken/", height = 6, width = 6)
 
 ausreisser_union <- select(filter(btw_trimmed_data, Vfg.Einkommen>30000), Gebiet, Vfg.Einkommen, CDU.Zweit.End.Perc, CSU.Zweit.End.Perc)
 
@@ -160,11 +160,12 @@ btw_trimmed_data %>%
          LINKE = LINKE.Zweit.End.Perc) %>%
   select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
            Vfg.Einkommen)) %>%
-  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") %>%
-  ggplot(aes(x = Vfg.Einkommen, y = Percentage, fill = Age)) +
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Parteien", values_to = "Percentage") %>%
+  mutate(Parteien = factor(Parteien, levels = c("UNION", "SPD", "AFD", "FDP", "LINKE", "GRÜNE"))) %>%
+  ggplot(aes(x = Vfg.Einkommen, y = Percentage, fill = Parteien)) +
   geom_jitter(size = 1.75, shape = 21, alpha = 0.4) +
-  facet_wrap("Age") +
-  scale_fill_manual(values = partei_colors_carla[c(3,4,6,5,2,1)]) +
+  facet_wrap("Parteien") +
+  scale_fill_manual(values = partei_colors_carla) +
   theme(legend.position = "none") +
   labs(title = "Verfügbares Einkommen und Zweitstimmen je Partei") +
   xlab("Verfügbares Einkommen der privaten Haushalte* \n(in Euro je Einwohner)") +
@@ -189,15 +190,16 @@ is_Osten_data <- btw_trimmed_data %>%
                               Bundesland.Nr %in% c(1:11) ~ "westliche Bundesländer")) %>%
   select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
            Vfg.Einkommen, f18t34.Perctange, is.Osten, Gebiet)) %>%
-  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage")
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Parteien", values_to = "Percentage") %>%
+  mutate(Parteien = factor(Parteien, levels = c("UNION", "SPD", "AFD", "FDP", "LINKE", "GRÜNE")))
 
-ggplot(is_Osten_data, aes(x = Vfg.Einkommen, y = Percentage, col = Age)) +
+ggplot(is_Osten_data, aes(x = Vfg.Einkommen, y = Percentage, col = Parteien)) +
   geom_jitter(size = 1.75, color = "grey") +
-  facet_wrap("Age") +
-  geom_jitter(data = filter(is_Osten_data, is.Osten == "östliche Bundesländer"), aes(x = Vfg.Einkommen, y = Percentage, col = Age), size = 1.75) +
-  scale_color_manual(values =  partei_colors_carla[c(3,4,6,5,2,1)]) +
+  facet_wrap("Parteien") +
+  geom_jitter(data = filter(is_Osten_data, is.Osten == "östliche Bundesländer"), aes(x = Vfg.Einkommen, y = Percentage, col = Parteien), size = 1.75) +
+  scale_color_manual(values =  partei_colors_carla) +
   theme(legend.position = "none") +
-  labs(title = "Verfügbares Einkommen und Zweitstimmen je Partei", subtitle = "Östliche Bundesländer (farbig)") +
+  labs(title = "Verfügbares Einkommen und Zweitstimmen je Partei (östliche Bundesländer farbig)") +
   xlab("Verfügbares Einkommen der privaten Haushalte* \n(in Euro je Einwohner)") +
   ylab("Zweitstimmen (in %)") +
   labs(caption = "* Stand: 2018") +
@@ -229,11 +231,12 @@ btw_trimmed_data %>%
          f18t34.Perctange = f18t24.Perctange + f25t34.Perctange) %>%
   select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
            f18t34.Perctange)) %>%
-  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage") %>%
-  ggplot(aes(x = f18t34.Perctange, y = Percentage, fill = Age)) +
+  pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Parteien", values_to = "Percentage") %>%
+  mutate(Parteien = factor(Parteien, levels = c("UNION", "SPD", "AFD", "FDP", "LINKE", "GRÜNE"))) %>%
+  ggplot(aes(x = f18t34.Perctange, y = Percentage, fill = Parteien)) +
   geom_jitter(size = 1.75, shape = 21, alpha = 0.4) +
-  facet_wrap("Age") +
-  scale_fill_manual(values = partei_colors_carla[c(3,4,6,5,2,1)]) +
+  facet_wrap("Parteien") +
+  scale_fill_manual(values = partei_colors_carla) +
   theme(legend.position = "none") +
   labs(title = "Anteil der 18- bis 34-Jährigen und Zweitstimmen je Partei") +
   xlab("Anteil der 18- bis 34-Jährigen an der Gesamtbevölkerung* (in %)") +
@@ -245,13 +248,13 @@ ggsave("Scatterplots_Alter_f18t34.png", path = "Grafiken/", width = 9, height = 
 
 # Junge Wählerschaft Osten
 
-ggplot(is_Osten_data, aes(x = f18t34.Perctange, y = Percentage, col = Age)) +
+ggplot(is_Osten_data, aes(x = f18t34.Perctange, y = Percentage, col = Parteien)) +
   geom_jitter(size = 1.75, color = "grey") +
-  facet_wrap("Age") +
-  geom_jitter(data = filter(is_Osten_data, is.Osten == "östliche Bundesländer"), aes(x = f18t34.Perctange, y = Percentage, col = Age), size = 1.75) +
-  scale_color_manual(values = partei_colors_carla[c(3,4,6,5,2,1)]) +
+  facet_wrap("Parteien") +
+  geom_jitter(data = filter(is_Osten_data, is.Osten == "östliche Bundesländer"), aes(x = f18t34.Perctange, y = Percentage, col = Parteien), size = 1.75) +
+  scale_color_manual(values = partei_colors_carla) +
   theme(legend.position = "none") +
-  labs(title = "Anteil der 18- bis 34-Jährigen und Zweitstimmen je Partei", subtitle = "Östliche Bundesländer (farbig)") +
+  labs(title = "Anteil der 18- bis 34-Jährigen und Zweitstimmen je Partei (östliche Bundesländer farbig)") +
   xlab("Anteil der 18- bis 34-Jährigen an der Gesamtbevölkerung* (in %)") +
   ylab("Zweitstimmen (in %)") +
   scale_y_continuous(labels = scales::percent) +
