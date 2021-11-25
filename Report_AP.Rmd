@@ -105,60 +105,6 @@ theme_map <- function(...) {
 
 # Carla
 
-# SPD vs CDU Boxplots
-```{r}
-# Verfügbares Einkommen
-
-spd_vs_union <- btw_trimmed_data %>%
-  replace(is.na(.), 0) %>%
-  mutate(Union.Zweit.End = CDU.Zweit.End + CSU.Zweit.End) %>%
-  mutate(UnionvsSPD = case_when((SPD.Zweit.End > Union.Zweit.End)
-                                ~ "Wahlkreise in denen die SPD mehr Zweitstimmen \nals die Union erreicht hat", 
-                                (SPD.Zweit.End < Union.Zweit.End)
-                                ~ "Wahlkreise in denen die Union mehr Zweitstimmen \nals die SPD erreicht hat"))
-
-spd_vs_union %>%
-  ggplot(aes(x = UnionvsSPD, y = Vfg.Einkommen, col = UnionvsSPD)) +
-  geom_boxplot() +
-  ylim(15000, 35000) +
-  labs(title = "Verfügbares Einkommen") +
-  xlab(" ") +
-  ylab("Verfügbares Einkommen der privaten Haushalte 2018 \n(EUR je EW)") +
-  scale_color_manual(values = c("red", "black")) +
-  theme(legend.position = "none")
-
-ggsave("Boxplot_SPD_Union_Einkommen.png", path = "Grafiken/")
-
-# Arbeitslosenquote
-
-spd_vs_union %>%
-  ggplot(aes(x = UnionvsSPD, y = ArbeitslosQ, col = UnionvsSPD)) +
-  geom_boxplot() +
-  labs(title = "Arbeitslosenquote") +
-  xlab(" ") +
-  ylab("Arbeitslosenquote Februar 2021") +
-  scale_color_manual(values = c("red", "black")) +
-  theme(legend.position = "none")
-
-ggsave("Boxplot_SPD_Union_Arbeitslosenquote.png", path = "Grafiken/")
-
-# Schulabgänger/-innen allgemeinblldender Schulen 2019 - mit allgemeiner und Fachhochschulreife
-
-spd_vs_union %>%
-  ggplot(aes(x = UnionvsSPD, y = Schulab.mitAllgHS, col = UnionvsSPD)) +
-  geom_boxplot() +
-  ylim(20, 60) +
-  labs(title = "Schulabgänger/-innen mit allgemeiner und Fachhochschulreife") +
-  xlab(" ") +
-  ylab("Schulabgänger/-innen allgemeinbildender Schulen 2019 \nmit allgemeiner und Fachhochschulreife") +
-  scale_color_manual(values = c("red", "black")) +
-  theme(legend.position = "none")
-
-ggsave("Boxplot_SPD_Union_Schulab.mitAllgHS.png", path = "Grafiken/")
-
-
-```
-
 # Strukturvariablen Scatterplots
 
 ```{r}
@@ -179,6 +125,8 @@ btw_trimmed_data %>%
 ggsave("Scatterplots_ArbeitslosQ_SPD.png", path = "Grafiken/")
 
 ausreisser_spd <- select(filter(btw_trimmed_data, ArbeitslosQ == max(ArbeitslosQ)), Gebiet, ArbeitslosQ)
+ausreisser_spd2 <- select(filter(btw_trimmed_data, SPD.Zweit.End.Perc == max(SPD.Zweit.End.Perc)), Gebiet, SPD.Zweit.End.Perc)
+
 
 # Verfügbares Einkommen CDU
 
@@ -237,10 +185,10 @@ is_Osten_data <- btw_trimmed_data %>%
          AFD = AFD.Zweit.End.Perc,
          LINKE = LINKE.Zweit.End.Perc,
          f18t34.Perctange = f18t24.Perctange + f25t34.Perctange,
-         is.Osten = case_when(Bundesland.Nr %in% c(10:16) ~ "östliche Bundesländer",
-                              Bundesland.Nr %in% c(1:9) ~ "westliche Bundesländer")) %>%
+         is.Osten = case_when(Bundesland.Nr %in% c(12:16) ~ "östliche Bundesländer",
+                              Bundesland.Nr %in% c(1:11) ~ "westliche Bundesländer")) %>%
   select(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE,
-           Vfg.Einkommen, f18t34.Perctange, is.Osten)) %>%
+           Vfg.Einkommen, f18t34.Perctange, is.Osten, Gebiet)) %>%
   pivot_longer(c(UNION, SPD, GRÜNE, FDP, AFD, LINKE), names_to = "Age", values_to = "Percentage")
 
 ggplot(is_Osten_data, aes(x = Vfg.Einkommen, y = Percentage, col = Age)) +
@@ -477,7 +425,7 @@ ergebnis_erststimmen <- ergebnisse_table %>%
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
   ylab("Erststimmenanteil (in %)") +
-  ggtitle(label = "Entgültige Erststimmen der Bundestagswahl 2021") +
+  ggtitle(label = "Endgültige Erststimmen der Bundestagswahl 2021") +
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10),
                      limits = c(0,0.3))
@@ -489,7 +437,7 @@ ergebnis_zweitstimmen <- ergebnisse_table %>%
   geom_bar(stat = "identity", fill = partei_colors) +
   xlab("Partei") +
   ylab("Zweitstimmenanteil (in %)") +
-  ggtitle(label = "Entgültige Zweitstimmen der Bundestagswahl 2021") +
+  ggtitle(label = "Endgültige Zweitstimmen der Bundestagswahl 2021") +
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10),
                      limits = c(0,0.3))
@@ -502,7 +450,7 @@ diff_zweitstimmen <- ergebnisse_table %>%
   geom_bar(stat = "identity", fill = partei_colors[1:6]) +
   xlab("Partei") +
   ylab("Differenz der Zweitstimmen zur BTW 2017 (in Prozentpunkten)") +
-  ggtitle(label = "Differenz an Prozentpunkten der Zweitstimmen zwischen der Bundestagswahl 2017 und 2021 je Partei") +
+  ggtitle(label = "Differenz an Prozentpunkten der Zweitstimmen \nzwischen der Bundestagswahl 2017 und 2021 je Partei") +
   scale_y_continuous(labels = scales::percent,
                      breaks = scales::pretty_breaks(n = 10),
                      limits = c(-0.1, 0.1)) +
@@ -1017,13 +965,13 @@ SozPfli.ÖffPrivDienstl <- FW_Diff_Data %>%
   scale_y_continuous(labels = scales::percent) + 
   scale_x_continuous(labels = scales::percent)
 
-p1 <- ggarrange(HW, MittSA,SozPfli.LandW, common.legend = TRUE, legend = "top", nrow= 1)
-annotate_figure(p1, top = text_grob("Beispiele positiver Korrelation: Anteil an Zweitstimmen und ausgewählte Strukturvariablen", color = "black", size = 15))
+p1 <- ggarrange(HW,SozPfli.LandW, common.legend = TRUE, legend = "top", nrow= 1)
+annotate_figure(p1, top = text_grob("Beispiele positiver Korrelation: Anteil an Zweitstimmen für freie Wähle und ausgewählte Strukturvariablen", color = "black", size = 15))
 ggsave("LT_FW_ZweitPerc_Scatter_PosKor.png", path = "Grafiken/", width = 15, height= 7)
 
 
-p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, SozPfli.ÖffPrivDienstl, nrow = 1,common.legend = TRUE, legend = "top")
-annotate_figure(p1, top = text_grob("Beispiele negativer Korrelation: Anteil an Zweitstimmen und ausgewählte Strukturvariablen", color = "black", size = 15))
+p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, nrow = 1,common.legend = TRUE, legend = "top")
+annotate_figure(p1, top = text_grob("Beispiele negativer Korrelation: Anteil an Zweitstimmen für Freie Wähler und ausgewählte Strukturvariablen", color = "black", size = 15))
 
 ggsave("LT_FW_ZweitPerc_Scatter_NegKor.png", path = "Grafiken/", width = 15, height= 7)
 ```
