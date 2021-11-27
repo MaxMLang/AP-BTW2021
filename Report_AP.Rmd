@@ -506,7 +506,8 @@ ggarrange(ez_spd, ez_fdp, ez_afd, nrow = 1)
 #Scatterplot Zusammenhang Erst-Zweitstimmen pro Partei
 ezd_union <- btw_trimmed_data %>%
   ggplot()+
-  geom_point(aes(x = Union.Erst.End.Perc, y = Union.Zweit.End.Perc), fill = partei_colors["CSU/CDU"], color = "black", shape = 21, alpha = 0.5)+
+  geom_abline(linetype = "longdash", color = "#666666")+
+  geom_point(aes(x = Union.Erst.End.Perc, y = Union.Zweit.End.Perc), fill = partei_colors["CDU/CSU"], color = "black", shape = 21, alpha = 0.5)+
   scale_x_continuous(labels = scales::percent,
                      limits = c(0, 0.55), position = "bottom")+
   scale_y_continuous(labels = scales::percent,
@@ -515,6 +516,7 @@ ezd_union <- btw_trimmed_data %>%
   ggtitle("Union")
 ezd_spd <- btw_trimmed_data %>%
   ggplot()+
+  geom_abline(linetype = "longdash", color = "#666666")+
   geom_point(aes(x = SPD.Erst.End.Perc, y = SPD.Zweit.End.Perc), shape = 21, fill = partei_colors["SPD"], color = "black", alpha = 0.5)+
   scale_x_continuous(labels = scales::percent,
                      limits = c(0, 0.55))+
@@ -524,6 +526,7 @@ ezd_spd <- btw_trimmed_data %>%
   ggtitle("SPD")
 ezd_gruene <- btw_trimmed_data %>%
   ggplot()+
+  geom_abline(linetype = "longdash", color = "#666666")+
   geom_point(aes(x = GRÜNE.Erst.End.Perc, y = GRÜNE.Zweit.End.Perc), shape = 21, fill = partei_colors["Grüne"], color = "black", alpha = 0.5)+
   scale_x_continuous(labels = scales::percent,
                      limits = c(0, 0.4))+
@@ -533,6 +536,7 @@ ezd_gruene <- btw_trimmed_data %>%
   ggtitle("GRÜNE")
 ezd_afd <- btw_trimmed_data %>%
   ggplot()+
+  geom_abline(linetype = "longdash", color = "#666666")+
   geom_point(aes(x = AFD.Erst.End.Perc, y = AFD.Zweit.End.Perc), shape = 21, fill = partei_colors["AFD"], color = "black", alpha = 0.5)+
   scale_x_continuous(labels = scales::percent,
                      limits = c(0, 0.4))+
@@ -542,6 +546,7 @@ ezd_afd <- btw_trimmed_data %>%
   ggtitle("AFD")
 ezd_fdp <- btw_trimmed_data %>%
   ggplot()+
+  geom_abline(linetype = "longdash", color = "#666666")+
   geom_point(aes(x = FDP.Erst.End.Perc, y = FDP.Zweit.End.Perc), shape = 21, fill = partei_colors["FDP"], color = "black", alpha = 0.3)+
   scale_x_continuous(labels = scales::percent,
                      limits = c(0, 0.4))+
@@ -551,6 +556,7 @@ ezd_fdp <- btw_trimmed_data %>%
   ggtitle("FDP")
 ezd_linke <- btw_trimmed_data %>%
   ggplot()+
+  geom_abline(linetype = "longdash", color = "#666666")+
   geom_point(aes(x = LINKE.Erst.End.Perc, y = LINKE.Zweit.End.Perc), shape = 21, fill = partei_colors["Linke"], color = "black", alpha = 0.5)+
   scale_x_continuous(labels = scales::percent,
                      limits = c(0, 0.4))+
