@@ -893,14 +893,16 @@ cor_matrix_FW_melted_sliced <- cor_matrix_FW_melted %>%
   filter(Var1 %in% c("FW.Zweit.End.Perc")) %>% 
   arrange(desc(value)) %>% 
   slice(which(Var2 %in% c("Unternehmen.HW", "Schulab.mitMittSA", "SozPfli.LandW",
-                    "Boden.SieduVerk", "Schulab.mitAllgHS", "SozPfli.ÖffPrivDienstl")))
+                    "Boden.SieduVerk", "Schulab.mitAllgHS", "SozPfli.ÖffPrivDienstl")))+
+  theme()
 
 cor_matrix_FW_melted_sliced %>% 
   filter(Var1 %in% c("FW.Erst.End.Perc", "FW.Zweit.End.Perc")) %>% 
 ggplot(aes(x=Var1, y=reorder(Var2,-value), fill=value)) +  
   geom_raster()+
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1))+
-theme(axis.text.x=element_text(angle=90,hjust=1))
+theme(axis.text.x=element_text(angle=0,hjust=0.5), legend.text = element_text("Wert Korrelation"))+
+  labs(x = "", y = "", title = "Korrelation Zweitstimmenanteil für Freie Wähler \nund ausgewählte Strukturvariablen")
 ggsave("Kor_Matrix_FW_Struktur_Sliced.png", path = "Grafiken/", width = 7, height= 7)
 
 HW <- FW_Diff_Data %>%
