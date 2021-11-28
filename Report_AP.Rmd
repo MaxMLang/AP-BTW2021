@@ -989,8 +989,8 @@ data.frame(list(union_diff= union_erst$DiffProzentPkt,
   scale_x_continuous(limits = c(-25, 10))+
   geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
   geom_vline(xintercept = 0, linetype= "dashed", colour= "black")+
-  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Erststimmen\n von SPD und Union (bzgl. der Bundestagswahl 2017")+
-  xlab("Union Differenz der Prozenpunkte (Erststimmen)")+
+  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Erststimmen\n von SPD und UNION (bzgl. der Bundestagswahl 2017")+
+  xlab("UNION Differenz der Prozenpunkte (Erststimmen)")+
   ylab("SPD Differenz der Prozentpunkte (Erststimmen)")
 
 ggsave("Erst_Union_SPD_Diff_Scatter.png", path="Grafiken/", width = 7, height= 7)
