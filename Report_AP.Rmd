@@ -135,9 +135,9 @@ btw_trimmed_data %>%
   mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc) %>%
   ggplot(aes(x = Vfg.Einkommen, y = UNION)) +
   geom_jitter(fill = partei_colors["CDU/CSU"], shape = 21, alpha = 0.4) +
-  labs(title = "Verfügbares Einkommen und Zweitstimmen Union") +
+  labs(title = "Verfügbares Einkommen und Zweitstimmen UNION") +
   xlab("Verfügbares Einkommen der privaten Haushalte* (EUR je EW)") +
-  ylab("Zweitstimmen Union (in %)") +
+  ylab("Zweitstimmen UNION (in %)") +
   labs(caption = "* Stand: 2018") +
   scale_y_continuous(labels = scales::percent, limits = c(0, 0.5))
 
