@@ -923,7 +923,7 @@ MittSA <- FW_Diff_Data %>%
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
   ylab("")+
-  xlab("\nSchulabgänger/-innen mit 
+  xlab("\n\nSchulabgänger/-innen mit 
        mittlerem Schulabschluss (in %)")+
   labs(colour= "Bayern") +
   scale_y_continuous(labels = scales::percent) + 
@@ -934,7 +934,7 @@ SozPfli.LandW <- FW_Diff_Data %>%
   geom_jitter(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
-  ylab("")+
+  ylab("Anteil an Zweitstimmen (in %)")+
   xlab("Sozialversicherungspflichtige Beschäftigte 
   Land- und Forstwirtschaft, 
        Fischerei (in %)")+
@@ -951,7 +951,7 @@ Boden.SieduVerk <- FW_Diff_Data %>%
   scale_colour_manual(values = c("black", "dodgerblue"),labels= c( "Nein","Ja"))+
   facet_wrap(~is.LT, labeller = labeller(is.LT = c("FALSE"="keine Landtagsvertretung", "TRUE"="Landtagsvertretung"))) +
   ylab("Anteil an Zweitstimmen (in %)")+
-  xlab("Bodenflächennutzung
+  xlab("\nBodenflächennutzung
        Siedlung und Verkehr (in %)")+
   labs(colour= "Bayern") +
   scale_y_continuous(labels = scales::percent) + 
