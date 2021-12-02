@@ -1,61 +1,55 @@
-Abkürzung - Bedeutung 
-Land - Bundesland
-Wahlkreis.Nr - Wahlkreisnummer
-Wahlkreis.Name - Wahlkreisname
-Gmd.Anz - Gemeinden Anzahl (Stand 31.12.2019)
-Flaeche.Km - Fläche in Kilometer (Stand 31.12.2019)
-Bvk.Insg - Bevölkerung Insgesamt in 1000 (Stand 31.12.2019)
-Bvk.Dt - Bevölkerung Deutsche in 1000 (Stand 31.12.2019)
-Bvk.Aus - Bevölkerung Ausländer in 1000 (Stand 31.12.2019)
-Bvk.Dcht - Bevölkerungsdichte EW je km^2 (Stand 31.12.2019)
-Gbrt.Saldo - Geburtensaldo je 1000 EW (+) Zunahme (-) Abnahme (Stand 2019)
-Wander.Saldo - Wanderungssaldo je 1000 EW (+) Zunahme (-) Abnahme (Stand 2019)
-
-u18.Perctange - Alter unter 18 (%) (Stand 31.12.2019)
-f18t24.Perctange - Alter von 18 bis 24 (%) (Stand 31.12.2019)
-f25t34.Perctange - Alter von 25 bis 34 (%) (Stand 31.12.2019)
-f35t59.Perctange - Alter von 35 bis 59 (%) (Stand 31.12.2019)
-f60t74.Perctange - Alter von 60 bis 74 (%) (Stand 31.12.2019)
-f75tInf.Perctange - Alter über 75 Jahren (Stand 31.12.2019)
-
-Boden.SieduVerk - Bodenfläche nach Art der tatsächlichen Nutzung Siedlung und Verkehr (%) (Stand am 31.12.2019)
-Boden.VegeuGewaes - Bodenfläche nach Art der tatsächlichen Nutzung Vegetation und Gewässer (%) (Stand am 31.12.2019)
-Fertig.Wohnungen - Fertiggestellte Wohnungen 2019 (je 1000 EW)
-Best.Wohnungen - Bestand an Wohnungen am 31.12.2019 - insgesamt (je 1000 EW)
-Flaech.Wohn - Wohnfläche am 31.12.2019 (je Wohnung)
-WohnFlaech.EW - Wohnfläche am 31.12.2019 (je EW)
-Best.PKW - PKW-Bestand am 01.01.2020 - PKW insgesamt (je 1000 EW)
-Best.PkwElek - PKW-Bestand am 01.01.2020 - PKW mit Elektro- oder Hybrid-Antrieb (%)
-Unternehmen.Insg - Unternehmensregister 2018 - Unternehmen insgesamt (je 1000 EW)
-Unternehmen.HW - Unternehmensregister 2018 - Handwerksunternehmen (je 1000 EW)
-Schulab.berufSch - Schulabgänger/-innen beruflicher Schulen 2019
-Schulab.allgSch - Schulabgänger/-innen allgemeinbildender Schulen 2019 - insgesamt ohne Externe (je 1000 EW)
-Schulab.ohneHS - Schulabgänger/-innen allgemeinbildender Schulen 2019 - ohne Hauptschulabschluss (%)
-Schulab.mitHS- Schulabgänger/-innen allgemeinbildender Schulen 2019 - mit Hauptschulabschluss (%)
-Schulab.mitMittSA - Schulabgänger/-innen allgemeinbildender Schulen 2019 - mit mittlerem Schulabschluss (%)
-Schulab.mitAllgHS - Schulabgänger/-innen allgemeinblldender Schulen 2019 - mit allgemeiner und Fachhochschulreife (%)
-KTG.KinderU3 - Kindertagesbetreuung am 01.03.2020 - Betreute Kinder unter 3 Jahre (Betreuungsquote)
-KTG.KinderF3t6 - Kindertagesbetreuung am 01.03.2020 - Betreute Kinder 3 bis unter 6 Jahre (Betreuungsquote)
-Vfg.Einkommen - Verfügbares Einkommen der privaten Haushalte 2018 (EUR je EW)
-BIP - Bruttoinlandsprodukt 2018 (EUR je EW)
-SozPfli.Insg - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - insgesamt (je 1000 EW)
-SozPfli.LandW - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - Land- und Forstwirtschaft, Fischerei (%)
-SozPfli.ProdGewerb - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - Produzierendes Gewerbe (%)
-SozPfli.HandelGwVerk - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - Handel, Gastgewerbe, Verkehr (%)
-SozPfli.ÖffPrivDienstl - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - Öffentliche und private Dienstleister (%)
-SozPfli.Rest - Sozialversicherungspflichtig Beschäftigte am 30.06.2020 - Übrige Dienstleister und "ohne Angabe" (%)
-
-SGB2.Empf.Insg - Empfänger/-innen von Leistungen nach SGB II  Oktober 2020 -  insgesamt (je 1000 EW)
-
-SGB2.Empf.nErwHilf -Empfänger/-innen von Leistungen nach SGB II  Oktober 2020 -  nicht erwerbsfähige Hilfebedürftige (%)
-
-SGB2.Empf.Aus - Empfänger/-innen von Leistungen nach SGB II  Oktober 2020 -  Ausländer/-innen (%)
-
-ArbeitslosQ - Arbeitslosenquote Februar 2021 - insgesamt
-ArbeitslosQ.M - Arbeitslosenquote Februar 2021 - Männer
-ArbeitslosQ.W - Arbeitslosenquote Februar 2021 - Frauen
-ArbeitslosQ.f15t24 - Arbeitslosenquote Februar 2021 - 15 bis 24 Jahre
-ArbeitslosQ.f55t64 - Arbeitslosenquote Februar 2021 - 55 bis 64 Jahre
+Abkürzung ; Bedeutung 
+Land ; Bundesland
+Wahlkreis.Nr ; Wahlkreisnummer
+Wahlkreis.Name ; Wahlkreisname
+Gmd.Anz ; Gemeinden Anzahl (Stand 31.12.2019)
+Flaeche.Km ; Fläche in Kilometer (Stand 31.12.2019)
+Bvk.Insg ; Bevölkerung Insgesamt in 1000 (Stand 31.12.2019)
+Bvk.Dt ; Bevölkerung Deutsche in 1000 (Stand 31.12.2019)
+Bvk.Aus ; Bevölkerung Ausländer in 1000 (Stand 31.12.2019)
+Bvk.Dcht ; Bevölkerungsdichte EW je km^2 (Stand 31.12.2019)
+Gbrt.Saldo ; Geburtensaldo je 1000 EW (+) Zunahme  Abnahme (Stand 2019)
+Wander.Saldo ; Wanderungssaldo je 1000 EW (+) Zunahme  Abnahme (Stand 2019)
+u18.Perctange ; Alter unter 18 (%) (Stand 31.12.2019)
+f18t24.Perctange ; Alter von 18 bis 24 (%) (Stand 31.12.2019)
+f25t34.Perctange ; Alter von 25 bis 34 (%) (Stand 31.12.2019)
+f35t59.Perctange ; Alter von 35 bis 59 (%) (Stand 31.12.2019)
+f60t74.Perctange ; Alter von 60 bis 74 (%) (Stand 31.12.2019)
+f75tInf.Perctange ; Alter über 75 Jahren (Stand 31.12.2019)
+Boden.SieduVerk ; Bodenfläche nach Art der tatsächlichen Nutzung Siedlung und Verkehr (%) (Stand am 31.12.2019)
+Boden.VegeuGewaes ; Bodenfläche nach Art der tatsächlichen Nutzung Vegetation und Gewässer (%) (Stand am 31.12.2019)
+Fertig.Wohnungen ; Fertiggestellte Wohnungen 2019 (je 1000 EW)
+Best.Wohnungen ; Bestand an Wohnungen am 31.12.2019  insgesamt (je 1000 EW)
+Flaech.Wohn ; Wohnfläche am 31.12.2019 (je Wohnung)
+WohnFlaech.EW ; Wohnfläche am 31.12.2019 (je EW)
+Best.PKW ; PKW Bestand am 01.01.2020  PKW insgesamt (je 1000 EW)
+Best.PkwElek ; PKW Bestand am 01.01.2020  PKW mit Elektro oder HybridAntrieb (%)
+Unternehmen.Insg ; Unternehmensregister 2018  Unternehmen insgesamt (je 1000 EW)
+Unternehmen.HW ; Unternehmensregister 2018  Handwerksunternehmen (je 1000 EW)
+Schulab.berufSch ; Schulabgänger/innen beruflicher Schulen 2019
+Schulab.allgSch ; Schulabgänger/innen allgemeinbildender Schulen 2019 insgesamt ohne Externe (je 1000 EW)
+Schulab.ohneHS ; Schulabgänger/innen allgemeinbildender Schulen 2019  ohne Hauptschulabschluss (%)
+Schulab.mitHS; Schulabgänger/innen allgemeinbildender Schulen 2019 mit Hauptschulabschluss (%)
+Schulab.mitMittSA ; Schulabgänger/innen allgemeinbildender Schulen 2019  mit mittlerem Schulabschluss (%)
+Schulab.mitAllgHS ; Schulabgänger/innen allgemeinblldender Schulen 2019  mit allgemeiner und Fachhochschulreife (%)
+KTG.KinderU3 ; Kindertagesbetreuung am 01.03.2020  Betreute Kinder unter 3 Jahre (Betreuungsquote)
+KTG.KinderF3t6 ; Kindertagesbetreuung am 01.03.2020 Betreute Kinder 3 bis unter 6 Jahre (Betreuungsquote)
+Vfg.Einkommen ; Verfügbares Einkommen der privaten Haushalte 2018 (EUR je EW)
+BIP ; Bruttoinlandsprodukt 2018 (EUR je EW)
+SozPfli.Insg ; Sozialversicherungspflichtig Beschäftigte am 30.06.2020 insgesamt (je 1000 EW)
+SozPfli.LandW ; Sozialversicherungspflichtig Beschäftigte am 30.06.2020 Land und Forstwirtschaft, Fischerei (%)
+SozPfli.ProdGewerb ; Sozialversicherungspflichtig Beschäftigte am 30.06.2020 Produzierendes Gewerbe (%)
+SozPfli.HandelGwVerk ; Sozialversicherungspflichtig Beschäftigte am 30.06.2020 Handel, Gastgewerbe, Verkehr (%)
+SozPfli.ÖffPrivDienstl ; Sozialversicherungspflichtig Beschäftigte am 30.06.2020 Öffentliche und private Dienstleister (%)
+SozPfli.Rest ; Sozialversicherungspflichtig Beschäftigte am 30.06.2020 Übrige Dienstleister und "ohne Angabe" (%)
+SGB2.Empf.Insg ; Empfänger/innen von Leistungen nach SGB II  Oktober 2020  insgesamt (je 1000 EW)
+SGB2.Empf.nErwHilf ; Empfänger/innen von Leistungen nach SGB II  Oktober 2020  nicht erwerbsfähige Hilfebedürftige (%)
+SGB2.Empf.Aus ; Empfänger/innen von Leistungen nach SGB II  Oktober 2020  Ausländer/innen (%)
+ArbeitslosQ ; Arbeitslosenquote Februar 2021 insgesamt
+ArbeitslosQ.M ; Arbeitslosenquote Februar 2021 Männer
+ArbeitslosQ.W ; Arbeitslosenquote Februar 2021 Frauen
+ArbeitslosQ.f15t24 ; Arbeitslosenquote Februar 2021 15 bis 24 Jahre
+ArbeitslosQ.f55t64 ; Arbeitslosenquote Februar 2021 55 bis 64 Jahre
 
 
 
