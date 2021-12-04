@@ -580,26 +580,13 @@ ggsave("MM_Erst_Zweit_Rest.png", path = "Grafiken", width = 9, height = 9)
 ```
 
 # Max
-# Dateneinführung
-* Daten des Bundeswahlleiters
-* 299 Wahlkreise als statistische Einheiten
-* Zwei Datensätze: tabelarischen und flachen Aufbau
-* Strukturdatensatz
-* Strukturdaten für Wahlkreise enthalten Angaben über Gebiet und Bevölkerung, Flächennutzung, Unternehmensregister, Schulabgängerinnen und -abgänger beruflicher und allgemeinbildender Schulen, Kindertagesbetreuung, volkswirtschaftliche Gesamtrechnungen der Länder, sozialversicherungspflichtige Beschäftigte, Empfängerinnen und Empfängern von Leistungen nach SGB II und Arbeitslosenquoten.
-* Strukturdaten stammen überwiegend aus der „Regionaldatenbank Deutschland“, einer Gemeinschaftsveröffentlichung der Statistischen Ämter des Bundes und der Länder.
-
-* Besonderheiten
-* Bei den Stadt*Bundesländern liegen die Daten häufig nur für das gesamte Bundesland vor und nicht auf Wahlkreisebene
-* Kurze Erkärung des Wahlsystems:
-* Jede wählende Person hat eine Erst- und eine Zweitstimme
-* Die Erststimme wird für einen Direktkandidaten im jeweiligen Wahlkreis abgegeben, nur der/die Kandidat/Kandidatin mit meisten Stimmen kommt in den Bundestag
-* Zweitstimmen werden für eine Partei abgegeben, diese wählt dann anhand einer Landesliste die Abgeordneten aus
-
-* Verwendung zusätzlicher Daten für Erstellung von Karten
 
 # Grafiken für den Vortrag
-# SPD und Union (Gewinn Verluste) --> Vor: Soziodemografisch Union SPD
+# SPD und Union (Gewinn Verluste)
 ```{r}
+# Data Preparation for ScatterplotGewinn Verluste
+
+# Filter for Erststimmen und Zweitstimmen
 spd_zweit <- btw_kerg2_wk %>% 
   filter(Gruppenname == "SPD") %>% 
   filter(Stimme == 2) %>% 
@@ -609,8 +596,10 @@ spd_erst <- btw_kerg2_wk %>%
   filter(Gruppenname == "SPD") %>% 
   filter(Stimme == 1) 
 
+# Checking Correlation
 cor(spd_erst$DiffProzentPkt, spd_zweit$DiffProzentPkt)
 
+# Filter for Erststimmen und Zweitstimmen
 union_zweit <- btw_kerg2_wk %>% 
   filter(Gruppenname %in% c("CDU", "CSU")) %>% 
   filter(Stimme == 2) %>% 
@@ -620,6 +609,7 @@ union_erst <- btw_kerg2_wk %>%
   filter(Gruppenname %in% c("CDU", "CSU")) %>% 
   filter(Stimme == 1)
 
+# Checking Correlation
 cor(union_erst$DiffProzentPkt, union_zweit$DiffProzentPkt)
 
 SPD_CDU_CSU_Diff <- rbind(union_zweit, spd_zweit) %>% 
@@ -630,21 +620,9 @@ SPD_CDU_CSU_Diff[["Gruppenname"]][which(SPD_CDU_CSU_Diff[["Gruppenname"]]%in% c(
 ```
 
 # Scatterplot Union-SPD Verlust
-* Union hat keine Gewinne bei den Zweitstimmen erzielen können
-* SPD konnte bis auf 3 Wahlkreise überall Zuwächse (Zweitstimmen) verzeichnen
-* Wahlkreise in denen die Union starke Verluste hatte, hatte die SPD starke Zuwächse
-
-* Stärksten Zuwächse bei SPD in:
-* Mecklenburgische Seenplatte II – Landkreis Rostock III
-* Ludwigslust-Parchim II – Nordwestmecklenburg II – Landkreis Rostock I
-
-* Verluste der SPD:
-* Aachen I und Aachen II + Düren
-
-* Union geringste Verluste:
-* Nürnberg-Süd, Aachen II, Gelsenkirchen
-
 ```{r}
+# Scatterplot Gewinn Verluste
+
 data.frame(list(union_diff= union_zweit$DiffProzentPkt,
                 spd_diff= spd_zweit$DiffProzentPkt,
                 Wahlkreis.Nr= union_zweit$Wahlkreis.Nr)) %>% 
@@ -711,14 +689,29 @@ union_erst %>%
   select(Gebietsname, DiffProzentPkt)
 ```
 
+## Vergleich der Gewinne/Verluste an Prozentpunkten der Erststimmen von SPD und Union (bzgl. der Bundestagswahl 2017)
+
+```{r}
+data.frame(list(union_diff= union_erst$DiffProzentPkt,
+                spd_diff= spd_erst$DiffProzentPkt,
+                Wahlkreis.Nr= union_erst$Wahlkreis.Nr)) %>% 
+  ggplot(aes(x= union_diff, y= spd_diff))+
+  geom_point(shape= 21, size= 1.1)+
+  scale_x_continuous(limits = c(-25, 10))+
+  geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
+  geom_vline(xintercept = 0, linetype= "dashed", colour= "black")+
+  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Erststimmen\n von SPD und UNION (bzgl. der Bundestagswahl 2017")+
+  xlab("UNION Differenz der Prozenpunkte (Erststimmen)")+
+  ylab("SPD Differenz der Prozentpunkte (Erststimmen)")
+
+ggsave("Erst_Union_SPD_Diff_Scatter.png", path="Grafiken/", width = 7, height= 7)
+```
 
 
 ## SPD Gewinn/Verlust Map und Union Verlust Map
-* SPD v.a. Zuwächse in den neuen Bundesländern
-* Union flächendeckende Verluste
 
 ```{r}
-
+# Maps Differenz Prozentpunkte
 spd_GV <- btw_trimmed_geo_data %>% 
   ggplot()+
   geom_sf(aes(geometry= geometry, fill= spd_zweit[["DiffProzentPkt"]] / 100),
@@ -733,6 +726,7 @@ spd_GV <- btw_trimmed_geo_data %>%
   theme_map()
 ggsave("SPD_GV.png", path="Grafiken/", width = 9, height= 9)
 
+# Maps Differenz Prozentpunkte
 union_GV <- btw_trimmed_geo_data %>% 
   ggplot()+
   geom_sf(aes(geometry= geometry, fill= union_zweit$DiffProzentPkt / 100),
@@ -748,6 +742,7 @@ union_GV <- btw_trimmed_geo_data %>%
 
 ggsave("Union_GV.png", path="Grafiken/", width = 9, height= 9)
 
+# As one map
 
 SPD_Union_Zweit_GV_Map <- ggarrange(spd_GV, union_GV,
 common.legend = TRUE, legend = "right", nrow= 1)
@@ -760,12 +755,16 @@ ggsave("SPD_Union_Zweit_GV_Map.png", path="Grafiken/", width = 14, height= 10)
 # Briefwahl in Bayern 
 ## Data Preparation
 ```{r}
+# Data Preparation for Breifwahl Analysis
+
+# Absolute Zahlen 2021
 total_brief_urne <- btw_by_brief_urne_wk21 %>% 
   mutate(Urnenwaehler= B - B1Briefwähler) %>% 
   select(B, Urnenwaehler, B1Briefwähler) %>% 
   colSums()
 names(total_brief_urne) <- c("Gesamt.Waehler", "Urnenwaehler", "Briefwaehler")
 
+# Berechnung der Urnenwähler 2021 und 2017
 btw_21_17_brief_urne <- btw_brief_urne_all %>% 
   mutate(Urnenwaehler_21= B_21 - B1Briefwähler_21,
          Urnenwaehler_17= B_17 - B1Briefwähler_17) %>% 
@@ -776,10 +775,12 @@ total_brief_urne_21_17 <- btw_21_17_brief_urne %>%
   select(-schluessel) %>% 
   colSums()
 
+# Creating Data Frame with previous vectors
 total_brief_urne_21_17_df <- data.frame(list(Jahr= as.factor(c("2017", "2017", "2021", "2021")), 
                                              Art= as.factor(c("Urne", "Brief", "Urne", "Brief")), 
                                              Anzahl= c(total_brief_urne_21_17[c("Urnenwaehler_17","B1Briefwähler_17")], total_brief_urne_21_17[c("Urnenwaehler_21","B1Briefwähler_21")])))
 
+# Gesamtzahl 2017 und 2021 as Column 
 total_brief_urne_21_17_df <-  total_brief_urne_21_17_df %>%
   add_column(Gesamt.Anzahl = c(rep(total_brief_urne_21_17[2],2), rep(total_brief_urne_21_17[1],2)))
 
@@ -821,13 +822,17 @@ ggsave("Brief_Urne_ScaledBar_BY_1721.png", path="Grafiken/", width = 7, height= 
 
 # Freie Wähler Landtagsbeteiligung + BTW
 ```{r}
+# Data Preparation
+# Checking Correlation 
 cor(btw_trimmed_data$FW.Erst.End.Perc, btw_trimmed_data$FW.Zweit.End.Perc, use= "complete")
 
+# Select only diff points
 FW_DiffProzent <- btw_trimmed_geo_data2 %>% 
   filter(Gruppenname %in% "FREIE WÄHLER") %>% 
   filter(Stimme == 2) %>% 
   select(Wahlkreis.Nr, DiffProzent, DiffProzentPkt)
 
+# drop unnecessary columns for analysis
 FW_Zweit_data <- btw_trimmed_geo_data %>% 
   select(-c(22:63)) %>% 
   select(-c(28:33))
@@ -1000,23 +1005,6 @@ ggsave("LT_FW_ZweitPerc_Scatter_NegKor.png", path = "Grafiken/", width = 15, hei
 
 # Grafiken für den Anhang 
 
-## Vergleich der Gewinne/Verluste an Prozentpunkten der Erststimmen von SPD und Union (bzgl. der Bundestagswahl 2017)
-
-```{r}
-data.frame(list(union_diff= union_erst$DiffProzentPkt,
-                spd_diff= spd_erst$DiffProzentPkt,
-                Wahlkreis.Nr= union_erst$Wahlkreis.Nr)) %>% 
-  ggplot(aes(x= union_diff, y= spd_diff))+
-  geom_point(shape= 21, size= 1.1)+
-  scale_x_continuous(limits = c(-25, 10))+
-  geom_hline(yintercept = 0, linetype= "dashed", colour= "black")+
-  geom_vline(xintercept = 0, linetype= "dashed", colour= "black")+
-  ggtitle("Vergleich der Gewinne/Verluste an Prozentpunkten der Erststimmen\n von SPD und UNION (bzgl. der Bundestagswahl 2017")+
-  xlab("UNION Differenz der Prozenpunkte (Erststimmen)")+
-  ylab("SPD Differenz der Prozentpunkte (Erststimmen)")
-
-ggsave("Erst_Union_SPD_Diff_Scatter.png", path="Grafiken/", width = 7, height= 7)
-```
 
 ## In welchen Wahlkreisen gab es die größte Veränderung zur Briefwahl?
 - Alle Wahlkreise deutliches Plus bei Urnenwahl im Vergleich zu 2017

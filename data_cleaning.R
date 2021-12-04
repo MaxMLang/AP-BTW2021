@@ -1,6 +1,8 @@
+# Imports
 library(tidyverse)
 library(openxlsx)
 
+# Reading in Datasets
 btw_kerg <- read.csv("Raw Data/btw21_kerg.csv", 
                      skip = 2,
                      sep= ";", 
@@ -322,13 +324,16 @@ saveRDS(btw_kerg2_wk, file= "btw_kerg2_wk.RDS")
 saveRDS(btw_kerg2_bund, file= "btw_kerg2_bund.RDS")
 
 # Briefwahldaten ----
+# Removing and summarizing sontige columns
 btw_by_brief_urne <- btw_by_brief_urne %>% 
   mutate(D.Sonstige= rowSums(btw_by_brief_urne[20:71], na.rm = TRUE)) %>% 
   mutate(F.Sonstige= rowSums(btw_by_brief_urne[81:99], na.rm = TRUE)) %>% 
   select(-c(20:71, 81:99))
 
+# Making sure daty type is correct
 btw_by_brief_urne[1:ncol(btw_by_brief_urne)] <- lapply(btw_by_brief_urne[1:ncol(btw_by_brief_urne)], as.numeric)
 
+# Aggregation auf Gemeindeebene und Wahlkreisebene
 btw_by_brief_urne_wk <- btw_by_brief_urne %>% 
   group_by(schluessel) %>% 
   summarise_each(list(sum))
@@ -337,9 +342,10 @@ btw_by_brief_urne_Gde <- btw_by_brief_urne %>%
   group_by(schluessel.Gde) %>% 
   summarise_each(list(sum))
 
-
 saveRDS(btw_by_brief_urne_wk, file= "btw_by_brief_urne_wk.RDS")
 saveRDS(btw_by_brief_urne_Gde, file= "btw_by_brief_urne_Gde.RDS")
+
+# Analog for 2017 Dataset
 
 btw_by_brief_urne17[1:ncol(btw_by_brief_urne17)] <- lapply(btw_by_brief_urne17[1:ncol(btw_by_brief_urne17)], as.numeric)
 
@@ -356,8 +362,8 @@ btw_by_brief_urne_17_Gde <- btw_by_brief_urne17 %>%
   group_by(schluessel.Gde) %>% 
   summarise_each(list(sum))
 
-btw_brief_urne_all <- left_join(btw_by_brief_urne_wk, btw_by_brief_urne_17_wk, by= c("schluessel"="schluessel.Wkr"), suffix= c("_21", "_17"))
 
+btw_brief_urne_all <- left_join(btw_by_brief_urne_wk, btw_by_brief_urne_17_wk, by= c("schluessel"="schluessel.Wkr"), suffix= c("_21", "_17"))
 
 saveRDS(btw_by_brief_urne_17_wk, file = "btw_by_brief_urne_17_wk.RDS")
 saveRDS(btw_by_brief_urne_17_Gde, file = "btw_by_brief_urne_17_Gde.RDS")
