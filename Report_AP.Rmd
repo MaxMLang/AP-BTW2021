@@ -329,22 +329,27 @@ ggsave("Scatterplots_Ausländer.png", path = "Grafiken/", width = 9, height = 7)
 # Chris
 ```{r}
 
-# Data Structuring: Making a clean Data Frame
+# Daten Strukturierung: Erstellen eines sauberen Data Frames
 
+# Filtern des ergebnisse_diff_table
 ergebnisse_diff_table <- btw_kerg2_bund %>%
   filter(Stimme == 2) %>%
   filter(Gruppenname %in% c("CDU", "CSU", "SPD", "AfD", "FDP", "DIE LINKE", "GRÜNE"))
 
+# Faktorisieren der DiffProzentPkt
 ergebnisse_diff_table[["DiffProzentPkt"]] <- as.numeric(ergebnisse_diff_table[["DiffProzentPkt"]])
 
+# Vektoren mit Anzahl der Stimmen 
 anzahl_stimmen_erst <- sum(btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Erst.End"]])
 
 anzahl_stimmen_zweit <- sum(btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Zweit.End"]])
 
 anzahl_stimmen_gesamt <- sum(btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Erst.End"]] + btw_kerg_trimmed_bundeslaender[["Gültige.Stimmen.Zweit.End"]])
 
-
+# Vektor der Parteinamen
 partei <- c("CDU/CSU", "SPD", "AFD", "FDP", "Linke", "Grüne", "Sonstiges")
+
+# Vektor mit Gesamtstimmen
 stimmen_gesamt <- c(
   sum(btw_kerg_trimmed_bundeslaender[["Union.Erst.End"]]) +
   sum(btw_kerg_trimmed_bundeslaender[["Union.Zweit.End"]]),
@@ -361,6 +366,7 @@ stimmen_gesamt <- c(
   0
   )
 
+# Vektor mit Erststimmen
 stimmen_erst <- c(
   sum(btw_kerg_trimmed_bundeslaender[["Union.Erst.End"]]),
   sum(btw_kerg_trimmed_bundeslaender[["SPD.Erst.End"]]),
@@ -370,6 +376,8 @@ stimmen_erst <- c(
   sum(btw_kerg_trimmed_bundeslaender[["GRÜNE.Erst.End"]]),
   0
   )
+
+# Vektor mit Zweitstimmen
 stimmen_zweit <- c(
   sum(btw_kerg_trimmed_bundeslaender[["Union.Zweit.End"]]),
   sum(btw_kerg_trimmed_bundeslaender[["SPD.Zweit.End"]]),
@@ -380,38 +388,39 @@ stimmen_zweit <- c(
   0
   )
 
+# Vektor mit prozentuallen Zweitstimmen-Differenzen
 stimmen_zweit_diff_perc <- c(
   sum(ergebnisse_diff_table[1,17], ergebnisse_diff_table[7,17]),
   ergebnisse_diff_table[2:6, 17],
   0
 )
 
-
+# Erstellen des Dataframes
 ergebnisse_table <- data.frame(partei, stimmen_erst, stimmen_zweit, stimmen_gesamt)
 
+# Ergänzung: Sonstige Parteien
 ergebnisse_table[7,2] <- anzahl_stimmen_erst - sum(ergebnisse_table[1:6,2])
 
 ergebnisse_table[7,3] <- anzahl_stimmen_zweit - sum(ergebnisse_table[1:6,3])
 
 ergebnisse_table[7,4] <- anzahl_stimmen_gesamt - sum(ergebnisse_table[1:6,4])
 
+# Ergänzung: Prozentuale Stimmen
 ergebnisse_table <- ergebnisse_table %>%
   mutate(stimmen_erst_perc = stimmen_erst / anzahl_stimmen_erst,
          stimmen_zweit_perc = stimmen_zweit / anzahl_stimmen_zweit,
          stimmen_gesamt_perc = stimmen_gesamt/ anzahl_stimmen_gesamt)
 
+# Faktorisieren der Spalte partei
 ergebnisse_table[["partei"]] <- factor(ergebnisse_table[["partei"]], levels = ergebnisse_table[["partei"]])
 
+# Ergänzung: Hinzufügen der Spalte stimmen_zweit_diff_perc
 ergebnisse_table <- cbind(ergebnisse_table, stimmen_zweit_diff_perc)
-
-ergebnisse_table
-  
-
-
 ```
 
 # Ergebnisse Bundestagswahl 2021
 ```{r}
+# Plot: Endgültige Erststimmen der Bundestagswahl 2021
 ergebnis_erststimmen <- ergebnisse_table %>%
   ggplot(mapping = aes(x = partei, y = stimmen_erst_perc)) +
   geom_bar(stat = "identity", fill = partei_colors) +
@@ -423,7 +432,8 @@ ergebnis_erststimmen <- ergebnisse_table %>%
                      limits = c(0,0.3))
   
   ggsave("Ergebnis_Erststimmen.png", path="Grafiken/", width = 7, height= 7)
-  
+
+# Plot: Endgültige Zweitstimmen der Bundestagswahl 2021
 ergebnis_zweitstimmen <- ergebnisse_table %>%
   ggplot(mapping = aes(x = partei, y = stimmen_zweit_perc)) +
   geom_bar(stat = "identity", fill = partei_colors) +
@@ -435,6 +445,7 @@ ergebnis_zweitstimmen <- ergebnisse_table %>%
                      limits = c(0,0.3))
 ggsave("Ergebnis_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
+# Plot: Differenz der Zweitstimmen zur BTW 2017 (in Prozentpunkten)
 diff_zweitstimmen <- ergebnisse_table %>%
   slice(-7) %>%
   ggplot(mapping = aes(x = partei, 
@@ -450,6 +461,7 @@ diff_zweitstimmen <- ergebnisse_table %>%
 
 ggsave("Differenzen_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
+# Plot: Endgültige Erst- und Zweitstimmen der Bundestagswahl 2021
 ggarrange(ergebnis_erststimmen, ergebnis_zweitstimmen, ncol = 1)
 
 ggsave("Ergebnis_UND_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
