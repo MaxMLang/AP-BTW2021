@@ -837,32 +837,6 @@ ggsave("FW_ZweitPerc_Map.png", path = "Grafiken/", width = 7, height= 7)
 ```
 
 
-## Boxplots DiffProzentPkt und Zweit Prozent 
-```{r}
-FW_Diff_Data %>% 
-ggplot(aes(x= is.LT, y= DiffProzentPkt))+
-  geom_boxplot()+
-  scale_x_discrete(labels= c("Keine Landtagsvertretung", "Landtagsvertretung"))+
-  xlab("")+
-  ylab("Differenz der Prozentpunkte bei den Zweitstimmen")+
-  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung")+
-  ggtitle("Differenz der Prozentpunkt bei den Zweitstimmen mit/ohne Landtagsvertretung")
-
-ggsave("LT_FW_DiffPkt_Box.png", path = "Grafiken/", width = 7, height= 7)
-
-FW_Diff_Data %>% 
-ggplot(aes(x= is.LT, y= FW.Zweit.End.Perc))+
-  geom_boxplot()+
-  scale_x_discrete(labels= c("Keine Landtagsvertretung", "Landtagsvertretung"))+
-  xlab("")+
-  ylab("Anteil an Zweitstimmen")+
-  labs(subtitle= "Bayern: Regierungsbeteiligung, Rheinland-Pfalz: Landtagsvertretung")+
-  ggtitle("Anteil an Zweitstimmen mit/ohne Landtagsvertretung")
-
-
-ggsave("LT_FW_ZweitPerc_Box.png", path = "Grafiken/", width = 7, height= 7)
-```
-
 ## Korrelationsanalyse Freie Wähler
 ```{r}
 #Erstellung einer Korrelationsmatrix für verschiedene Strukturmerkmale und Zweitstimmen für die Freien Wähler
