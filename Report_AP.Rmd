@@ -471,40 +471,9 @@ ggsave("Ergebnis_UND_Zweitstimmen.png", path="Grafiken/", width = 7, height= 7)
 
 # Mattia
 ```{r}
-#Boxplot Differenz Erst - Zweitstimmen pro Partei
-ez_union <- btw_trimmed_data %>%
-  ggplot()+
-  geom_boxplot(aes(x = "UNION", y = Union.Erst.Zweit.Diff.Perc), fill = "black",
-               color = "darkgrey", outlier.color = "black", size = 1.02)+
-  labs(x = NULL)+
-  scale_y_continuous(limits = c(-0.1, 0.2))
-ez_spd <- btw_trimmed_data %>%
-  ggplot()+
-  geom_boxplot(aes(x = "SPD", y = SPD.Erst.Zweit.Diff.Perc), fill = "red")+
-  labs(x = NULL)
-ez_afd <- btw_trimmed_data %>%
-  ggplot()+
-  geom_boxplot(aes(x = "AFD", y = AFD.Erst.Zweit.Diff.Perc), fill = "blue")+
-  labs(x = NULL)
-ez_gruene <- btw_trimmed_data %>%
-  ggplot()+
-  geom_boxplot(aes(x = "GRÜNE", y = GRÜNE.Erst.Zweit.Diff.Perc),fill = "green")+
-  labs(x = NULL)+
-  scale_y_continuous(limits = c(-0.1, 0.2))
-ez_fdp <- btw_trimmed_data %>%
-  ggplot()+
-  geom_boxplot(aes(x = "FDP", y = FDP.Erst.Zweit.Diff.Perc), fill = "yellow")+
-  labs(x = NULL, y = "Stimmen mehr Erststimmen als Zweitstimmen in %", title = "Erst- und Zweitstimmen der Wahlkreise pro Partei")
-ez_linke <- btw_trimmed_data %>% 
-  ggplot()+
-  geom_boxplot(aes(x = "LINKE", y = LINKE.Erst.Zweit.Diff.Perc), fill = "purple")+
-  labs(x= NULL)+
-  scale_y_continuous(limits = c(-0.1, 0.2))
-ggarrange(ez_union, ez_gruene, ez_linke, nrow = 1)
-ggarrange(ez_spd, ez_fdp, ez_afd, nrow = 1)
+#Scatterplots Zusammenhang Erst-Zweitstimmen pro Partei
 
-
-#Scatterplot Zusammenhang Erst-Zweitstimmen pro Partei
+#Erstellung der einzelnen Scatterplots pro Partei incl. Ursprungsgerade
 ezd_union <- btw_trimmed_data %>%
   ggplot()+
   geom_abline(linetype = "longdash", color = "#666666")+
@@ -515,6 +484,7 @@ ezd_union <- btw_trimmed_data %>%
                      limits = c(0, 0.55))+
   labs(x = "Erststimmanteile (in %)", y = "Zweitstimmanteile (in %)") +
   ggtitle("UNION")
+
 ezd_spd <- btw_trimmed_data %>%
   ggplot()+
   geom_abline(linetype = "longdash", color = "#666666")+
@@ -525,6 +495,7 @@ ezd_spd <- btw_trimmed_data %>%
                      limits = c(0, 0.55))+
   labs(x = "Erststimmanteile (in %)", y = NULL) +
   ggtitle("SPD")
+
 ezd_gruene <- btw_trimmed_data %>%
   ggplot()+
   geom_abline(linetype = "longdash", color = "#666666")+
@@ -533,8 +504,9 @@ ezd_gruene <- btw_trimmed_data %>%
                      limits = c(0, 0.4))+
   scale_y_continuous(labels = scales::percent,
                      limits = c(0, 0.4))+
-  labs(x = NULL, y = "Zweitstimmanteile (in %)") +
+  labs(x = "Erststimmanteile (in %)", y = NULL) +
   ggtitle("GRÜNE")
+
 ezd_afd <- btw_trimmed_data %>%
   ggplot()+
   geom_abline(linetype = "longdash", color = "#666666")+
@@ -543,8 +515,9 @@ ezd_afd <- btw_trimmed_data %>%
                      limits = c(0, 0.4))+
   scale_y_continuous(labels = scales::percent,
                      limits = c(0, 0.4))+
-  labs(x = "Erststimmanteile (in %)", y = "Zweitstimmanteile (in %)") +
+  labs(x = NULL, y = "Zweitstimmanteile (in %)") +
   ggtitle("AFD")
+
 ezd_fdp <- btw_trimmed_data %>%
   ggplot()+
   geom_abline(linetype = "longdash", color = "#666666")+
@@ -555,6 +528,7 @@ ezd_fdp <- btw_trimmed_data %>%
                      limits = c(0, 0.4))+
   labs(x = NULL, y = NULL) +
   ggtitle("FDP")
+
 ezd_linke <- btw_trimmed_data %>%
   ggplot()+
   geom_abline(linetype = "longdash", color = "#666666")+
@@ -563,21 +537,20 @@ ezd_linke <- btw_trimmed_data %>%
                      limits = c(0, 0.4))+
   scale_y_continuous(labels = scales::percent,
                      limits = c(0, 0.4))+
-  labs(x = "Erststimmanteile (in %)", y = NULL) +
+  labs(x = "Erststimmanteile (in %)", y = "Zweitstimmanteile (in %)") +
   ggtitle("LINKE")
-ggarrange(ezd_union, ezd_spd, ezd_gruene, ezd_fdp, ezd_afd, ezd_linke, label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
 
+#Zusammenfuegen von Unions- und SPD-Plot
 MM_Erst_Zweit_CDU_SPD <- ggarrange(ezd_union, ezd_spd, label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
 annotate_figure(MM_Erst_Zweit_CDU_SPD, top = text_grob("Erststimmen vs. Zweitstimmen", color = "black", size = 14))
 
 ggsave("MM_Erst_Zweit_CDU_SPD.png", path = "Grafiken", width = 9, height = 5)
 
-MM_Erst_Zweit_Rest <- ggarrange(ezd_gruene, ezd_fdp, ezd_afd, ezd_linke, label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
+#Zusammenfuegen der Plots der anderen Parteien
+MM_Erst_Zweit_Rest <- ggarrange(ezd_afd, ezd_fdp, ezd_linke, ezd_gruene, label.y = c(rep(1, 6)), label.x = rep(0.3, 6))
 annotate_figure(MM_Erst_Zweit_Rest, top = text_grob("Erststimmen vs. Zweitstimmen", color = "black", size = 14))
 
 ggsave("MM_Erst_Zweit_Rest.png", path = "Grafiken", width = 9, height = 9)
-
-#ggsave("MM_Erst_Zweit_große_Parteien.png", path = "Grafiken", width = 9, height = 7)
 ```
 
 # Max
@@ -849,6 +822,7 @@ FW_Diff_Data$is.LT <- as.factor(FW_Diff_Data$is.LT)
 
 ## Bundesmap FW Stimmen
 ```{r}
+#Erstellung einer Deutschland-Karte mit den Freien-Wähler-Zweitstimmenanteilen
 FW_Diff_Data %>%
   summarise(geometry= geometry, FW.Zweit.End.Perc= FW.Zweit.End.Perc) %>% 
   ggplot()+
@@ -891,6 +865,7 @@ ggsave("LT_FW_ZweitPerc_Box.png", path = "Grafiken/", width = 7, height= 7)
 
 ## Korrelationsanalyse Freie Wähler
 ```{r}
+#Erstellung einer Korrelationsmatrix für verschiedene Strukturmerkmale und Zweitstimmen für die Freien Wähler
 cor_matrix_FW <- cor(select(FW_Diff_Data,-c(1:21,26,76,79)))
 
 cor_matrix_FW_melted <- melt(cor_matrix_FW)
@@ -906,10 +881,16 @@ cor_matrix_FW_melted_sliced %>%
 ggplot(aes(x=Var1, y=reorder(Var2,-value), fill=value)) +  
   geom_raster()+
   scale_fill_distiller(palette= "RdBu", type = "div", limit= c(-1,1), name = "Wert Korrelation")+
-theme(axis.text.x=element_text(angle=0,hjust=0.5))+
-  labs(x = "", y = "", title = "Korrelation Zweitstimmenanteil für Freie Wähler \nund ausgewählte Strukturvariablen")
+theme(axis.text.x=element_text(angle=45,hjust=1, vjust = 1))+
+  labs(x = "", y = "", title = "Korrelation Zweitstimmenanteil für Freie Wähler \nund ausgewählte Strukturvariablen")+
+  coord_flip()
+
 ggsave("Kor_Matrix_FW_Struktur_Sliced.png", path = "Grafiken/", width = 7, height= 7)
 
+#Erstellung Scatterplots Freie-Wähler-Anteil und ausgewählte Strukturvariablen
+#Aufteilung in Landtagsvertretung oder nicht und Bayern oder nicht
+
+#Anzahl Handwerksunternehmen je 1000 Einwohner
 HW <- FW_Diff_Data %>%
   ggplot(aes(x= Unternehmen.HW, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
@@ -923,6 +904,7 @@ HW <- FW_Diff_Data %>%
   
 ggsave("LT_FW_ZweitPerc_Scatter_HW.png", path = "Grafiken/", width = 10, height= 7)
 
+#Anzahl Schulabgänger*innen mit mittlerem Schulabschluss
 MittSA <- FW_Diff_Data %>% 
   ggplot(aes(x= Schulab.mitMittSA/100, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
@@ -935,6 +917,9 @@ MittSA <- FW_Diff_Data %>%
   scale_y_continuous(labels = scales::percent) + 
   scale_x_continuous(labels = scales::percent)
 
+ggsave("LT_FW_ZweitPerc_Scatter_mittlSA.png", path = "Grafiken/", width = 10, height= 7)
+
+#Anzahl Sozialversicherungspflichtige Beschäftigte in Land- und Forstwirtschaft und Fischerei
 SozPfli.LandW <- FW_Diff_Data %>% 
   ggplot(aes(x= SozPfli.LandW/100, y= FW.Zweit.End.Perc))+
   geom_jitter(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
@@ -951,6 +936,7 @@ SozPfli.LandW <- FW_Diff_Data %>%
 
 ggsave("LT_FW_ZweitPerc_Scatter_SozVersLandForst.png", path = "Grafiken/", width = 10, height= 7)
 
+#Anteil Bodenflächennutzung von Siedlung und Verkehr
 Boden.SieduVerk <- FW_Diff_Data %>% 
   ggplot(aes(x= Boden.SieduVerk/100, y= FW.Zweit.End.Perc))+
   geom_jitter(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
@@ -965,7 +951,8 @@ Boden.SieduVerk <- FW_Diff_Data %>%
   ggtitle("Beispiel negativer Korrelation: Anteil an Zweitstimmen für freie Wähler und Anteil Bodenflächennutzung\n                                                 durch Siedlung und Verkehr")
 
 ggsave("LT_FW_ZweitPerc_Scatter_BodenflNutzung.png", path = "Grafiken/", width = 10, height= 7)
-  
+
+#Anteil Schulabgänger*innen mit allgemeiner und Fachhochschulreifung  
 Schulab.mitAllgHS <- FW_Diff_Data %>% 
   ggplot(aes(x= Schulab.mitAllgHS/100, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
@@ -981,6 +968,7 @@ Schulab.mitAllgHS <- FW_Diff_Data %>%
 
 ggsave("LT_FW_ZweitPerc_Scatter_HSAbschl.png", path = "Grafiken/", width = 10, height= 7)
 
+#Anteil sozialversicherungpflichtige Beschäftigte in öffentlichen und privaten Dienstleistern
 SozPfli.ÖffPrivDienstl <- FW_Diff_Data %>% 
   ggplot(aes(x= SozPfli.ÖffPrivDienstl/100, y= FW.Zweit.End.Perc))+
   geom_point(aes(colour= ifelse(Bundesland.Nr %in% 9, "blue","black")),alpha= 0.5)+
@@ -993,15 +981,7 @@ SozPfli.ÖffPrivDienstl <- FW_Diff_Data %>%
   scale_y_continuous(labels = scales::percent) + 
   scale_x_continuous(labels = scales::percent)
 
-p1 <- ggarrange(HW,SozPfli.LandW, common.legend = TRUE, legend = "top", nrow= 1)
-annotate_figure(p1, top = text_grob("Beispiele positiver Korrelation: Anteil an Zweitstimmen für freie Wähle und ausgewählte Strukturvariablen", color = "black", size = 15))
-ggsave("LT_FW_ZweitPerc_Scatter_PosKor.png", path = "Grafiken/", width = 15, height= 7)
-
-
-p1 <- ggarrange(Boden.SieduVerk, Schulab.mitAllgHS, nrow = 1,common.legend = TRUE, legend = "top")
-annotate_figure(p1, top = text_grob("Beispiele negativer Korrelation: Anteil an Zweitstimmen für Freie Wähler und ausgewählte Strukturvariablen", color = "black", size = 15))
-
-ggsave("LT_FW_ZweitPerc_Scatter_NegKor.png", path = "Grafiken/", width = 15, height= 7)
+ggsave("LT_FW_ZweitPerc_Scatter_SozVersÖffprivDienstl.png", path = "Grafiken/", width = 10, height= 7)
 ```
 
 # Grafiken für den Anhang 
