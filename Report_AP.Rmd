@@ -109,7 +109,7 @@ theme_map <- function(...) {
 
 ```{r}
 
-# Arbeitslosigkeit SPD
+# Grafik Arbeitslosigkeit SPD
 
 btw_trimmed_data %>%
   ggplot(aes(x = ArbeitslosQ / 100, y = SPD.Zweit.End.Perc)) +
@@ -124,11 +124,13 @@ btw_trimmed_data %>%
 
 ggsave("Scatterplots_ArbeitslosQ_SPD.png", path = "Grafiken/", height = 6, width = 6)
 
+# Ausreißer bestimmen
+
 ausreisser_spd <- select(filter(btw_trimmed_data, ArbeitslosQ == max(ArbeitslosQ)), Gebiet, ArbeitslosQ)
 ausreisser_spd2 <- select(filter(btw_trimmed_data, SPD.Zweit.End.Perc == max(SPD.Zweit.End.Perc)), Gebiet, SPD.Zweit.End.Perc)
 
 
-# Verfügbares Einkommen CDU
+# Grafik verfügbares Einkommen CDU
 
 btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
@@ -145,7 +147,7 @@ ggsave("Scatterplots_Vermögen_Union.png", path = "Grafiken/", height = 6, width
 
 ausreisser_union <- select(filter(btw_trimmed_data, Vfg.Einkommen>30000), Gebiet, Vfg.Einkommen, CDU.Zweit.End.Perc, CSU.Zweit.End.Perc)
 
-# Verfügbares Einkommen Parteien im Überblick
+# Grafik verfügbares Einkommen Parteien im Überblick
 
 partei_colors_carla <- partei_colors[1:6]
 names(partei_colors_carla) <- NULL
@@ -212,7 +214,7 @@ ggplot(is_Osten_data, aes(x = Vfg.Einkommen, y = Percentage, col = Parteien)) +
 ggsave("Scatterplots_Vermögen_Osten.png", path = "Grafiken/", width = 9, height = 7)
 
 
-# Junge Wählerschaft Grüne
+# Grafik junge Wählerschaft Grüne
 
 btw_trimmed_data %>%
   ggplot(aes(x = ArbeitslosQ / 100, y = SPD.Zweit.End.Perc)) +
@@ -226,7 +228,7 @@ btw_trimmed_data %>%
 
 ggsave("Scatterplots_Alter_f18t34_GRÜNE.png", path = "Grafiken/", height = 6, width = 6)
 
-# Junge Wählerschaft
+# Grafik junge Wählerschaft Parteien im Überblick
 
 btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
@@ -254,7 +256,7 @@ btw_trimmed_data %>%
 
 ggsave("Scatterplots_Alter_f18t34.png", path = "Grafiken/", width = 9, height = 7)
 
-# Junge Wählerschaft Osten
+# Grafik junge Wählerschaft Osten Parteien im Überblick (östliche Bundesländer farbig)
 
 ggplot(is_Osten_data, aes(x = f18t34.Perctange, y = Percentage, col = Parteien)) +
   geom_jitter(size = 1.75, color = "grey") +
@@ -270,9 +272,9 @@ ggplot(is_Osten_data, aes(x = f18t34.Perctange, y = Percentage, col = Parteien))
 
 ggsave("Scatterplots_Alter_f18t34_Osten.png", path = "Grafiken/", width = 9, height = 7)
 
-# Ü 34 Wählerschaft
+# Grafik Ü 34 Wählerschaft Parteien im Überblick
 
-a <- btw_trimmed_data %>%
+btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
   mutate(UNION = CDU.Zweit.End.Perc + CSU.Zweit.End.Perc,
          SPD = SPD.Zweit.End.Perc,
@@ -298,7 +300,7 @@ a <- btw_trimmed_data %>%
 
 ggsave("Scatterplots_Alter_f34tInf.png", path = "Grafiken/", width = 9, height = 7)
 
-# Bevölkerung Ausländer
+# Grafik Bevölkerung Ausländer Parteien im Überblick
 
 btw_trimmed_data %>%
   replace(is.na(.), 0) %>%
